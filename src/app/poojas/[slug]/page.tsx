@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { getAuthUser } from '@/lib/auth'
 import BookingForm from '@/components/BookingForm'
+
+export const dynamic = 'force-dynamic'
 
 export default async function PoojaDetailPage({
   params,
