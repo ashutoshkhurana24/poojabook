@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       include: {
         pooja: { include: { category: true } },
         slot: { include: { location: true } },
-        vendor: { include: { include: { user: { select: { name: true } } } } },
+        vendor: true,
         payments: true,
       },
       orderBy: { createdAt: 'desc' },
