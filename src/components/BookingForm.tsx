@@ -18,7 +18,7 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/api/auth/me')
+    fetch('/api/auth/me', { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -89,6 +89,7 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           poojaId,
           slotDate: selectedDate || dates[0],
