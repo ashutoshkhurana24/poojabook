@@ -1,8 +1,21 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthUser, generateOrderNo } from '@/lib/auth'
-import { createOrderSchema } from '@/lib/validations'
-import { successResponse, errorResponse, validationError, serverError, unauthorized } from '@/lib/api'
+import { successResponse, errorResponse, serverError, unauthorized } from '@/lib/api'
+import { z } from 'zod'
+
+const createOrderSchema = z.object({
+  poojaId: z.string().min(1),
+  slotId: z.string().optional(),
+  slotDate: z.string().optional(),
+  slotTime: z.string().optional(),
+  attendeeName: z.string().min(1),
+  attendeePhone: z.string().min(1),
+  address: z.string().optional(),
+  notes: z.string().optional(),
+  addOnIds: z.array(z.string()).optional(),
+  mode: z.string(),
+})
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +33,7 @@ export async function GET(request: NextRequest) {
       include: {
         pooja: { include: { category: true } },
         slot: { include: { location: true } },
-        vendor: { include: { user: { select: { name: true } } } },
+        vendor: { include: { include: { user: { select: { name: true } } } } },
         payments: true,
       },
       orderBy: { createdAt: 'desc' },
@@ -39,18 +52,36 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const data = createOrderSchema.parse(body)
-    const { poojaId, slotId, attendeeName, attendeePhone, address, notes, addOnIds, mode } = data
+    const { poojaId, slotId, slotDate, slotTime, attendeeName, attendeePhone, address, notes, addOnIds, mode } = data
 
-    const [pooja, slot] = await Promise.all([
-      prisma.pooja.findUnique({ where: { id: poojaId } }),
-      prisma.poojaSlot.findUnique({
-        where: { id: slotId },
-        include: { location: true },
-      }),
-    ])
+    const pooja = await prisma.pooja.findUnique({ where: { id: poojaId } })
+    if (!pooja) {
+      return errorResponse('Invalid pooja')
+    }
 
-    if (!pooja || !slot) {
-      return errorResponse('Invalid pooja or slot')
+    let slot = slotId ? await prisma.poojaSlot.findUnique({ where: { id: slotId } }) : null
+
+    if (!slot && slotDate) {
+      slot = await prisma.poojaSlot.findFirst({
+        where: {
+          poojaId,
+          date: slotDate,
+          isAvailable: true,
+        },
+      })
+    }
+
+    if (!slot) {
+      slot = await prisma.poojaSlot.create({
+        data: {
+          poojaId,
+          date: slotDate || new Date().toISOString().split('T')[0],
+          startTime: slotTime || '09:00 AM',
+          capacity: 10,
+          bookedCount: 0,
+          isAvailable: true,
+        },
+      })
     }
 
     if (!slot.isAvailable || slot.bookedCount >= slot.capacity) {
@@ -77,7 +108,7 @@ export async function POST(request: NextRequest) {
           orderNo: generateOrderNo(),
           customerId: auth.userId,
           poojaId,
-          slotId,
+          slotId: slot!.id,
           mode,
           attendeeName,
           attendeePhone,
@@ -101,7 +132,7 @@ export async function POST(request: NextRequest) {
       }
 
       await tx.poojaSlot.update({
-        where: { id: slotId },
+        where: { id: slot!.id },
         data: { bookedCount: { increment: 1 } },
       })
 
@@ -118,11 +149,11 @@ export async function POST(request: NextRequest) {
       await tx.notification.create({
         data: {
           orderId: newOrder.id,
-          type: 'EMAIL',
-          status: 'PENDING',
-          recipient: auth.phone,
+          type: 'SMS',
+          status: 'SENT',
+          recipient: attendeePhone,
           subject: 'Order Confirmed',
-          body: `Your order ${newOrder.orderNo} has been confirmed.`,
+          body: `Your booking for ${pooja.title} is confirmed! Order No: ${newOrder.orderNo}`,
         },
       })
 
@@ -141,10 +172,8 @@ export async function POST(request: NextRequest) {
     return successResponse(fullOrder, 201)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return validationError(error)
+      return errorResponse(error.errors[0].message)
     }
     return serverError(error)
   }
 }
-
-import { z } from 'zod'

@@ -1,29 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-interface Slot {
-  id: string
-  date: string
-  startTime: string
-  location: { name: string; city: string }
-}
-
-interface AddOn {
-  id: string
-  name: string
-  price: number
-}
-
-interface Pooja {
-  id: string
-  basePrice: number
-  mode: string
-}
-
-export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<string, Slot[]> }) {
+export default function BookingForm({ poojaId, basePrice }: { poojaId: string; basePrice: number }) {
   const router = useRouter()
+  const [mode, setMode] = useState('IN_TEMPLE')
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedSlot, setSelectedSlot] = useState('')
   const [selectedAddons, setSelectedAddons] = useState<string[]>([])
@@ -33,8 +15,31 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [slots, setSlots] = useState<any[]>([])
 
-  const addons = pooja.mode === 'AT_HOME' 
+  useEffect(() => {
+    fetch(`/api/poojas/${poojaId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setMode(data.data.pooja.mode)
+        }
+      })
+  }, [poojaId])
+
+  const generateDates = () => {
+    const dates = []
+    for (let i = 0; i < 14; i++) {
+      const d = new Date()
+      d.setDate(d.getDate() + i)
+      dates.push(d.toISOString().split('T')[0])
+    }
+    return dates
+  }
+
+  const dates = generateDates()
+
+  const addons = mode === 'AT_HOME' 
     ? [
         { id: '1', name: 'Premium Pandit', price: 500 },
         { id: '2', name: 'Samagri Delivery', price: 300 },
@@ -42,13 +47,12 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
       ]
     : []
 
-  const selectedSlotData = Object.values(slots).flat().find(s => s.id === selectedSlot)
-  const taxRate = 0.18
   const addOnTotal = selectedAddons.reduce((sum, id) => {
     const addon = addons.find(a => a.id === id)
     return sum + (addon?.price || 0)
   }, 0)
-  const subtotal = pooja.basePrice + addOnTotal
+  const taxRate = 0.18
+  const subtotal = basePrice + addOnTotal
   const tax = subtotal * taxRate
   const total = subtotal + tax
 
@@ -56,7 +60,7 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
     e.preventDefault()
     setError('')
 
-    if (!selectedSlot || !attendeeName || !attendeePhone) {
+    if (!attendeeName || !attendeePhone) {
       setError('Please fill all required fields')
       return
     }
@@ -68,14 +72,15 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          poojaId: pooja.id,
-          slotId: selectedSlot,
+          poojaId,
+          slotDate: selectedDate || dates[0],
+          slotTime: '09:00 AM',
           attendeeName,
           attendeePhone,
-          address: pooja.mode === 'AT_HOME' ? address : undefined,
+          address: mode === 'AT_HOME' ? address : undefined,
           notes,
           addOnIds: selectedAddons,
-          mode: pooja.mode,
+          mode,
         }),
       })
 
@@ -86,7 +91,7 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
         return
       }
 
-      router.push(`/orders/${data.data.id}`)
+      router.push(`/my-orders/${data.data.id}`)
     } catch (err) {
       setError('Failed to create order')
     } finally {
@@ -97,22 +102,21 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="bg-error/10 text-error p-3 rounded-lg text-sm">{error}</div>
+        <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">{error}</div>
       )}
 
-      {/* Date Selection */}
       <div>
         <label className="block text-sm font-medium mb-2">Select Date</label>
         <div className="flex flex-wrap gap-2">
-          {Object.keys(slots).slice(0, 7).map((date) => (
+          {dates.slice(0, 7).map((date) => (
             <button
               key={date}
               type="button"
-              onClick={() => { setSelectedDate(date); setSelectedSlot(''); }}
+              onClick={() => setSelectedDate(date)}
               className={`px-3 py-2 rounded-lg text-sm transition ${
-                selectedDate === date
+                selectedDate === date || (!selectedDate && date === dates[0])
                   ? 'bg-primary text-white'
-                  : 'bg-background border hover:border-primary'
+                  : 'bg-gray-100 border hover:border-primary'
               }`}
             >
               {new Date(date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
@@ -121,37 +125,12 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
         </div>
       </div>
 
-      {/* Slot Selection */}
-      {selectedDate && slots[selectedDate] && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Select Time Slot</label>
-          <div className="grid grid-cols-2 gap-2">
-            {slots[selectedDate].map((slot) => (
-              <button
-                key={slot.id}
-                type="button"
-                onClick={() => setSelectedSlot(slot.id)}
-                className={`p-3 rounded-lg text-sm text-left transition ${
-                  selectedSlot === slot.id
-                    ? 'bg-primary text-white'
-                    : 'bg-background border hover:border-primary'
-                }`}
-              >
-                <div className="font-medium">{slot.startTime}</div>
-                <div className="text-xs opacity-80">{slot.location.name}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Add-ons */}
-      {addons.length > 0 && selectedSlot && (
+      {addons.length > 0 && (
         <div>
           <label className="block text-sm font-medium mb-2">Add-ons</label>
           <div className="space-y-2">
             {addons.map((addon) => (
-              <label key={addon.id} className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-background">
+              <label key={addon.id} className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -174,87 +153,81 @@ export function BookingForm({ pooja, slots }: { pooja: Pooja; slots: Record<stri
         </div>
       )}
 
-      {/* Attendee Details */}
-      {selectedSlot && (
-        <div className="space-y-4 pt-4 border-t">
-          <h3 className="font-medium">Attendee Details</h3>
-          
-          <div>
-            <label className="block text-sm mb-1">Full Name *</label>
-            <input
-              type="text"
-              value={attendeeName}
-              onChange={(e) => setAttendeeName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
-              required
-            />
-          </div>
+      <div className="space-y-4 pt-4 border-t">
+        <h3 className="font-medium">Your Details</h3>
+        
+        <div>
+          <label className="block text-sm mb-1">Full Name *</label>
+          <input
+            type="text"
+            value={attendeeName}
+            onChange={(e) => setAttendeeName(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block text-sm mb-1">Phone Number *</label>
-            <input
-              type="tel"
-              value={attendeePhone}
-              onChange={(e) => setAttendeePhone(e.target.value)}
-              placeholder="+91 9876543210"
-              className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
-              required
-            />
-          </div>
+        <div>
+          <label className="block text-sm mb-1">Phone Number *</label>
+          <input
+            type="tel"
+            value={attendeePhone}
+            onChange={(e) => setAttendeePhone(e.target.value)}
+            placeholder="+91 9876543210"
+            className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
+            required
+          />
+        </div>
 
-          {pooja.mode === 'AT_HOME' && (
-            <div>
-              <label className="block text-sm mb-1">Address *</label>
-              <textarea
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                rows={3}
-                className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
-                required
-              />
-            </div>
-          )}
-
+        {mode === 'AT_HOME' && (
           <div>
-            <label className="block text-sm mb-1">Notes (Optional)</label>
+            <label className="block text-sm mb-1">Address *</label>
             <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={2}
-              placeholder="Any specific requirements..."
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              rows={3}
               className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
+              required
             />
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Price Summary */}
-      {selectedSlot && (
-        <div className="bg-background p-4 rounded-lg space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Base Price</span>
-            <span>₹{pooja.basePrice.toLocaleString()}</span>
-          </div>
-          {addOnTotal > 0 && (
-            <div className="flex justify-between text-sm">
-              <span>Add-ons</span>
-              <span>₹{addOnTotal.toLocaleString()}</span>
-            </div>
-          )}
-          <div className="flex justify-between text-sm">
-            <span>Tax (18%)</span>
-            <span>₹{tax.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between font-semibold text-lg pt-2 border-t">
-            <span>Total</span>
-            <span>₹{total.toLocaleString()}</span>
-          </div>
+        <div>
+          <label className="block text-sm mb-1">Notes (Optional)</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            placeholder="Any specific requirements..."
+            className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
+          />
         </div>
-      )}
+      </div>
+
+      <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+        <div className="flex justify-between text-sm">
+          <span>Base Price</span>
+          <span>₹{basePrice.toLocaleString()}</span>
+        </div>
+        {addOnTotal > 0 && (
+          <div className="flex justify-between text-sm">
+            <span>Add-ons</span>
+            <span>₹{addOnTotal.toLocaleString()}</span>
+          </div>
+        )}
+        <div className="flex justify-between text-sm">
+          <span>Tax (18%)</span>
+          <span>₹{tax.toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between font-semibold text-lg pt-2 border-t">
+          <span>Total</span>
+          <span>₹{total.toLocaleString()}</span>
+        </div>
+      </div>
 
       <button
         type="submit"
-        disabled={loading || !selectedSlot}
+        disabled={loading || !attendeeName || !attendeePhone}
         className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition disabled:opacity-50"
       >
         {loading ? 'Processing...' : 'Book Now'}
