@@ -6,18 +6,31 @@ import { useRouter } from 'next/navigation'
 export default function BookingForm({ poojaId, basePrice }: { poojaId: string; basePrice: number }) {
   const router = useRouter()
   const [mode, setMode] = useState('IN_TEMPLE')
+  const [loading, setLoading] = useState(true)
+  const [authenticated, setAuthenticated] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
-  const [selectedSlot, setSelectedSlot] = useState('')
   const [selectedAddons, setSelectedAddons] = useState<string[]>([])
   const [attendeeName, setAttendeeName] = useState('')
   const [attendeePhone, setAttendeePhone] = useState('')
   const [address, setAddress] = useState('')
   const [notes, setNotes] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [slots, setSlots] = useState<any[]>([])
 
   useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setAuthenticated(true)
+          setAttendeeName(data.data.user?.name || '')
+        } else {
+          setAuthenticated(false)
+        }
+      })
+      .catch(() => setAuthenticated(false))
+      .finally(() => setLoading(false))
+
     fetch(`/api/poojas/${poojaId}`)
       .then(res => res.json())
       .then(data => {
@@ -60,12 +73,17 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
     e.preventDefault()
     setError('')
 
+    if (!authenticated) {
+      router.push('/login')
+      return
+    }
+
     if (!attendeeName || !attendeePhone) {
       setError('Please fill all required fields')
       return
     }
 
-    setLoading(true)
+    setSubmitting(true)
 
     try {
       const res = await fetch('/api/orders', {
@@ -95,8 +113,23 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
     } catch (err) {
       setError('Failed to create order')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
+  }
+
+  if (loading) {
+    return <div className="text-center py-4">Loading...</div>
+  }
+
+  if (!authenticated) {
+    return (
+      <button
+        onClick={() => router.push('/login')}
+        className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition"
+      >
+        Login to Book
+      </button>
+    )
   }
 
   return (
@@ -227,10 +260,10 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
 
       <button
         type="submit"
-        disabled={loading || !attendeeName || !attendeePhone}
+        disabled={submitting || !attendeeName || !attendeePhone}
         className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition disabled:opacity-50"
       >
-        {loading ? 'Processing...' : 'Book Now'}
+        {submitting ? 'Processing...' : 'Book Now'}
       </button>
     </form>
   )

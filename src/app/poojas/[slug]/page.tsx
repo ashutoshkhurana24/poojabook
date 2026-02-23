@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import { getAuthUser } from '@/lib/auth'
 import BookingForm from '@/components/BookingForm'
 
 export const dynamic = 'force-dynamic'
@@ -12,7 +11,6 @@ export default async function PoojaDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const user = await getAuthUser()
 
   const pooja = await prisma.pooja.findUnique({
     where: { slug },
@@ -76,16 +74,7 @@ export default async function PoojaDetailPage({
               <div className="text-3xl font-heading mb-2">₹{pooja.basePrice.toLocaleString()}</div>
               <p className="text-text-secondary text-sm mb-4">Base price (excludes add-ons & taxes)</p>
 
-              {user ? (
-                <BookingForm poojaId={pooja.id} basePrice={pooja.basePrice} />
-              ) : (
-                <Link 
-                  href="/login"
-                  className="block w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition text-center"
-                >
-                  Login to Book
-                </Link>
-              )}
+              <BookingForm poojaId={pooja.id} basePrice={pooja.basePrice} />
             </div>
           </div>
         </div>
