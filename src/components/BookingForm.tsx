@@ -39,13 +39,11 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
 
   const dates = generateDates()
 
-  const addons = mode === 'AT_HOME' 
-    ? [
-        { id: '1', name: 'Premium Pandit', price: 500 },
-        { id: '2', name: 'Samagri Delivery', price: 300 },
-        { id: '3', name: 'Prasad Home Delivery', price: 200 },
-      ]
-    : []
+  const addons: { id: string; name: string; price: number; desc: string }[] = [
+    { id: '1', name: 'Premium Pandit', price: 500, desc: 'Highly experienced senior pandit' },
+    { id: '2', name: 'Samagri Kit', price: 300, desc: 'All items pre-arranged and delivered' },
+    { id: '3', name: 'Prasad Delivery', price: 200, desc: 'Prasad delivered to your home' },
+  ]
 
   const addOnTotal = selectedAddons.reduce((sum, id) => {
     const addon = addons.find(a => a.id === id)
@@ -137,7 +135,7 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
 
       {addons.length > 0 && (
         <div>
-          <label className="block text-sm font-medium mb-2">Add-ons</label>
+          <label className="block text-sm font-medium mb-2">Add-ons (Optional)</label>
           <div className="space-y-2">
             {addons.map((addon) => (
               <label key={addon.id} className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
@@ -154,7 +152,10 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
                     }}
                     className="rounded"
                   />
-                  <span>{addon.name}</span>
+                  <div>
+                    <span className="font-medium">{addon.name}</span>
+                    <p className="text-xs text-gray-500">{addon.desc}</p>
+                  </div>
                 </div>
                 <span className="text-primary">+₹{addon.price}</span>
               </label>
