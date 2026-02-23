@@ -72,9 +72,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!slot) {
+      const location = await prisma.poojaLocation.findFirst()
       slot = await prisma.poojaSlot.create({
         data: {
           poojaId,
+          locationId: location?.id || 'loc-1',
           date: slotDate || new Date().toISOString().split('T')[0],
           startTime: slotTime || '09:00 AM',
           capacity: 10,
@@ -172,7 +174,7 @@ export async function POST(request: NextRequest) {
     return successResponse(fullOrder, 201)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return errorResponse(error.errors[0].message)
+      return errorResponse(error.issues[0].message)
     }
     return serverError(error)
   }
