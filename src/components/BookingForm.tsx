@@ -7,7 +7,6 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
   const router = useRouter()
   const [mode, setMode] = useState('IN_TEMPLE')
   const [loading, setLoading] = useState(true)
-  const [authenticated, setAuthenticated] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedAddons, setSelectedAddons] = useState<string[]>([])
   const [attendeeName, setAttendeeName] = useState('')
@@ -18,19 +17,6 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/api/auth/me', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setAuthenticated(true)
-          setAttendeeName(data.data.user?.name || '')
-        } else {
-          setAuthenticated(false)
-        }
-      })
-      .catch(() => setAuthenticated(false))
-      .finally(() => setLoading(false))
-
     fetch(`/api/poojas/${poojaId}`)
       .then(res => res.json())
       .then(data => {
@@ -38,6 +24,7 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
           setMode(data.data.pooja.mode)
         }
       })
+      .finally(() => setLoading(false))
   }, [poojaId])
 
   const generateDates = () => {
@@ -73,11 +60,6 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
     e.preventDefault()
     setError('')
 
-    if (!authenticated) {
-      router.push('/login')
-      return
-    }
-
     if (!attendeeName || !attendeePhone) {
       setError('Please fill all required fields')
       return
@@ -105,6 +87,11 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
 
       const data = await res.json()
 
+      if (res.status === 401 || data.error?.includes('authorized')) {
+        router.push('/login')
+        return
+      }
+
       if (!data.success) {
         setError(data.error || 'Something went wrong')
         return
@@ -120,17 +107,6 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
 
   if (loading) {
     return <div className="text-center py-4">Loading...</div>
-  }
-
-  if (!authenticated) {
-    return (
-      <button
-        onClick={() => router.push('/login')}
-        className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition"
-      >
-        Login to Book
-      </button>
-    )
   }
 
   return (
