@@ -171,12 +171,6 @@ export default function PoojaDetailPage({
               <div className="text-3xl font-heading mb-2">₹{pooja.basePrice.toLocaleString()}</div>
               <p className="text-text-secondary text-sm mb-4">Base price (excludes add-ons & taxes)</p>
 
-              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
-                <p className="text-sm text-yellow-800">
-                  <strong>Demo Mode:</strong> Connect a database to enable booking.
-                </p>
-              </div>
-
               <Link 
                 href="/login"
                 className="block w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition text-center"

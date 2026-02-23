@@ -187,13 +187,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Database Notice */}
-      <div className="fixed bottom-4 right-4 bg-yellow-100 border border-yellow-400 p-4 rounded-lg shadow-lg max-w-sm">
-        <p className="text-sm text-yellow-800">
-          <strong>Demo Mode:</strong> Database not connected. 
-          <a href="https://vercel.com/ashutoshkhurana-1312s-projects/poojabook" target="_blank" className="underline">Add PostgreSQL on Vercel</a> to enable full functionality.
-        </p>
-      </div>
+
     </div>
   )
 }
