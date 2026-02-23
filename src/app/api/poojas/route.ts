@@ -42,13 +42,6 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           category: true,
-          poojaSlots: {
-            where: { isAvailable: true, date: { gte: new Date().toISOString().split('T')[0] } },
-            include: { location: true },
-            take: 10,
-          },
-          addOns: { where: { isActive: true } },
-          reviews: { include: { customer: true }, take: 5 },
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
@@ -59,12 +52,10 @@ export async function GET(request: NextRequest) {
 
     const poojasWithRating = poojas.map((pooja) => ({
       ...pooja,
-      avgRating: pooja.reviews.length
-        ? pooja.reviews.reduce((sum, r) => sum + r.rating, 0) / pooja.reviews.length
-        : 0,
-      reviewCount: pooja.reviews.length,
-      samagri: JSON.parse(pooja.samagri),
-      languages: JSON.parse(pooja.category?.icon || '[]'),
+      avgRating: 0,
+      reviewCount: 0,
+      samagri: JSON.parse(pooja.samagri || '[]'),
+      languages: [],
     }))
 
     return successResponse({
