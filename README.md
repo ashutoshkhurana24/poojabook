@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PoojaBook - Divine Services Platform
+
+A production-ready web application for booking Hindu religious ceremonies (poojas) across India. Built with Next.js, Prisma, and SQLite.
+
+## Features
+
+- **Customer Portal**: Browse poojas by category, location, and mode; book slots; make payments
+- **Admin Dashboard**: Manage poojas, vendors, orders; view analytics and revenue
+- **Vendor Portal**: Receive and manage assigned orders, update status
+- **Authentication**: OTP-based phone login (mock in dev)
+- **Payment**: Mock payment gateway
+
+## Tech Stack
+
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: SQLite with Prisma ORM
+- **Authentication**: JWT with OTP verification
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Navigate to project directory
+cd poojabook
+
+# Install dependencies
+npm install
+
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to database
+npx prisma db push
+
+# Seed database with sample data
+npm run db:seed
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running the App
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Start development server
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The app will be available at http://localhost:3000
 
-## Learn More
+### Login Credentials
 
-To learn more about Next.js, take a look at the following resources:
+**Admin:**
+- Phone: +919999999999
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Vendor:**
+- Phone: +919888888888, +919877777777, +919866666666
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Customer:**
+- Register a new account or use the OTP login
 
-## Deploy on Vercel
+## API Endpoints
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Authentication
+- `POST /api/auth` - Send OTP, Verify OTP, Register, Login
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Poojas
+- `GET /api/poojas` - List poojas with filters
+- `GET /api/poojas/[id]` - Get pooja details
+- `POST /api/categories` - Create category (admin)
+- `GET /api/locations` - List locations
+- `POST /api/locations` - Create location (admin)
+
+### Orders
+- `GET /api/orders` - Get user's orders
+- `POST /api/orders` - Create new order
+- `GET /api/orders/[id]` - Get order details
+- `PATCH /api/orders/[id]` - Update order status
+
+### Admin
+- `GET /api/admin/dashboard` - Dashboard stats
+- `GET /api/admin/orders` - Manage orders
+- `GET /api/admin/vendors` - Manage vendors
+
+### Vendor
+- `GET /api/vendor/dashboard` - Vendor dashboard
+- `GET /api/vendor/orders` - Vendor's orders
+
+## Seed Data
+
+The seed script creates:
+- 8 pooja categories (Ganesh, Lakshmi, Navgraha, etc.)
+- 8 temple locations across India
+- 3 vendor profiles with users
+- 20 poojas with various modes
+- Slots for the next 14 days
+
+## Environment Variables
+
+```env
+DATABASE_URL="file:./prisma/dev.db"
+JWT_SECRET="your-secret-key-change-in-production"
+```
+
+## Pages
+
+| Route | Description |
+|-------|-------------|
+| `/` | Home page with search |
+| `/poojas` | Pooja listing with filters |
+| `/poojas/[slug]` | Pooja details & booking |
+| `/login` | OTP login |
+| `/register` | Register new account |
+| `/my-orders` | Customer's orders |
+| `/my-orders/[id]` | Order details |
+| `/admin` | Admin dashboard |
+| `/admin/orders` | Order management |
+| `/admin/vendors` | Vendor management |
+| `/vendor` | Vendor dashboard |
+| `/vendor/orders` | Vendor's order queue |
+
+## License
+
+MIT
