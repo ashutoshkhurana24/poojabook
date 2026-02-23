@@ -1,12 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function BookingForm({ poojaId, basePrice }: { poojaId: string; basePrice: number }) {
   const router = useRouter()
-  const [mode, setMode] = useState('IN_TEMPLE')
-  const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedAddons, setSelectedAddons] = useState<string[]>([])
   const [attendeeName, setAttendeeName] = useState('')
@@ -15,17 +13,6 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    fetch(`/api/poojas/${poojaId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setMode(data.data.pooja.mode)
-        }
-      })
-      .finally(() => setLoading(false))
-  }, [poojaId])
 
   const generateDates = () => {
     const dates = []
@@ -76,10 +63,10 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
           slotTime: '09:00 AM',
           attendeeName,
           attendeePhone,
-          address: mode === 'AT_HOME' ? address : undefined,
+          address,
           notes,
           addOnIds: selectedAddons,
-          mode,
+          mode: 'IN_TEMPLE',
         }),
       })
 
@@ -101,10 +88,6 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
     } finally {
       setSubmitting(false)
     }
-  }
-
-  if (loading) {
-    return <div className="text-center py-4">Loading...</div>
   }
 
   return (
@@ -133,36 +116,34 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
         </div>
       </div>
 
-      {addons.length > 0 && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Add-ons (Optional)</label>
-          <div className="space-y-2">
-            {addons.map((addon) => (
-              <label key={addon.id} className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedAddons.includes(addon.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedAddons([...selectedAddons, addon.id])
-                      } else {
-                        setSelectedAddons(selectedAddons.filter(id => id !== addon.id))
-                      }
-                    }}
-                    className="rounded"
-                  />
-                  <div>
-                    <span className="font-medium">{addon.name}</span>
-                    <p className="text-xs text-gray-500">{addon.desc}</p>
-                  </div>
+      <div>
+        <label className="block text-sm font-medium mb-2">Add-ons (Optional)</label>
+        <div className="space-y-2">
+          {addons.map((addon) => (
+            <label key={addon.id} className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedAddons.includes(addon.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedAddons([...selectedAddons, addon.id])
+                    } else {
+                      setSelectedAddons(selectedAddons.filter(id => id !== addon.id))
+                    }
+                  }}
+                  className="rounded"
+                />
+                <div>
+                  <span className="font-medium">{addon.name}</span>
+                  <p className="text-xs text-gray-500">{addon.desc}</p>
                 </div>
-                <span className="text-primary">+₹{addon.price}</span>
-              </label>
-            ))}
-          </div>
+              </div>
+              <span className="text-primary">+₹{addon.price}</span>
+            </label>
+          ))}
         </div>
-      )}
+      </div>
 
       <div className="space-y-4 pt-4 border-t">
         <h3 className="font-medium">Your Details</h3>
@@ -189,19 +170,6 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
             required
           />
         </div>
-
-        {mode === 'AT_HOME' && (
-          <div>
-            <label className="block text-sm mb-1">Address *</label>
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              rows={3}
-              className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
-              required
-            />
-          </div>
-        )}
 
         <div>
           <label className="block text-sm mb-1">Notes (Optional)</label>
