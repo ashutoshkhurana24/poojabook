@@ -11,9 +11,12 @@ export interface Fast2SMSResponse {
 export async function sendOTPViaFast2SMS(phoneNumber: string, otp: string): Promise<boolean> {
   const apiKey = process.env.FAST2SMS_API_KEY
   
+  console.log('[Fast2SMS] ENV FAST2SMS_API_KEY exists:', !!process.env.FAST2SMS_API_KEY)
+  console.log('[Fast2SMS] ENV FAST2SMS_API_KEY value:', process.env.FAST2SMS_API_KEY ? 'yes' : 'no')
+  
   if (!apiKey) {
     console.error('[Fast2SMS] API key not configured')
-    throw new Error('SMS service not configured')
+    throw new Error('SMS service not configured. Please contact support.')
   }
 
   const cleanPhone = phoneNumber.replace(/^\+91/, '').replace(/\D/g, '')
@@ -38,10 +41,12 @@ export async function sendOTPViaFast2SMS(phoneNumber: string, otp: string): Prom
     })
 
     const data: Fast2SMSResponse = await response.json()
+    console.log('[Fast2SMS] Response status:', response.status)
+    console.log('[Fast2SMS] Response data:', JSON.stringify(data))
 
     if (!data.return) {
       console.error('[Fast2SMS] Failed to send OTP:', data.message)
-      throw new Error(data.message as string || 'Failed to send OTP')
+      throw new Error(Array.isArray(data.message) ? data.message[0] : (data.message as string || 'Failed to send OTP'))
     }
 
     console.log(`[Fast2SMS] OTP sent successfully to ${cleanPhone}`)

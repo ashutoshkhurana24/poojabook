@@ -107,9 +107,9 @@ export async function POST(request: NextRequest) {
 
       try {
         await sendOTPViaFast2SMS(phoneNumber, otp)
-      } catch (smsError) {
-        console.error('[send-otp] Fast2SMS error:', smsError)
-        return errorResponse('Failed to send OTP. Please try again.')
+      } catch (smsError: any) {
+        console.error('[send-otp] Fast2SMS error:', smsError?.message || smsError)
+        return errorResponse(smsError?.message || 'Failed to send OTP. Please try again.')
       }
 
       return successResponse({ 
