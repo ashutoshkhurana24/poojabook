@@ -1,11 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { generateOTP, generateToken, hashPassword, verifyPassword } from '@/lib/auth'
+import { generateToken, hashPassword, verifyPassword } from '@/lib/auth'
+import { 
+  sendOTPViaFast2SMS, 
+  generateOTP, 
+  hashOTP, 
+  verifyOTP, 
+  sanitizePhoneNumber, 
+  validatePhoneNumber,
+  maskPhoneNumber
+} from '@/lib/fast2sms'
 import { v4 as uuidv4 } from 'uuid'
+import crypto from 'crypto'
 import { z } from 'zod'
 import { successResponse, errorResponse, validationError, serverError } from '@/lib/api'
 
-const otpStore = new Map<string, { otp: string; expires: number }>()
+const OTP_RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutes
+const OTP_MAX_ATTEMPTS = 3
+const OTP_EXPIRY_MINUTES = 10
+
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
+
+function checkRateLimit(phoneNumber: string): { allowed: boolean; remaining: number; resetTime: number } {
+  const now = Date.now()
+  const key = sanitizePhoneNumber(phoneNumber)
+  const record = rateLimitStore.get(key)
+  
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(key, { count: 1, resetTime: now + OTP_RATE_LIMIT_WINDOW })
+    return { allowed: true, remaining: OTP_MAX_ATTEMPTS - 1, resetTime: now + OTP_RATE_LIMIT_WINDOW }
+  }
+  
+  if (record.count >= OTP_MAX_ATTEMPTS) {
+    return { allowed: false, remaining: 0, resetTime: record.resetTime }
+  }
+  
+  record.count++
+  return { allowed: true, remaining: OTP_MAX_ATTEMPTS - record.count, resetTime: record.resetTime }
+}
 
 function setAuthCookie(response: NextResponse, token: string, rememberMe?: boolean) {
   const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7
@@ -40,77 +72,110 @@ export async function POST(request: NextRequest) {
     const { action } = body
 
     // ============================================
-    // SEND OTP (for phone-based login/register)
+    // SEND OTP
     // ============================================
     if (action === 'send-otp') {
       const data = z.object({
-        phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number'),
+        phone: z.string().min(10, 'Phone number required'),
       }).parse(body)
+
+      const phoneNumber = sanitizePhoneNumber(data.phone)
       
+      if (!validatePhoneNumber(phoneNumber)) {
+        return errorResponse('Invalid phone number. Must be 10 digits starting with 6, 7, 8, or 9.')
+      }
+
+      const rateLimit = checkRateLimit(phoneNumber)
+      if (!rateLimit.allowed) {
+        const minutesLeft = Math.ceil((rateLimit.resetTime - Date.now()) / 60000)
+        return errorResponse(`Too many OTP requests. Try again in ${minutesLeft} minutes.`, 429)
+      }
+
       const otp = generateOTP()
-      otpStore.set(data.phone, { otp, expires: Date.now() + 10 * 60 * 1000 })
-      
-      console.log(`[DEV] OTP for ${data.phone}: ${otp}`)
-      
-      return successResponse({ message: 'OTP sent successfully', devOtp: otp })
+      const otpHash = await hashOTP(otp)
+      const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000)
+
+      await prisma.otpVerification.create({
+        data: {
+          phoneNumber,
+          otpHash,
+          expiresAt,
+          isUsed: false,
+          attemptCount: 0,
+        },
+      })
+
+      try {
+        await sendOTPViaFast2SMS(phoneNumber, otp)
+      } catch (smsError) {
+        console.error('[send-otp] Fast2SMS error:', smsError)
+        return errorResponse('Failed to send OTP. Please try again.')
+      }
+
+      return successResponse({ 
+        message: 'OTP sent successfully',
+        maskedPhone: maskPhoneNumber(phoneNumber),
+      })
     }
 
     // ============================================
-    // VERIFY OTP (phone login)
+    // VERIFY OTP
     // ============================================
     if (action === 'verify-otp') {
       const data = z.object({
-        phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number'),
+        phone: z.string().min(10, 'Phone number required'),
         otp: z.string().length(6, 'OTP must be 6 digits'),
       }).parse(body)
+
+      const phoneNumber = sanitizePhoneNumber(data.phone)
       
-      const stored = otpStore.get(data.phone)
-      if (!stored) {
-        return errorResponse('OTP not found or expired')
+      if (!validatePhoneNumber(phoneNumber)) {
+        return errorResponse('Invalid phone number format')
       }
-      
-      if (Date.now() > stored.expires) {
-        otpStore.delete(data.phone)
-        return errorResponse('OTP expired')
-      }
-      
-      if (stored.otp !== data.otp) {
-        return errorResponse('Invalid OTP')
-      }
-      
-      otpStore.delete(data.phone)
-      
-      let user = await prisma.user.findUnique({ 
-        where: { phone: data.phone },
-        include: { partnerProfile: true }
+
+      const otpRecord = await prisma.otpVerification.findFirst({
+        where: {
+          phoneNumber,
+          isUsed: false,
+          expiresAt: { gt: new Date() },
+        },
+        orderBy: { createdAt: 'desc' },
       })
-      
-      if (!user) {
-        const newUser = await prisma.user.create({
-          data: { phone: data.phone, name: 'New User', role: 'CUSTOMER' },
-        })
-        await prisma.customerProfile.create({ data: { userId: newUser.id } })
-        user = { ...newUser, partnerProfile: null }
+
+      if (!otpRecord) {
+        return errorResponse('OTP expired or not found. Please request a new OTP.')
       }
-      
-      // Check if partner pending approval
-      const isPartnerPending = ['PANDIT', 'TEMPLE'].includes(user.role) && 
-        user.partnerProfile && !user.partnerProfile.isApproved
-      
-      const token = generateToken({
-        userId: user.id,
-        phone: user.phone || '',
-        role: user.role,
+
+      if (otpRecord.attemptCount >= 5) {
+        return errorResponse('Too many failed attempts. Please request a new OTP.')
+      }
+
+      await prisma.otpVerification.update({
+        where: { id: otpRecord.id },
+        data: { attemptCount: { increment: 1 } },
       })
+
+      const isValid = await verifyOTP(data.otp, otpRecord.otpHash)
       
-      const response = successResponse({ 
-        user: { ...user, passwordHash: undefined },
-        token,
-        redirectTo: getRedirectPath(user.role, user.partnerProfile?.isApproved)
+      if (!isValid) {
+        const remaining = 5 - otpRecord.attemptCount - 1
+        return errorResponse(`Invalid OTP. ${remaining} attempts remaining.`)
+      }
+
+      await prisma.otpVerification.update({
+        where: { id: otpRecord.id },
+        data: { isUsed: true },
       })
-      setAuthCookie(response, token)
-      
-      return response
+
+      await prisma.user.updateMany({
+        where: { phone: phoneNumber },
+        data: { phoneVerified: true },
+      })
+
+      return successResponse({ 
+        verified: true, 
+        message: 'Phone number verified successfully' 
+      })
     }
 
     // ============================================
@@ -119,10 +184,10 @@ export async function POST(request: NextRequest) {
     if (action === 'register-devotee') {
       const data = z.object({
         fullName: z.string().min(2, 'Name must be at least 2 characters'),
-        email: z.string().email('Invalid email address').optional().or(z.literal('')),
+        email: z.string().email('Invalid email address'),
         password: z.string().min(8, 'Password must be at least 8 characters'),
         confirmPassword: z.string(),
-        phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number').optional().or(z.literal('')),
+        phone: z.string().optional(),
         city: z.string().optional(),
         agreeToTerms: z.boolean(),
       }).parse(body)
@@ -131,11 +196,14 @@ export async function POST(request: NextRequest) {
         return errorResponse('Passwords do not match')
       }
 
+      const phone = data.phone ? sanitizePhoneNumber(data.phone) : undefined
+      const phoneVerified = phone ? true : false
+
       const existingUser = await prisma.user.findFirst({
         where: { 
           OR: [
-            { email: data.email || undefined },
-            { phone: data.phone || undefined }
+            { email: data.email },
+            { phone: phone || null }
           ].filter(x => x.email || x.phone)
         },
       })
@@ -148,12 +216,15 @@ export async function POST(request: NextRequest) {
       
       const user = await prisma.user.create({
         data: { 
-          phone: data.phone || null,
-          email: data.email || null,
+          phone: phone || null,
+          email: data.email,
           name: data.fullName,
           passwordHash,
           role: 'CUSTOMER',
           isVerified: true,
+          phoneVerified: phoneVerified || false,
+          emailVerified: true,
+          city: data.city || null,
         },
       })
       
@@ -189,7 +260,7 @@ export async function POST(request: NextRequest) {
         email: z.string().email('Invalid email address'),
         password: z.string().min(8, 'Password must be at least 8 characters'),
         confirmPassword: z.string(),
-        phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number'),
+        phone: z.string().min(10, 'Phone number required'),
         city: z.string().min(1, 'City is required'),
         state: z.string().min(1, 'State is required'),
         type: z.enum(['PANDIT', 'TEMPLE']),
@@ -198,15 +269,22 @@ export async function POST(request: NextRequest) {
         languages: z.array(z.string()).min(1, 'Select at least one language'),
         bio: z.string().optional(),
         agreeToTerms: z.boolean(),
+        phoneVerified: z.boolean(),
       }).parse(body)
+
+      if (!data.phoneVerified) {
+        return errorResponse('Please verify your phone number first')
+      }
 
       if (data.password !== data.confirmPassword) {
         return errorResponse('Passwords do not match')
       }
 
+      const phone = sanitizePhoneNumber(data.phone)
+
       const existingUser = await prisma.user.findFirst({
         where: { 
-          OR: [{ email: data.email }, { phone: data.phone }]
+          OR: [{ email: data.email }, { phone }]
         },
       })
       
@@ -218,12 +296,14 @@ export async function POST(request: NextRequest) {
       
       const user = await prisma.user.create({
         data: { 
-          phone: data.phone,
+          phone,
           email: data.email,
           name: data.fullName,
           passwordHash,
-          role: data.type, // PANDIT or TEMPLE
+          role: data.type,
           isVerified: false,
+          phoneVerified: true,
+          city: data.city,
         },
       })
       
@@ -239,7 +319,7 @@ export async function POST(request: NextRequest) {
           specializations: JSON.stringify(data.specializations),
           city: data.city,
           state: data.state,
-          isApproved: false, // Requires admin approval
+          isApproved: false,
         },
       })
       
@@ -273,12 +353,11 @@ export async function POST(request: NextRequest) {
         return errorResponse('Incorrect password. Please try again.')
       }
       
-      // Check if partner pending approval
       const isPartnerPending = ['PANDIT', 'TEMPLE'].includes(user.role) && 
         user.partnerProfile && !user.partnerProfile.isApproved
       
       if (isPartnerPending) {
-        return errorResponse('Your partner application is under review.')
+        return errorResponse('Your partner application is under review. We\'ll notify you within 24 hours.')
       }
       
       const token = generateToken({
@@ -302,13 +381,15 @@ export async function POST(request: NextRequest) {
     // ============================================
     if (action === 'login-phone') {
       const data = z.object({
-        phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number'),
+        phone: z.string().min(10, 'Phone number required'),
         password: z.string().min(1, 'Password is required'),
         rememberMe: z.boolean().optional(),
       }).parse(body)
       
+      const phone = sanitizePhoneNumber(data.phone)
+      
       const user = await prisma.user.findUnique({ 
-        where: { phone: data.phone },
+        where: { phone },
         include: { partnerProfile: true }
       })
       
@@ -321,7 +402,6 @@ export async function POST(request: NextRequest) {
         return errorResponse('Incorrect password. Please try again.')
       }
       
-      // Check if partner pending approval
       const isPartnerPending = ['PANDIT', 'TEMPLE'].includes(user.role) && 
         user.partnerProfile && !user.partnerProfile.isApproved
       
@@ -357,15 +437,19 @@ export async function POST(request: NextRequest) {
         where: { email: data.email }
       })
       
-      // Always return success to prevent email enumeration
       if (!user) {
         return successResponse({ 
           message: 'If an account exists, a reset link has been sent to your email.' 
         })
       }
       
-      const resetToken = uuidv4()
-      const expires = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+      const resetToken = crypto.randomBytes(32).toString('hex')
+      const expires = new Date(Date.now() + 60 * 60 * 1000)
+      
+      // Delete existing token for this email if any
+      await prisma.passwordResetToken.deleteMany({
+        where: { email: data.email }
+      })
       
       await prisma.passwordResetToken.create({
         data: {
@@ -375,8 +459,6 @@ export async function POST(request: NextRequest) {
         },
       })
       
-      // In production, send email with reset link
-      // For now, return the token in dev mode
       console.log(`[DEV] Password reset token for ${data.email}: ${resetToken}`)
       
       return successResponse({ 
@@ -418,7 +500,6 @@ export async function POST(request: NextRequest) {
         data: { passwordHash },
       })
       
-      // Delete the used token
       await prisma.passwordResetToken.delete({
         where: { token: data.token },
       })
@@ -427,15 +508,10 @@ export async function POST(request: NextRequest) {
     }
 
     // ============================================
-    // GOOGLE OAUTH (placeholder - requires setup)
+    // GOOGLE OAUTH (placeholder)
     // ============================================
-    if (action === 'google-signup') {
-      // TODO: Implement Google OAuth
-      // This requires:
-      // 1. Set up Google Cloud Console project
-      // 2. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env
-      // 3. Use NextAuth.js or handle OAuth flow manually
-      return errorResponse('Google Sign-Up is not configured yet. Please use email/password or phone login.')
+    if (action === 'google-signup' || action === 'google-login') {
+      return errorResponse('Google Sign-In is not configured yet. Please use email/password login.')
     }
 
     return errorResponse('Invalid action')

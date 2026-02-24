@@ -15,6 +15,9 @@ model User {
   role         String   @default("CUSTOMER")
   passwordHash String?
   googleId     String?
+  city         String?
+  phoneVerified Boolean  @default(false)
+  emailVerified Boolean  @default(false)
   isVerified   Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -25,6 +28,19 @@ model User {
   orders          Order[]
   reviews         Review[]
   auditLogs       AuditLog[]
+  otpVerifications OtpVerification[]
+}
+
+model OtpVerification {
+  id            String   @id @default(uuid())
+  phoneNumber   String
+  otpHash       String
+  expiresAt     DateTime
+  isUsed        Boolean  @default(false)
+  attemptCount  Int      @default(0)
+  createdAt     DateTime @default(now())
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String?
 }
 
 model PartnerProfile {

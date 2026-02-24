@@ -13,7 +13,6 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showOtpStep, setShowOtpStep] = useState(false)
-  const [devOtp, setDevOtp] = useState('')
   const [otp, setOtp] = useState('')
 
   const [emailForm, setEmailForm] = useState({ email: '', password: '', rememberMe: false })
@@ -107,7 +106,6 @@ export default function LoginPage() {
         return
       }
 
-      setDevOtp(data.data.devOtp || '')
       setShowOtpStep(true)
     } catch (err) {
       setError('Failed to send OTP')
@@ -330,12 +328,6 @@ export default function LoginPage() {
           {/* Phone OTP Verification */}
           {method === 'phone' && showOtpStep && (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
-              {devOtp && (
-                <div className="mb-4 p-3 bg-amber-50 text-amber-700 rounded-lg text-sm border border-amber-200">
-                  Dev OTP: {devOtp}
-                </div>
-              )}
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Enter OTP</label>
                 <input
