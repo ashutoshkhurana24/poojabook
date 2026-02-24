@@ -5,6 +5,7 @@ import Link from 'next/link'
 import LocationSelector from '@/components/LocationSelector'
 import AuspiciousDaysSection from '@/components/AuspiciousDaysSection'
 
+// Icon update deployed - Feb 24 2026
 const featuredPoojas = [
   { title: 'Ganesh Puja', slug: 'ganesh-puja', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE', icon: '🐘' },
   { title: 'Lakshmi Puja', slug: 'lakshmi-puja', price: 2100, category: 'Lakshmi', mode: 'IN_TEMPLE', icon: '🪷' },
