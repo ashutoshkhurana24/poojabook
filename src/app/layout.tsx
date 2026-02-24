@@ -16,9 +16,12 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "PoojaBook - Book Divine Poojas Across India",
+  title: "PoojaBook - Book Divine Poojas",
   description: "Discover and book authentic poojas at temples or at-home. Experienced pandits, transparent pricing, and divine experiences.",
   keywords: "pooja, hindu rituals, temple booking, pandit, divine services",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
