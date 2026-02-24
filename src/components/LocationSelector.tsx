@@ -32,10 +32,7 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
       setSelectedCity(savedCity)
       onCityChange?.(savedCity)
     } else {
-      const bannerDismissed = localStorage.getItem('poojabook_location_banner_dismissed')
-      if (!bannerDismissed) {
-        setShowBanner(true)
-      }
+      setShowBanner(true)
     }
   }, [onCityChange])
 
@@ -73,7 +70,7 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
           let state = address.state
 
           if (!city || !state) {
-            setError('Location detected but couldn\'t find city. Please select manually.')
+            setError('Couldn\'t find city. Please select manually.')
             setIsDetecting(false)
             return
           }
@@ -92,10 +89,6 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
             'Gujarat': 'Gujarat',
             'Telangana': 'Telangana',
             'Kerala': 'Kerala',
-            'Madhya Pradesh': 'MP',
-            'Rajasthan': 'Rajasthan',
-            'Punjab': 'Punjab',
-            'Haryana': 'Haryana',
           }
 
           const normalizedState = stateMap[state] || state
@@ -118,7 +111,6 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
           }
 
           setShowBanner(false)
-          localStorage.setItem('poojabook_location_banner_dismissed', 'true')
         } catch (err) {
           console.error('Geocoding error:', err)
           setError('Couldn\'t fetch location. Please select manually.')
@@ -129,7 +121,7 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
       (err) => {
         setIsDetecting(false)
         if (err.code === err.PERMISSION_DENIED) {
-          setError('Location access denied. Please select your city.')
+          setError('Location denied. Please select your city.')
         } else {
           setError('Couldn\'t detect location. Please select manually.')
         }
@@ -145,7 +137,6 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
 
   const handleDismissBanner = () => {
     setShowBanner(false)
-    localStorage.setItem('poojabook_location_banner_dismissed', 'true')
   }
 
   const handleCityChange = (value: string) => {
@@ -161,7 +152,9 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
   const clearLocation = () => {
     setSelectedCity('')
     setCustomCity('')
+    setShowBanner(true)
     localStorage.removeItem('poojabook_user_city')
+    localStorage.removeItem('poojabook_location_banner_dismissed')
     onCityChange?.('')
   }
 
@@ -170,51 +163,61 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
     cities.push({ value: customCity, label: customCity })
   }
 
+  const selectedLabel = cities.find(c => c.value === selectedCity)?.label || selectedCity
+
   return (
-    <>
+    <div className="w-full">
       {showBanner && (
-        <div className="mb-4 bg-primary/10 border border-primary/20 rounded-xl p-3 flex items-center justify-between">
-          <p className="text-sm text-primary">
-            Allow location access for a personalized experience
-          </p>
-          <div className="flex gap-2 ml-4">
+        <div className="mb-3 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">📍</span>
+            <span className="text-sm text-gray-700">Enable location for personalized experience</span>
+          </div>
+          <div className="flex gap-2">
             <button
               onClick={handleAllowBanner}
-              className="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition"
+              className="px-3 py-1.5 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition font-medium"
             >
-              Allow
+              Enable
             </button>
             <button
               onClick={handleDismissBanner}
-              className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300 transition"
+              className="px-3 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-lg hover:bg-gray-200 transition"
             >
-              Dismiss
+              Skip
             </button>
           </div>
         </div>
       )}
 
       <div className="flex gap-2">
-        <select
-          name="city"
-          value={selectedCity}
-          onChange={(e) => handleCityChange(e.target.value)}
-          className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-primary outline-none"
-        >
-          <option value="">Select City</option>
-          {cities.map((city) => (
-            <option key={city.value} value={city.value}>
-              {city.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative flex-1">
+          <select
+            name="city"
+            value={selectedCity}
+            onChange={(e) => handleCityChange(e.target.value)}
+            className="w-full px-4 py-3 pr-10 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none appearance-none bg-white"
+          >
+            <option value="">Select City</option>
+            {cities.map((city) => (
+              <option key={city.value} value={city.value}>
+                {city.label}
+              </option>
+            ))}
+          </select>
+          {selectedCity && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <span className="text-green-500">✓</span>
+            </div>
+          )}
+        </div>
         
         <button
           type="button"
           onClick={detectLocation}
           disabled={isDetecting}
           title="Detect my location"
-          className="px-3 py-3 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary/5 transition flex items-center justify-center min-w-[50px]"
+          className="px-4 py-3 rounded-xl border-2 border-primary/20 hover:border-primary hover:bg-orange-50 transition flex items-center justify-center min-w-[50px] bg-white"
         >
           {isDetecting ? (
             <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -227,19 +230,22 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
         </button>
       </div>
 
-      {selectedCity && !customCity && (
-        <button
-          type="button"
-          onClick={clearLocation}
-          className="text-xs text-text-secondary hover:text-primary mt-1 underline"
-        >
-          Not {cities.find(c => c.value === selectedCity)?.label || selectedCity}? Change
-        </button>
+      {selectedCity && (
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-xs text-green-600 font-medium">✓ {selectedLabel}</span>
+          <button
+            type="button"
+            onClick={clearLocation}
+            className="text-xs text-gray-500 hover:text-primary underline"
+          >
+            Change
+          </button>
+        </div>
       )}
 
       {error && (
-        <p className="text-xs text-red-500 mt-1">{error}</p>
+        <p className="text-xs text-red-500 mt-2">{error}</p>
       )}
-    </>
+    </div>
   )
 }
