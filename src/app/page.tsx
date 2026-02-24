@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import LocationSelector from '@/components/LocationSelector'
 
 const featuredPoojas = [
   { title: 'Ganesh Puja', slug: 'ganesh-puja', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE' },
@@ -47,17 +48,7 @@ export default function HomePage() {
                   />
                 </div>
                 <div>
-                  <select
-                    name="city"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary outline-none"
-                  >
-                    <option value="">Select City</option>
-                    <option value="Mumbai">Mumbai, Maharashtra</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Bangalore">Bangalore, Karnataka</option>
-                    <option value="Varanasi">Varanasi, UP</option>
-                    <option value="Chennai">Chennai, Tamil Nadu</option>
-                  </select>
+                  <LocationSelector />
                 </div>
                 <button
                   type="submit"
