@@ -6,21 +6,21 @@ import LocationSelector from '@/components/LocationSelector'
 import AuspiciousDaysSection from '@/components/AuspiciousDaysSection'
 
 const featuredPoojas = [
-  { title: 'Ganesh Puja', slug: 'ganesh-puja', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE' },
-  { title: 'Lakshmi Puja', slug: 'lakshmi-puja', price: 2100, category: 'Lakshmi', mode: 'IN_TEMPLE' },
-  { title: 'Navgraha Shanti', slug: 'navgraha-shanti', price: 5100, category: 'Navgraha', mode: 'AT_HOME' },
-  { title: 'Satyanarayan Puja', slug: 'satyanarayan-puja', price: 2500, category: 'Satyanarayan', mode: 'AT_HOME' },
-  { title: 'Rudrabhishek', slug: 'rudrabhishek', price: 8100, category: 'Rudrabhishek', mode: 'AT_HOME' },
-  { title: 'Hanuman Chalisa', slug: 'hanuman-chalisa', price: 510, category: 'Hanuman', mode: 'AT_HOME' },
+  { title: 'Ganesh Puja', slug: 'ganesh-puja', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE', icon: '🐘' },
+  { title: 'Lakshmi Puja', slug: 'lakshmi-puja', price: 2100, category: 'Lakshmi', mode: 'IN_TEMPLE', icon: '🪷' },
+  { title: 'Navgraha Shanti', slug: 'navgraha-shanti', price: 5100, category: 'Navgraha', mode: 'AT_HOME', icon: '🌟' },
+  { title: 'Satyanarayan Puja', slug: 'satyanarayan-puja', price: 2500, category: 'Satyanarayan', mode: 'AT_HOME', icon: '🔱' },
+  { title: 'Rudrabhishek', slug: 'rudrabhishek', price: 8100, category: 'Rudrabhishek', mode: 'AT_HOME', icon: '🕉️' },
+  { title: 'Hanuman Chalisa', slug: 'hanuman-chalisa', price: 510, category: 'Hanuman', mode: 'AT_HOME', icon: '🐒' },
 ]
 
 const categories = [
   { name: 'Ganesh', slug: 'ganesh', icon: '🐘' },
-  { name: 'Lakshmi', slug: 'lakshmi', icon: '💰' },
-  { name: 'Navgraha', slug: 'navgraha', icon: '🪐' },
+  { name: 'Lakshmi', slug: 'lakshmi', icon: '🪷' },
+  { name: 'Navgraha', slug: 'navgraha', icon: '🌟' },
   { name: 'Satyanarayan', slug: 'satyanarayan', icon: '🔱' },
-  { name: 'Rudrabhishek', slug: 'rudrabhishek', icon: '🗿' },
-  { name: 'Vishnu', slug: 'vishnu', icon: '🪷' },
+  { name: 'Rudrabhishek', slug: 'rudrabhishek', icon: '🕉️' },
+  { name: 'Vishnu', slug: 'vishnu', icon: '🐚' },
   { name: 'Hanuman', slug: 'hanuman', icon: '🐒' },
   { name: 'Durga', slug: 'durga', icon: '⚔️' },
 ]
@@ -178,7 +178,7 @@ export default function HomePage() {
                 className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
               >
                 <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                  <span className="text-6xl">🪔</span>
+                  <span className="text-6xl">{pooja.icon}</span>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">

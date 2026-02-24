@@ -1,18 +1,18 @@
 import Link from 'next/link'
 
 const poojas = [
-  { id: '1', title: 'Ganesh Puja', slug: 'ganesh-puja', description: 'Invoke the blessings of Lord Ganesha, the remover of obstacles.', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE', rating: 4.8, reviews: 124 },
-  { id: '2', title: 'Lakshmi Puja', slug: 'lakshmi-puja', description: 'Propitiate Goddess Lakshmi for wealth, prosperity, and abundance.', price: 2100, category: 'Lakshmi', mode: 'IN_TEMPLE', rating: 4.9, reviews: 89 },
-  { id: '3', title: 'Navgraha Shanti', slug: 'navgraha-shanti', description: 'Pacify the nine planetary influences for harmony in life.', price: 5100, category: 'Navgraha', mode: 'AT_HOME', rating: 4.7, reviews: 56 },
-  { id: '4', title: 'Satyanarayan Puja', slug: 'satyanarayan-puja', description: 'Perform this sacred puja for mental peace and prosperity.', price: 2500, category: 'Satyanarayan', mode: 'AT_HOME', rating: 4.8, reviews: 203 },
-  { id: '5', title: 'Rudrabhishek', slug: 'rudrabhishek', description: 'Abhishek of Lord Shiva with milk, honey, ghee, and sacred items.', price: 8100, category: 'Rudrabhishek', mode: 'AT_HOME', rating: 4.9, reviews: 45 },
-  { id: '6', title: 'Vishnu Sahasranamam', slug: 'vishnu-sahasranamam', description: 'Recitation of the 1000 names of Lord Vishnu.', price: 3100, category: 'Vishnu', mode: 'ONLINE', rating: 4.7, reviews: 78 },
-  { id: '7', title: 'Hanuman Chalisa', slug: 'hanuman-chalisa', description: 'Recitation of Hanuman Chalisa for courage and protection.', price: 510, category: 'Hanuman', mode: 'AT_HOME', rating: 4.9, reviews: 312 },
-  { id: '8', title: 'Durga Puja', slug: 'durga-puja', description: 'Worship of Goddess Durga for power and removal of obstacles.', price: 10100, category: 'Durga', mode: 'IN_TEMPLE', rating: 4.8, reviews: 67 },
-  { id: '9', title: 'Ganga Aarti', slug: 'ganga-aarti', description: 'Experience the divine Ganga Aarti virtually.', price: 510, category: 'Ganga', mode: 'ONLINE', rating: 4.6, reviews: 156 },
-  { id: '10', title: 'Saraswati Puja', slug: 'saraswati-puja', description: 'Worship Goddess Saraswati for knowledge and wisdom.', price: 1500, category: 'Saraswati', mode: 'IN_TEMPLE', rating: 4.7, reviews: 89 },
-  { id: '11', title: 'Mahashivratri', slug: 'mahashivratri', description: 'The great night of Lord Shiva with Rudra abhishek.', price: 15100, category: 'Shiva', mode: 'AT_HOME', rating: 5.0, reviews: 23 },
-  { id: '12', title: 'Diwali Lakshmi Puja', slug: 'diwali-lakshmi-puja', description: 'Special Lakshmi puja performed on Diwali evening.', price: 3100, category: 'Lakshmi', mode: 'AT_HOME', rating: 4.9, reviews: 178 },
+  { id: '1', title: 'Ganesh Puja', slug: 'ganesh-puja', description: 'Invoke the blessings of Lord Ganesha, the remover of obstacles.', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE', rating: 4.8, reviews: 124, icon: '🐘' },
+  { id: '2', title: 'Lakshmi Puja', slug: 'lakshmi-puja', description: 'Propitiate Goddess Lakshmi for wealth, prosperity, and abundance.', price: 2100, category: 'Lakshmi', mode: 'IN_TEMPLE', rating: 4.9, reviews: 89, icon: '🪷' },
+  { id: '3', title: 'Navgraha Shanti', slug: 'navgraha-shanti', description: 'Pacify the nine planetary influences for harmony in life.', price: 5100, category: 'Navgraha', mode: 'AT_HOME', rating: 4.7, reviews: 56, icon: '🌟' },
+  { id: '4', title: 'Satyanarayan Puja', slug: 'satyanarayan-puja', description: 'Perform this sacred puja for mental peace and prosperity.', price: 2500, category: 'Satyanarayan', mode: 'AT_HOME', rating: 4.8, reviews: 203, icon: '🔱' },
+  { id: '5', title: 'Rudrabhishek', slug: 'rudrabhishek', description: 'Abhishek of Lord Shiva with milk, honey, ghee, and sacred items.', price: 8100, category: 'Rudrabhishek', mode: 'AT_HOME', rating: 4.9, reviews: 45, icon: '🕉️' },
+  { id: '6', title: 'Vishnu Sahasranamam', slug: 'vishnu-sahasranamam', description: 'Recitation of the 1000 names of Lord Vishnu.', price: 3100, category: 'Vishnu', mode: 'ONLINE', rating: 4.7, reviews: 78, icon: '🐚' },
+  { id: '7', title: 'Hanuman Chalisa', slug: 'hanuman-chalisa', description: 'Recitation of Hanuman Chalisa for courage and protection.', price: 510, category: 'Hanuman', mode: 'AT_HOME', rating: 4.9, reviews: 312, icon: '🐒' },
+  { id: '8', title: 'Durga Puja', slug: 'durga-puja', description: 'Worship of Goddess Durga for power and removal of obstacles.', price: 10100, category: 'Durga', mode: 'IN_TEMPLE', rating: 4.8, reviews: 67, icon: '⚔️' },
+  { id: '9', title: 'Ganga Aarti', slug: 'ganga-aarti', description: 'Experience the divine Ganga Aarti virtually.', price: 510, category: 'Ganga', mode: 'ONLINE', rating: 4.6, reviews: 156, icon: '🪔' },
+  { id: '10', title: 'Saraswati Puja', slug: 'saraswati-puja', description: 'Worship Goddess Saraswati for knowledge and wisdom.', price: 1500, category: 'Saraswati', mode: 'IN_TEMPLE', rating: 4.7, reviews: 89, icon: '🎓' },
+  { id: '11', title: 'Mahashivratri', slug: 'mahashivratri', description: 'The great night of Lord Shiva with Rudra abhishek.', price: 15100, category: 'Shiva', mode: 'AT_HOME', rating: 5.0, reviews: 23, icon: '🔱' },
+  { id: '12', title: 'Diwali Lakshmi Puja', slug: 'diwali-lakshmi-puja', description: 'Special Lakshmi puja performed on Diwali evening.', price: 3100, category: 'Lakshmi', mode: 'AT_HOME', rating: 4.9, reviews: 178, icon: '🪷' },
 ]
 
 const categories = [
@@ -108,7 +108,7 @@ export default function PoojasPage({
                     className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
                   >
                     <div className="h-40 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                      <span className="text-5xl">🪔</span>
+                      <span className="text-5xl">{pooja.icon}</span>
                     </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2">
