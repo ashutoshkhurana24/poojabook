@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateToken, hashPassword, verifyPassword } from '@/lib/auth'
 import { 
-  sendOTPViaFast2SMS, 
+  sendOTPViaTwilio, 
   generateOTP, 
   hashOTP, 
   verifyOTP, 
   sanitizePhoneNumber, 
   validatePhoneNumber,
   maskPhoneNumber
-} from '@/lib/fast2sms'
+} from '@/lib/twilio'
 import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
 import { z } from 'zod'
@@ -106,9 +106,9 @@ export async function POST(request: NextRequest) {
       })
 
       try {
-        await sendOTPViaFast2SMS(phoneNumber, otp)
+        await sendOTPViaTwilio(phoneNumber, otp)
       } catch (smsError: any) {
-        console.error('[send-otp] Fast2SMS error:', smsError?.message || smsError)
+        console.error('[send-otp] Twilio error:', smsError?.message || smsError)
         return errorResponse(smsError?.message || 'Failed to send OTP. Please try again.')
       }
 
