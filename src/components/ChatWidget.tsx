@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 
 interface Message {
   id: string
@@ -22,29 +22,35 @@ const botGreetings = [
   'Hello! ✨ How may we help you today?',
 ]
 
-export default function ChatWidget() {
+function ChatWidgetInner() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [inputText, setInputText] = useState('')
   const [unreadCount, setUnreadCount] = useState(0)
   const [isTyping, setIsTyping] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const stored = localStorage.getItem('poojabook_chat')
-    if (stored) {
-      const parsed = JSON.parse(stored)
-      setMessages(parsed)
-    } else {
-      const greeting = botGreetings[Math.floor(Math.random() * botGreetings.length)]
-      const welcomeMessage: Message = {
-        id: Date.now().toString(),
-        text: greeting,
-        sender: 'bot',
-        timestamp: new Date(),
+    setIsMounted(true)
+    try {
+      const stored = localStorage.getItem('poojabook_chat')
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        setMessages(parsed)
+      } else {
+        const greeting = botGreetings[Math.floor(Math.random() * botGreetings.length)]
+        const welcomeMessage: Message = {
+          id: Date.now().toString(),
+          text: greeting,
+          sender: 'bot',
+          timestamp: new Date(),
+        }
+        setMessages([welcomeMessage])
+        localStorage.setItem('poojabook_chat', JSON.stringify([welcomeMessage]))
       }
-      setMessages([welcomeMessage])
-      localStorage.setItem('poojabook_chat', JSON.stringify([welcomeMessage]))
+    } catch (e) {
+      console.error('ChatWidget error:', e)
     }
   }, [])
 
@@ -135,6 +141,10 @@ export default function ChatWidget() {
 
   const handleQuickReply = (message: string) => {
     sendMessage(message)
+  }
+
+  if (!isMounted) {
+    return null
   }
 
   return (
@@ -357,5 +367,13 @@ export default function ChatWidget() {
         </div>
       )}
     </>
+  )
+}
+
+export default function ChatWidget() {
+  return (
+    <Suspense fallback={null}>
+      <ChatWidgetInner />
+    </Suspense>
   )
 }
