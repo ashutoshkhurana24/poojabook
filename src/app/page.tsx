@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import LocationSelector from '@/components/LocationSelector'
 
@@ -22,13 +25,60 @@ const categories = [
 ]
 
 export default function HomePage() {
+  const [showBanner, setShowBanner] = useState(false)
+  const [isDetecting, setIsDetecting] = useState(false)
+
+  useEffect(() => {
+    const savedCity = localStorage.getItem('poojabook_user_city')
+    if (!savedCity) {
+      setShowBanner(true)
+    }
+  }, [])
+
+  const detectLocation = async () => {
+    if (!navigator.geolocation) {
+      setShowBanner(false)
+      return
+    }
+
+    setIsDetecting(true)
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1&email=support@poojabook.com`,
+            { headers: { 'User-Agent': 'PoojaBook/1.0' } }
+          )
+          const data = await response.json()
+          const address = data.address
+          const city = address.city || address.town || address.village || address.district
+          if (city) {
+            localStorage.setItem('poojabook_user_city', city)
+            const event = new CustomEvent('cityDetected', { detail: city })
+            window.dispatchEvent(event)
+          }
+        } catch (e) {
+          console.error(e)
+        }
+        setShowBanner(false)
+        setIsDetecting(false)
+      },
+      () => {
+        setShowBanner(false)
+        setIsDetecting(false)
+      },
+      { timeout: 10000 }
+    )
+  }
+
   return (
     <div>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-secondary/90 to-secondary py-24">
         <div className="absolute inset-0 bg-[url('https://thumbs.dreamstime.com/b/vibrant-diwali-puja-thali-brimming-traditional-offerings-shimmering-diyas-fragrant-flowers-sweet-delicacies-symbolic-324123032.jpg')] bg-cover bg-center opacity-20" />
         <div className="relative container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl text-white mb-6">
               Book Divine Poojas<br />Across India
             </h1>
@@ -37,27 +87,53 @@ export default function HomePage() {
             </p>
 
             {/* Search Box */}
-            <form action="/poojas" className="bg-surface rounded-2xl p-4 shadow-xl">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-2">
+            <div className="bg-surface rounded-2xl p-4 shadow-xl">
+              {showBanner && (
+                <div className="mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-sm text-amber-800">
+                    <span>📍</span>
+                    <span>Enable location for personalized experience</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={detectLocation}
+                      disabled={isDetecting}
+                      className="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition font-medium disabled:opacity-50"
+                    >
+                      {isDetecting ? 'Detecting...' : 'Enable'}
+                    </button>
+                    <button
+                      onClick={() => setShowBanner(false)}
+                      className="px-2 py-1 text-gray-500 hover:text-gray-700 text-lg leading-none"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <form action="/poojas" className="flex flex-col md:flex-row gap-3">
+                <div className="flex-[2]">
                   <input
                     type="text"
                     name="search"
                     placeholder="Search poojas, temples..."
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+                    className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                   />
                 </div>
-                <div>
-                  <LocationSelector />
+                <div className="flex-[1] min-w-[200px]">
+                  <div className="h-12">
+                    <LocationSelector />
+                  </div>
                 </div>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition font-semibold"
+                  className="h-12 px-8 bg-primary text-white rounded-xl hover:bg-primary-dark transition font-semibold whitespace-nowrap"
                 >
                   Search
                 </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -142,21 +218,21 @@ export default function HomePage() {
                 <span className="text-3xl">🔍</span>
               </div>
               <h3 className="font-heading text-xl mb-2">Browse & Select</h3>
-              <p className="text-text-secondary">Explore poojas by category, location, or mode. View details, pricing, and available slots.</p>
+              <p className="text-text-secondary">Explore poojas by category, location, or mode.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">📅</span>
               </div>
               <h3 className="font-heading text-xl mb-2">Book Your Slot</h3>
-              <p className="text-text-secondary">Choose your preferred date and time, add any extras, and complete your booking.</p>
+              <p className="text-text-secondary">Choose date, time, and complete booking.</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">✨</span>
               </div>
               <h3 className="font-heading text-xl mb-2">Divine Experience</h3>
-              <p className="text-text-secondary">Receive confirmation and enjoy a peaceful, authentic pooja experience.</p>
+              <p className="text-text-secondary">Enjoy authentic pooja experience.</p>
             </div>
           </div>
         </div>
@@ -177,8 +253,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
-
     </div>
   )
 }
