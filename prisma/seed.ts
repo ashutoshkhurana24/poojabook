@@ -465,6 +465,105 @@ async function main() {
   }
   console.log('Poojas and slots created')
 
+  // Pandits
+  const pandits = [
+    {
+      name: 'Pandit Ramesh Sharma',
+      photo: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400',
+      bio: 'Vedic scholar with 25 years of experience performing Ganesh, Lakshmi, and Satyanarayan poojas. Based in Mumbai, served 5000+ families.',
+      experienceYears: 25,
+      languages: JSON.stringify(['Hindi', 'Sanskrit', 'Marathi', 'English']),
+      specializations: JSON.stringify(['ganesh', 'lakshmi', 'satyanarayan']),
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      rating: 4.9,
+      totalReviews: 328,
+      totalPoojasCompleted: 5420,
+      isVerified: true,
+      verificationBadge: 'Vedic Certified',
+    },
+    {
+      name: 'Pandit Suresh Iyer',
+      photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
+      bio: 'Traditional Tamil Brahmin pandit specializing in South Indian rituals. Expert in Rudrabhishek and Navgraha Shanti.',
+      experienceYears: 22,
+      languages: JSON.stringify(['Tamil', 'Telugu', 'Sanskrit', 'English']),
+      specializations: JSON.stringify(['rudrabhishek', 'navgraha', 'vishnu']),
+      city: 'Chennai',
+      state: 'Tamil Nadu',
+      rating: 4.8,
+      totalReviews: 256,
+      totalPoojasCompleted: 4100,
+      isVerified: true,
+      verificationBadge: 'Traditional Expert',
+    },
+    {
+      name: 'Pandit Arun Tripathi',
+      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+      bio: 'Varanasi-based purohit with expertise in Ganga Aarti, Rudrabhishek, and all Kashi rituals. Performed over 10,000 poojas.',
+      experienceYears: 30,
+      languages: JSON.stringify(['Hindi', 'Sanskrit', 'Bhojpuri']),
+      specializations: JSON.stringify(['rudrabhishek', 'ganesh', 'hanuman']),
+      city: 'Varanasi',
+      state: 'Uttar Pradesh',
+      rating: 4.95,
+      totalReviews: 512,
+      totalPoojasCompleted: 10200,
+      isVerified: true,
+      verificationBadge: 'Kashi Purohit',
+    },
+    {
+      name: 'Pandit Venkatesh Bhat',
+      photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400',
+      bio: 'Expert in Vaishnavite poojas, Vishnu Sahasranamam, and South Indian traditions. Based in Bangalore.',
+      experienceYears: 18,
+      languages: JSON.stringify(['Kannada', 'Tamil', 'Telugu', 'Sanskrit']),
+      specializations: JSON.stringify(['vishnu', 'satyanarayan', 'ganesh']),
+      city: 'Bangalore',
+      state: 'Karnataka',
+      rating: 4.7,
+      totalReviews: 189,
+      totalPoojasCompleted: 2800,
+      isVerified: true,
+      verificationBadge: 'Vaishnav Expert',
+    },
+    {
+      name: 'Pandit Mahendra Dixit',
+      photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400',
+      bio: 'Specialized in Durga puja, Navgraha Shanti, and Mahashivratri celebrations. Based in Kolkata.',
+      experienceYears: 28,
+      languages: JSON.stringify(['Bengali', 'Hindi', 'Sanskrit']),
+      specializations: JSON.stringify(['durga', 'navgraha', 'rudrabhishek']),
+      city: 'Kolkata',
+      state: 'West Bengal',
+      rating: 4.85,
+      totalReviews: 420,
+      totalPoojasCompleted: 7500,
+      isVerified: true,
+      verificationBadge: 'Shakti Expert',
+    },
+    {
+      name: 'Pandit Prashant Joshi',
+      photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+      bio: 'Modern approach pandit who combines traditional rituals with virtual pooja services. Expert in Hanuman Chalisa and Satyanarayan.',
+      experienceYears: 15,
+      languages: JSON.stringify(['Marathi', 'Hindi', 'English', 'Sanskrit']),
+      specializations: JSON.stringify(['hanuman', 'satyanarayan', 'ganesh']),
+      city: 'Pune',
+      state: 'Maharashtra',
+      rating: 4.6,
+      totalReviews: 145,
+      totalPoojasCompleted: 1800,
+      isVerified: true,
+      verificationBadge: 'Online Expert',
+    },
+  ]
+
+  for (const panditData of pandits) {
+    await prisma.pandit.create({ data: panditData }).catch(() => {})
+  }
+  console.log('Pandits created')
+
   console.log('Seed completed!')
 }
 

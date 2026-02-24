@@ -147,6 +147,8 @@ model Order {
   slot             PoojaSlot   @relation(fields: [slotId], references: [id])
   vendorId         String?
   vendor           Vendor?     @relation(fields: [vendorId], references: [id])
+  panditId         String?
+  pandit           Pandit?     @relation(fields: [panditId], references: [id])
   status           String      @default("BOOKED")
   mode             String
   attendeeName     String
@@ -242,6 +244,41 @@ model Coupon {
   isActive    Boolean  @default(true)
   validFrom   DateTime
   validUntil  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Pandit {
+  id                    String   @id @default(uuid())
+  name                  String
+  photo                 String?
+  bio                   String?
+  experienceYears       Int      @default(0)
+  languages             String   @default("[]")
+  specializations       String   @default("[]")
+  city                  String
+  state                 String
+  rating                Float    @default(0)
+  totalReviews          Int      @default(0)
+  totalPoojasCompleted  Int      @default(0)
+  isVerified            Boolean  @default(false)
+  verificationBadge     String?
+  isAvailable           Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  reviews               PanditReview[]
+  orders                Order[]
+}
+
+model PanditReview {
+  id          String   @id @default(uuid())
+  panditId    String
+  pandit      Pandit   @relation(fields: [panditId], references: [id], onDelete: Cascade)
+  userId      String
+  bookingId   String?
+  rating      Int
+  comment     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

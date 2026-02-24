@@ -1,18 +1,36 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import PanditCard from './PanditCard'
 
-export default function BookingForm({ poojaId, basePrice }: { poojaId: string; basePrice: number }) {
+export default function BookingForm({ poojaId, basePrice, categorySlug }: { 
+  poojaId: string; 
+  basePrice: number;
+  categorySlug?: string;
+}) {
   const router = useRouter()
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedAddons, setSelectedAddons] = useState<string[]>([])
+  const [selectedPandit, setSelectedPandit] = useState<string | null>(null)
+  const [pandits, setPandits] = useState<any[]>([])
+  const [showPanditSelection, setShowPanditSelection] = useState(false)
   const [attendeeName, setAttendeeName] = useState('')
   const [attendeePhone, setAttendeePhone] = useState('')
   const [address, setAddress] = useState('')
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetch(`/api/pandits?category=${categorySlug || 'ganesh'}&limit=4`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setPandits(data.data)
+        }
+      })
+  }, [categorySlug])
 
   const generateDates = () => {
     const dates = []
@@ -59,6 +77,7 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
         credentials: 'include',
         body: JSON.stringify({
           poojaId,
+          panditId: selectedPandit,
           slotDate: selectedDate || dates[0],
           slotTime: '09:00 AM',
           attendeeName,
@@ -90,31 +109,96 @@ export default function BookingForm({ poojaId, basePrice }: { poojaId: string; b
     }
   }
 
+  const selectedPanditData = pandits.find(p => p.id === selectedPandit)
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
         <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">{error}</div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Select Date</label>
-        <div className="flex flex-wrap gap-2">
-          {dates.slice(0, 7).map((date) => (
+      {!showPanditSelection ? (
+        <>
+          <div>
+            <label className="block text-sm font-medium mb-2">Select Date</label>
+            <div className="flex flex-wrap gap-2">
+              {dates.slice(0, 7).map((date) => (
+                <button
+                  key={date}
+                  type="button"
+                  onClick={() => setSelectedDate(date)}
+                  className={`px-3 py-2 rounded-lg text-sm transition ${
+                    selectedDate === date || (!selectedDate && date === dates[0])
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 border hover:border-primary'
+                  }`}
+                >
+                  {new Date(date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Choose Your Pandit</label>
+            {pandits.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setShowPanditSelection(true)}
+                className="w-full p-4 border-2 border-dashed border-primary/30 rounded-lg text-left hover:border-primary transition"
+              >
+                {selectedPanditData ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                      {selectedPanditData.photo ? (
+                        <img src={selectedPanditData.photo} alt="" className="w-full h-full rounded-full object-cover" />
+                      ) : '🧑‍🎓'}
+                    </div>
+                    <div>
+                      <p className="font-medium">{selectedPanditData.name}</p>
+                      <p className="text-sm text-text-secondary">{selectedPanditData.city} • {selectedPanditData.rating}⭐</p>
+                    </div>
+                    <span className="ml-auto text-primary">Change</span>
+                  </div>
+                ) : (
+                  <p className="text-primary font-medium">Select a Pandit →</p>
+                )}
+              </button>
+            ) : (
+              <p className="text-text-secondary text-sm">Loading pandits...</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium">Choose Your Pandit</label>
             <button
-              key={date}
               type="button"
-              onClick={() => setSelectedDate(date)}
-              className={`px-3 py-2 rounded-lg text-sm transition ${
-                selectedDate === date || (!selectedDate && date === dates[0])
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 border hover:border-primary'
-              }`}
+              onClick={() => setShowPanditSelection(false)}
+              className="text-sm text-primary hover:underline"
             >
-              {new Date(date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+              {selectedPandit ? 'Change' : 'Skip'}
             </button>
-          ))}
+          </div>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {pandits.map((pandit) => (
+              <div
+                key={pandit.id}
+                onClick={() => {
+                  setSelectedPandit(pandit.id)
+                  setShowPanditSelection(false)
+                }}
+                className={`p-2 border-2 rounded-lg cursor-pointer transition ${
+                  selectedPandit === pandit.id ? 'border-primary' : 'border-transparent hover:border-primary/30'
+                }`}
+              >
+                <PanditCard pandit={pandit} selected={selectedPandit === pandit.id} />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium mb-2">Add-ons (Optional)</label>

@@ -74,7 +74,7 @@ export default async function PoojaDetailPage({
               <div className="text-3xl font-heading mb-2">₹{pooja.basePrice.toLocaleString()}</div>
               <p className="text-text-secondary text-sm mb-4">Base price (excludes add-ons & taxes)</p>
 
-              <BookingForm poojaId={pooja.id} basePrice={pooja.basePrice} />
+              <BookingForm poojaId={pooja.id} basePrice={pooja.basePrice} categorySlug={pooja.category?.slug} />
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 const createOrderSchema = z.object({
   poojaId: z.string().min(1),
+  panditId: z.string().optional(),
   slotId: z.string().optional(),
   slotDate: z.string().optional(),
   slotTime: z.string().optional(),
@@ -34,6 +35,7 @@ export async function GET(request: NextRequest) {
         pooja: { include: { category: true } },
         slot: { include: { location: true } },
         vendor: true,
+        pandit: true,
         payments: true,
       },
       orderBy: { createdAt: 'desc' },
@@ -52,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const data = createOrderSchema.parse(body)
-    const { poojaId, slotId, slotDate, slotTime, attendeeName, attendeePhone, address, notes, addOnIds, mode } = data
+    const { poojaId, panditId, slotId, slotDate, slotTime, attendeeName, attendeePhone, address, notes, addOnIds, mode } = data
 
     const pooja = await prisma.pooja.findUnique({ where: { id: poojaId } })
     if (!pooja) {
@@ -111,6 +113,7 @@ export async function POST(request: NextRequest) {
           customerId: auth.userId,
           poojaId,
           slotId: slot!.id,
+          panditId: panditId || null,
           mode,
           attendeeName,
           attendeePhone,
