@@ -172,9 +172,33 @@ export async function POST(request: NextRequest) {
         data: { phoneVerified: true },
       })
 
-      return successResponse({ 
-        verified: true, 
-        message: 'Phone number verified successfully' 
+      const existingUser = await prisma.user.findUnique({
+        where: { phone: phoneNumber },
+        include: { partnerProfile: true }
+      })
+
+      if (existingUser) {
+        const token = generateToken({
+          userId: existingUser.id,
+          phone: existingUser.phone || '',
+          role: existingUser.role,
+        })
+
+        const response = successResponse({
+          verified: true,
+          user: { ...existingUser, passwordHash: undefined },
+          token,
+          redirectTo: getRedirectPath(existingUser.role, existingUser.partnerProfile?.isApproved),
+          isNewUser: false,
+        })
+        setAuthCookie(response, token)
+        return response
+      }
+
+      return successResponse({
+        verified: true,
+        message: 'Phone number verified. Please complete your registration.',
+        isNewUser: true,
       })
     }
 

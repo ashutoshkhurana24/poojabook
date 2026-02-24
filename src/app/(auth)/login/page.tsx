@@ -150,6 +150,11 @@ export default function LoginPage() {
         return
       }
 
+      if (data.data.isNewUser) {
+        router.push('/register?phone=' + phoneForm.phone.replace(/\D/g, '').slice(0, 10))
+        return
+      }
+
       router.push(data.data.redirectTo || '/')
       router.refresh()
     } catch (err) {
