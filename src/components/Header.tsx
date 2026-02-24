@@ -56,7 +56,7 @@ export function Header() {
               At Home
             </Link>
             <Link href="/calendar" className="text-text-secondary hover:text-primary font-medium">
-              🗓️ Calendar
+              Hindu Calendar
             </Link>
           </nav>
 
