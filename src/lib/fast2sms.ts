@@ -35,8 +35,7 @@ export async function sendOTPViaFast2SMS(phoneNumber: string, otp: string): Prom
       body: JSON.stringify({
         route: 'otp',
         variables_values: otp,
-        numbers: cleanPhone,
-        flash: 0
+        numbers: cleanPhone
       })
     })
 
