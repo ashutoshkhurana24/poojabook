@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -8,12 +8,14 @@ interface User {
   id: string
   name: string
   phone: string
+  email?: string
   role: string
 }
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -25,6 +27,16 @@ export function Header() {
       .catch(() => {})
   }, [pathname])
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
     setUser(null)
@@ -33,6 +45,8 @@ export function Header() {
 
   const isAdmin = user?.role === 'ADMIN'
   const isVendor = user?.role === 'VENDOR'
+  const isPartner = user?.role === 'PANDIT' || user?.role === 'TEMPLE'
+  const isCustomer = user?.role === 'CUSTOMER'
 
   return (
     <header className="bg-surface shadow-sm sticky top-0 z-50">
@@ -62,33 +76,72 @@ export function Header() {
 
           <div className="flex items-center gap-4">
             {user ? (
-              <div className="relative">
+              <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
                   className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full hover:bg-primary/20 transition"
                 >
-                  <span className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm">
+                  <span className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                   <span className="text-sm font-medium hidden sm:block">{user.name}</span>
+                  <svg className={`w-4 h-4 transition-transform ${menuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-surface rounded-xl shadow-lg border py-2">
+                  <div className="absolute right-0 mt-2 w-56 bg-surface rounded-xl shadow-lg border py-2 animate-in fade-in slide-in-from-top-2">
+                    <div className="px-4 py-2 border-b">
+                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                      <p className="text-xs text-gray-500">{user.email || user.phone}</p>
+                    </div>
+                    
                     {isAdmin && (
                       <Link href="/admin" className="block px-4 py-2 text-sm hover:bg-background">
                         Admin Dashboard
                       </Link>
                     )}
-                    {isVendor && (
+                    
+                    {(isVendor || isPartner) && (
                       <Link href="/vendor" className="block px-4 py-2 text-sm hover:bg-background">
-                        Vendor Dashboard
+                        My Dashboard
                       </Link>
                     )}
+                    
+                    {isPartner && (
+                      <Link href="/vendor/listings" className="block px-4 py-2 text-sm hover:bg-background">
+                        My Listings
+                      </Link>
+                    )}
+                    
                     <Link href="/my-orders" className="block px-4 py-2 text-sm hover:bg-background">
-                      My Orders
+                      My Bookings
                     </Link>
-                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-error hover:bg-background">
+                    
+                    {isCustomer && (
+                      <>
+                        <Link href="/saved" className="block px-4 py-2 text-sm hover:bg-background">
+                          Saved Poojas
+                        </Link>
+                        <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-background">
+                          Profile Settings
+                        </Link>
+                      </>
+                    )}
+                    
+                    {(isVendor || isPartner) && (
+                      <Link href="/vendor/settings" className="block px-4 py-2 text-sm hover:bg-background">
+                        Partner Settings
+                      </Link>
+                    )}
+                    
+                    <div className="border-t my-1" />
+                    
+                    <button 
+                      onClick={handleLogout} 
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-background"
+                    >
                       Logout
                     </button>
                   </div>

@@ -9,6 +9,63 @@ export const verifyOtpSchema = z.object({
   otp: z.string().length(6, 'OTP must be 6 digits'),
 })
 
+export const registerDevoteeSchema = z.object({
+  fullName: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string(),
+  phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number').optional().or(z.literal('')),
+  city: z.string().optional(),
+  agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to Terms & Conditions'),
+}).refine(data => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+})
+
+export const registerPartnerSchema = z.object({
+  fullName: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string(),
+  phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
+  type: z.enum(['PANDIT', 'TEMPLE']),
+  experienceYears: z.number().optional(),
+  specializations: z.array(z.string()).default([]),
+  languages: z.array(z.string()).min(1, 'Select at least one language'),
+  bio: z.string().optional(),
+  agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to Partner Terms'),
+}).refine(data => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+})
+
+export const loginWithPasswordSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+  rememberMe: z.boolean().optional(),
+})
+
+export const loginWithPhoneSchema = z.object({
+  phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number'),
+  password: z.string().min(1, 'Password is required'),
+  rememberMe: z.boolean().optional(),
+})
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Invalid email address'),
+})
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Token is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+})
+
 export const registerSchema = z.object({
   phone: z.string().regex(/^\+91[0-9]{10}$/, 'Invalid phone number'),
   email: z.string().email().optional(),
