@@ -155,8 +155,8 @@ export default function LoginPage() {
         return
       }
 
-      router.push(data.data.redirectTo || '/')
-      router.refresh()
+      await new Promise(resolve => setTimeout(resolve, 500))
+      window.location.href = data.data.redirectTo || '/'
     } catch (err) {
       setError('Failed to verify OTP')
     } finally {
