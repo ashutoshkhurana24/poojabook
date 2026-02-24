@@ -55,6 +55,9 @@ export function Header() {
             <Link href="/poojas?mode=AT_HOME" className="text-text-secondary hover:text-primary font-medium">
               At Home
             </Link>
+            <Link href="/calendar" className="text-text-secondary hover:text-primary font-medium">
+              🗓️ Calendar
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">

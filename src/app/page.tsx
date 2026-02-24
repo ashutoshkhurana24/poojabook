@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import LocationSelector from '@/components/LocationSelector'
+import AuspiciousDaysSection from '@/components/AuspiciousDaysSection'
 
 const featuredPoojas = [
   { title: 'Ganesh Puja', slug: 'ganesh-puja', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE' },
@@ -207,6 +208,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <AuspiciousDaysSection />
 
       {/* How It Works */}
       <section className="py-16 bg-surface">

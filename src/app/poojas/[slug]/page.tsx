@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import BookingForm from '@/components/BookingForm'
+import BestDatesSection from '@/components/BestDatesSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -67,6 +68,8 @@ export default async function PoojaDetailPage({
               <h2 className="font-heading text-xl mb-4">Instructions</h2>
               <p className="text-text-secondary">{pooja.instructions || 'Follow the pandit\'s guidance during the puja.'}</p>
             </div>
+
+            <BestDatesSection poojaSlug={slug} />
           </div>
 
           <div className="lg:col-span-1">
