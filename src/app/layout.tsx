@@ -36,15 +36,19 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
-        <script>
-          window.OneSignal = window.OneSignal || [];
-          OneSignal.push(function() {
-            OneSignal.init({
-              appId: "75298ded-5296-49ac-870c-48738419e42f",
-              allowLocalhostAsSecureOrigin: true,
-            });
-          });
-        </script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.OneSignal = window.OneSignal || [];
+              OneSignal.push(function() {
+                OneSignal.init({
+                  appId: "75298ded-5296-49ac-870c-48738419e42f",
+                  allowLocalhostAsSecureOrigin: true,
+                });
+              });
+            `,
+          }}
+        />
       </head>
       <body className={`${playfair.variable} ${dmSans.variable} antialiased min-h-screen`}>
         <SessionProvider>

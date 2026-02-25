@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import PanditCard from './PanditCard'
+import RazorpayPayment from './RazorpayPayment'
 
 export default function BookingForm({ poojaId, basePrice, categorySlug }: { 
   poojaId: string; 
@@ -21,6 +22,10 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  
+  const [showPayment, setShowPayment] = useState(false)
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
 
   useEffect(() => {
     fetch(`/api/pandits?category=${categorySlug || 'ganesh'}&limit=4`)
@@ -101,12 +106,43 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
         return
       }
 
-      router.push(`/my-orders/${data.data.id}`)
+      setCreatedOrderId(data.data.id)
+      setShowPayment(true)
     } catch (err) {
       setError('Failed to create order')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handlePaymentSuccess = (paymentId: string) => {
+    setPaymentSuccess(true)
+    setShowPayment(false)
+  }
+
+  const handlePaymentFailure = (errorMsg: string) => {
+    setError(errorMsg)
+    setShowPayment(false)
+  }
+
+  if (paymentSuccess) {
+    return (
+      <div className="bg-surface rounded-2xl p-6 sticky top-24 text-center">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-3xl">✅</span>
+        </div>
+        <h3 className="text-xl font-semibold mb-2">Booking Confirmed!</h3>
+        <p className="text-text-secondary mb-4">Your pooja has been booked successfully.</p>
+        {createdOrderId && (
+          <button
+            onClick={() => router.push(`/my-orders/${createdOrderId}`)}
+            className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition"
+          >
+            View Booking Details
+          </button>
+        )}
+      </div>
+    )
   }
 
   const selectedPanditData = pandits.find(p => p.id === selectedPandit)
@@ -288,13 +324,24 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={submitting || !attendeeName || !attendeePhone}
-        className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition disabled:opacity-50"
-      >
-        {submitting ? 'Processing...' : 'Book Now'}
-      </button>
+      {showPayment && createdOrderId ? (
+        <RazorpayPayment
+          orderId={createdOrderId}
+          amount={total}
+          customerName={attendeeName}
+          customerPhone={attendeePhone}
+          onSuccess={handlePaymentSuccess}
+          onFailure={handlePaymentFailure}
+        />
+      ) : (
+        <button
+          type="submit"
+          disabled={submitting || !attendeeName || !attendeePhone}
+          className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition disabled:opacity-50"
+        >
+          {submitting ? 'Processing...' : 'Book Now'}
+        </button>
+      )}
     </form>
   )
 }
