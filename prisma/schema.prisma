@@ -19,6 +19,8 @@ model User {
   phoneVerified Boolean  @default(false)
   emailVerified Boolean  @default(false)
   isVerified   Boolean  @default(false)
+  notificationToken String?
+  notificationPreferences String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -29,6 +31,7 @@ model User {
   reviews         Review[]
   auditLogs       AuditLog[]
   otpVerifications OtpVerification[]
+  notificationTokens NotificationToken[]
 }
 
 model OtpVerification {
@@ -325,4 +328,14 @@ model PasswordResetToken {
   token     String   @unique
   expires   DateTime
   createdAt DateTime @default(now())
+}
+
+model NotificationToken {
+  id            String   @id @default(uuid())
+  token         String   @unique
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferences   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

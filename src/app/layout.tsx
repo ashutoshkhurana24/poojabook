@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { SessionProvider } from "@/components/SessionProvider";
 import ChatWidget from "@/components/ChatWidget";
+import NotificationPrompt from "@/components/NotificationPrompt";
 
 const playfair = Playfair_Display({
   variable: "--font-heading",
@@ -40,6 +41,7 @@ export default function RootLayout({
             {children}
           </main>
           <ChatWidget />
+          <NotificationPrompt />
           <footer className="bg-secondary text-white py-12">
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">

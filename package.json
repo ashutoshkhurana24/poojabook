@@ -20,6 +20,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^17.3.1",
+    "firebase": "^12.9.0",
     "jsonwebtoken": "^9.0.3",
     "next": "16.1.6",
     "next-auth": "^4.24.13",
