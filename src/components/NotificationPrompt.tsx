@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { requestNotificationPermission } from '@/lib/firebase'
 
 interface NotificationPromptProps {
   onComplete?: (granted: boolean) => void
@@ -30,31 +31,29 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
   const handleAllow = async () => {
     setLoading(true)
     
-    if (!('Notification' in window)) {
-      alert('This browser does not support notifications')
-      setLoading(false)
-      return
-    }
-    
     try {
-      const permission = await Notification.requestPermission()
+      const token = await requestNotificationPermission()
       
-      if (permission === 'granted') {
+      if (token) {
         localStorage.setItem('poojabook_notification_permission', 'granted')
-        const token = 'demo_' + Date.now()
         localStorage.setItem('poojabook_fcm_token', token)
         
-        alert('✅ Notifications enabled! (Demo mode)')
+        // Save token to backend
+        await fetch('/api/notifications/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        })
+        
+        alert('✅ Notifications enabled! Token saved.')
         setShow(false)
         onComplete?.(true)
       } else {
-        localStorage.setItem('poojabook_notification_permission', 'denied')
-        alert('Notifications blocked. Please enable in browser settings.')
-        setShow(false)
+        alert('Failed to get notification token')
       }
     } catch (error) {
-      console.error('Notification error:', error)
-      setShow(false)
+      console.error('Error:', error)
+      alert('Error enabling notifications')
     } finally {
       setLoading(false)
     }
