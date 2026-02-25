@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import PanditCard from './PanditCard'
-import RazorpayPayment from './RazorpayPayment'
+import MockPayment from './MockPayment'
 
 export default function BookingForm({ poojaId, basePrice, categorySlug }: { 
   poojaId: string; 
@@ -325,7 +325,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
       </div>
 
       {showPayment && createdOrderId ? (
-        <RazorpayPayment
+        <MockPayment
           orderId={createdOrderId}
           amount={total}
           customerName={attendeeName}
