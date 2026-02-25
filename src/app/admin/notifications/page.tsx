@@ -6,45 +6,36 @@ export default function AdminNotificationsPage() {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [result, setResult] = useState('')
-  const [sending, setSending] = useState(false)
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!title || !body) {
       setResult('Please enter title and message')
       return
     }
 
-    setSending(true)
-    setResult('')
+    if (!('Notification' in window)) {
+      setResult('This browser does not support notifications')
+      return
+    }
 
-    try {
-      // Check permission
-      if (Notification.permission === 'granted') {
-        // Send notification directly
-        new Notification(title, {
-          body,
-          icon: '/favicon.svg',
-          tag: 'poojabook-notification'
-        })
-        setResult('✅ Notification sent directly to your browser!')
-      } else if (Notification.permission === 'default') {
-        const permission = await Notification.requestPermission()
+    if (Notification.permission === 'granted') {
+      new Notification(title, {
+        body,
+        icon: '/favicon.svg'
+      })
+      setResult('✅ Notification sent!')
+    } else {
+      Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
           new Notification(title, {
             body,
             icon: '/favicon.svg'
           })
-          setResult('✅ Permission granted! Notification sent.')
+          setResult('✅ Permission granted! Notification sent!')
         } else {
-          setResult('❌ Notification permission denied')
+          setResult('❌ Notifications blocked. Please enable in browser settings.')
         }
-      } else {
-        setResult('❌ Notifications blocked. Please enable in browser settings.')
-      }
-    } catch (error) {
-      setResult('❌ Error: ' + String(error))
-    } finally {
-      setSending(false)
+      })
     }
   }
 
@@ -89,10 +80,9 @@ export default function AdminNotificationsPage() {
 
             <button
               onClick={handleSend}
-              disabled={sending || !title || !body}
-              className="w-full py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 disabled:opacity-50"
+              className="w-full py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700"
             >
-              {sending ? 'Sending...' : 'Send Notification'}
+              Send Notification
             </button>
 
             {result && (
@@ -110,21 +100,13 @@ export default function AdminNotificationsPage() {
               <button
                 key={idx}
                 onClick={() => { setTitle(notif.title); setBody(notif.body) }}
-                className="w-full p-3 text-left bg-gray-50 hover:bg-orange-50 rounded-lg transition"
+                className="w-full p-3 text-left bg-gray-50 hover:bg-orange-50 rounded-lg"
               >
                 <p className="font-medium">{notif.title}</p>
                 <p className="text-sm text-gray-500">{notif.body}</p>
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <h3 className="font-semibold text-yellow-800 mb-2">⚠️ Note</h3>
-          <p className="text-sm text-yellow-700">
-            This sends notifications directly to YOUR browser for testing. 
-            For sending to ALL users, you need to set up OneSignal or Firebase properly.
-          </p>
         </div>
       </div>
     </div>

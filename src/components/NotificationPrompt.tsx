@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 export default function NotificationPrompt() {
   const [show, setShow] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const dismissed = localStorage.getItem('poojabook_notification_dismissed')
@@ -13,33 +13,37 @@ export default function NotificationPrompt() {
     }
   }, [])
 
-  const handleAllow = async () => {
-    setLoading(true)
-    
-    try {
-      console.log('Requesting notification permission...')
-      const permission = await Notification.requestPermission()
-      console.log('Permission:', permission)
-      
-      if (permission === 'granted') {
-        localStorage.setItem('poojabook_notification_enabled', 'true')
-        
-        // Show immediate test notification
-        const notif = new Notification('🔔 PoojaBook Test', {
-          body: 'Notifications are working!',
-          icon: '/favicon.svg'
-        })
-        console.log('Notification shown:', notif)
-        
-        setShow(false)
-      } else {
-        alert('Notifications are blocked. Please check browser settings.')
-      }
-    } catch (error) {
-      console.error('Error:', error)
-    } finally {
-      setLoading(false)
+  const handleClick = () => {
+    // Direct notification without any async
+    if (!('Notification' in window)) {
+      alert('This browser does not support notifications')
+      return
     }
+    
+    if (Notification.permission === 'granted') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          new Notification('🔔 PoojaBook', {
+            body: 'Notifications enabled!',
+            icon: '/favicon.svg'
+          })
+        }
+      })
+    } else if (Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        console.log('Permission result:', permission)
+        if (permission === 'granted') {
+          new Notification('🔔 PoojaBook', {
+            body: 'Notifications enabled!',
+            icon: '/favicon.svg'
+          })
+        }
+      })
+    } else {
+      alert('Notifications are blocked in browser settings')
+    }
+    
+    setShow(false)
   }
 
   const handleLater = () => {
@@ -51,8 +55,8 @@ export default function NotificationPrompt() {
 
   return (
     <div style={{
-      position: 'fixed',
-      bottom: '100px',
+fixed',
+      bottom      position: ': '100px',
       right: '20px',
       zIndex: 9999,
       maxWidth: '320px',
@@ -82,8 +86,8 @@ export default function NotificationPrompt() {
           </p>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
-              onClick={handleAllow}
-              disabled={loading}
+              ref={buttonRef}
+              onClick={handleClick}
               style={{
                 flex: 1,
                 padding: '8px 16px',
@@ -93,11 +97,10 @@ export default function NotificationPrompt() {
                 fontSize: '14px',
                 fontWeight: '500',
                 border: 'none',
-                cursor: 'pointer',
-                opacity: loading ? 0.5 : 1
+                cursor: 'pointer'
               }}
             >
-              {loading ? 'Enabling...' : 'Allow'}
+              Allow
             </button>
             <button
               onClick={handleLater}
