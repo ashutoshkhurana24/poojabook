@@ -17,20 +17,23 @@ export default function NotificationPrompt() {
     setLoading(true)
     
     try {
+      console.log('Requesting notification permission...')
       const permission = await Notification.requestPermission()
+      console.log('Permission:', permission)
       
       if (permission === 'granted') {
         localStorage.setItem('poojabook_notification_enabled', 'true')
         
-        new Notification('🔔 PoojaBook', {
-          body: 'Notifications enabled!',
+        // Show immediate test notification
+        const notif = new Notification('🔔 PoojaBook Test', {
+          body: 'Notifications are working!',
           icon: '/favicon.svg'
         })
+        console.log('Notification shown:', notif)
         
-        alert('✅ Notifications enabled!')
         setShow(false)
       } else {
-        alert('Notifications blocked. Please enable in browser settings.')
+        alert('Notifications are blocked. Please check browser settings.')
       }
     } catch (error) {
       console.error('Error:', error)
