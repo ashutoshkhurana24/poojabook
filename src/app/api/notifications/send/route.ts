@@ -85,7 +85,14 @@ export async function POST(request: NextRequest) {
         where: { notificationToken: { not: null } },
         select: { notificationToken: true },
       })
-      tokens = users.map(u => u.notificationToken).filter(Boolean) as string[]
+      const userTokens = users.map(u => u.notificationToken).filter(Boolean) as string[]
+      
+      const anonymousTokens = await prisma.notificationToken.findMany({
+        select: { token: true },
+      })
+      const anonTokens = anonymousTokens.map(t => t.token)
+      
+      tokens = [...userTokens, ...anonTokens]
     }
 
     if (tokens.length === 0) {

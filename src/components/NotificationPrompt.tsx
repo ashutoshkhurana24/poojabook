@@ -31,17 +31,21 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
   const handleAllow = async () => {
     setLoading(true)
     try {
+      console.log('Requesting notification permission...')
       const token = await requestNotificationPermission()
+      console.log('Token received:', token ? 'yes' : 'no')
       
       if (token) {
         localStorage.setItem('poojabook_notification_permission', 'granted')
         
-        await fetch('/api/notifications/register', {
+        const res = await fetch('/api/notifications/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token }),
         })
-
+        const data = await res.json()
+        console.log('Registration response:', data)
+        
         setShow(false)
         onComplete?.(true)
       } else {
