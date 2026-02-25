@@ -1,28 +1,28 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging'
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'demo.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'demo',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'demo.appspot.com',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '123456',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:123456:web:demo',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
 }
 
 let messaging: ReturnType<typeof getMessaging> | null = null
 
-export const initializeFirebase = () => {
+export const initializeFirebase = async () => {
   if (typeof window === 'undefined') return null
   
   try {
-    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
-    
-    if (!app) {
-      console.error('Failed to initialize Firebase app')
+    const supported = await isSupported()
+    if (!supported) {
+      console.error('Firebase Messaging is not supported in this browser')
       return null
     }
     
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
     messaging = getMessaging(app)
     return messaging
   } catch (error) {
@@ -39,19 +39,15 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
     return null
   }
   
-  if (!('serviceWorker' in navigator)) {
-    console.error('This browser does not support service workers')
-    return null
-  }
-  
   try {
     const permission = await Notification.requestPermission()
-    console.log('Permission status:', permission)
+    console.log('Notification permission:', permission)
     if (permission !== 'granted') {
+      console.log('Notification permission not granted')
       return null
     }
 
-    const messaging = initializeFirebase()
+    const messaging = await initializeFirebase()
     if (!messaging) {
       console.error('Failed to initialize messaging')
       return null
@@ -64,10 +60,10 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
     }
 
     const token = await getToken(messaging, { vapidKey })
-    console.log('FCM Token:', token)
+    console.log('FCM Token obtained:', token ? 'yes' : 'no')
     return token
-  } catch (error) {
-    console.error('Error getting notification permission:', error)
+  } catch (error: any) {
+    console.error('Error getting notification permission:', error?.message || error)
     return null
   }
 }
