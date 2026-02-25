@@ -13,9 +13,11 @@ export async function POST(request: NextRequest) {
       return errorResponse('Token is required')
     }
 
-    if (auth) {
+    const userId = auth?.userId || null
+
+    if (userId) {
       await prisma.user.update({
-        where: { id: auth.userId },
+        where: { id: userId },
         data: {
           notificationToken: token,
           notificationPreferences: preferences ? JSON.stringify(preferences) : null,
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
         where: { token },
         create: {
           token,
-          userId: auth?.userId || null,
+          userId,
           preferences: preferences ? JSON.stringify(preferences) : null,
         },
         update: {
