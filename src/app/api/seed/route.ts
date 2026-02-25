@@ -5,10 +5,34 @@ import { successResponse, errorResponse } from '@/lib/api'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { secret } = body
+    const { secret, phone, name } = body
     
     if (secret !== 'poojabook-seed-2026') {
       return errorResponse('Invalid secret', 401)
+    }
+
+    if (phone && name) {
+      const existingUser = await prisma.user.findFirst({
+        where: { phone },
+      })
+      
+      if (existingUser) {
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: { role: 'ADMIN' },
+        })
+        return successResponse({ message: 'User promoted to ADMIN', phone })
+      }
+      
+      const user = await prisma.user.create({
+        data: {
+          name,
+          phone,
+          role: 'ADMIN',
+          phoneVerified: true,
+        },
+      })
+      return successResponse({ message: 'Admin user created', userId: user.id })
     }
 
     // Create categories
