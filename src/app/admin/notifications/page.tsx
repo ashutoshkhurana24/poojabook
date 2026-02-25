@@ -1,13 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-
-const notificationTypes = [
-  { value: 'all', label: 'All Users', description: 'Send to all users with notifications enabled' },
-  { value: 'booked', label: 'Users with Bookings', description: 'Send to users who have booked poojas' },
-  { value: 'specific', label: 'Specific User', description: 'Send to a particular user' },
-]
 
 const quickNotifications = [
   { title: 'Pooja Reminder', body: 'Your booked pooja is tomorrow! 🙏', type: 'pooja_reminder' },
@@ -16,14 +10,22 @@ const quickNotifications = [
   { title: 'New Pooja', body: 'New: Hanuman Puja now available in your city!', type: 'new_pooja' },
 ]
 
+const notificationTypes = [
+  { value: 'all', label: 'All Users', description: 'Send to all users with notifications enabled' },
+  { value: 'booked', label: 'Users with Bookings', description: 'Send to users who have booked poojas' },
+  { value: 'specific', label: 'Specific User', description: 'Send to a particular user' },
+]
+
 export default function AdminNotificationsPage() {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [type, setType] = useState<'all' | 'booked' | 'specific'>('all')
   const [targetUserId, setTargetUserId] = useState('')
+  const [manualToken, setManualToken] = useState('')
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState<{ sent: number; failed: number } | null>(null)
+  const [testResult, setTestResult] = useState('')
 
   const handleSend = async () => {
     if (!title || !body) return
@@ -61,6 +63,32 @@ export default function AdminNotificationsPage() {
   const handleQuickSend = (notification: typeof quickNotifications[0]) => {
     setTitle(notification.title)
     setBody(notification.body)
+  }
+
+  const handleTestSend = async () => {
+    if (!manualToken || !title || !body) {
+      setTestResult('Please enter token, title and body')
+      return
+    }
+    setSending(true)
+    setTestResult('')
+    try {
+      const res = await fetch('/api/notifications/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: manualToken, title, body }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setTestResult('✅ Notification sent successfully!')
+      } else {
+        setTestResult('❌ ' + (data.error || 'Failed'))
+      }
+    } catch (error) {
+      setTestResult('❌ Error: ' + String(error))
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -143,6 +171,36 @@ export default function AdminNotificationsPage() {
                     ✅ Sent to {result.sent} users ({result.failed} failed)
                   </p>
                 </div>
+              )}
+            </div>
+
+            {/* Test Token Section */}
+            <div className="bg-white rounded-xl shadow p-6 mt-6">
+              <h2 className="text-lg font-semibold mb-4">Test with Token</h2>
+              <p className="text-sm text-gray-600 mb-3">
+                Get your FCM token from browser console after allowing notifications, then paste it here to test.
+              </p>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={manualToken}
+                  onChange={(e) => setManualToken(e.target.value)}
+                  placeholder="Paste FCM token here..."
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm font-mono"
+                />
+                <button
+                  onClick={handleTestSend}
+                  disabled={sending || !manualToken || !title || !body}
+                  className="w-full py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                >
+                  {sending ? 'Sending...' : 'Send Test Notification'}
+                </button>
+                {testResult && (
+                  <p className="text-sm font-medium">{testResult}</p>
+                )}
+              </div>
+            </div>
+          </div>
               )}
             </div>
           </div>
