@@ -5,38 +5,12 @@ import { useState } from 'react'
 export default function AdminNotificationsPage() {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
-  const [result, setResult] = useState('')
+  const [showNotif, setShowNotif] = useState(false)
 
   const handleSend = () => {
-    if (!title || !body) {
-      setResult('Please enter title and message')
-      return
-    }
-
-    if (!('Notification' in window)) {
-      setResult('This browser does not support notifications')
-      return
-    }
-
-    if (Notification.permission === 'granted') {
-      new Notification(title, {
-        body,
-        icon: '/favicon.svg'
-      })
-      setResult('✅ Notification sent!')
-    } else {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          new Notification(title, {
-            body,
-            icon: '/favicon.svg'
-          })
-          setResult('✅ Permission granted! Notification sent!')
-        } else {
-          setResult('❌ Notifications blocked. Please enable in browser settings.')
-        }
-      })
-    }
+    if (!title || !body) return
+    setShowNotif(true)
+    setTimeout(() => setShowNotif(false), 5000)
   }
 
   const quickNotifications = [
@@ -48,9 +22,28 @@ export default function AdminNotificationsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      {/* In-page notification that WILL show */}
+      {showNotif && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: '#ea580c',
+          color: 'white',
+          padding: '16px 24px',
+          borderRadius: '12px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          zIndex: 99999,
+          maxWidth: '400px'
+        }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{title}</div>
+          <div style={{ fontSize: '14px' }}>{body}</div>
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Send Notifications</h1>
-        <p className="text-gray-600 mb-6">Send push notifications to users</p>
+        <p className="text-gray-600 mb-6">Send in-app notifications to users</p>
 
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Compose Notification</h2>
@@ -80,16 +73,11 @@ export default function AdminNotificationsPage() {
 
             <button
               onClick={handleSend}
-              className="w-full py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700"
+              disabled={!title || !body}
+              className="w-full py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 disabled:opacity-50"
             >
-              Send Notification
+              Show Notification
             </button>
-
-            {result && (
-              <div className={`p-4 rounded-lg ${result.includes('✅') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-                {result}
-              </div>
-            )}
           </div>
         </div>
 
@@ -107,6 +95,13 @@ export default function AdminNotificationsPage() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+          <p className="text-sm text-yellow-700">
+            <strong>Note:</strong> This shows an in-app notification. 
+            For browser push notifications, user must allow in browser settings.
+          </p>
         </div>
       </div>
     </div>
