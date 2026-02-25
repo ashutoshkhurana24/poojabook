@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       body: z.string().min(1, 'Body is required'),
       type: z.enum(['all', 'specific', 'booked']).default('all'),
       targetUserId: z.string().optional(),
-      data: z.record(z.string()).optional(),
+      data: z.record(z.string(), z.string()).optional(),
     })
 
     const { title, body: notificationBody, type, targetUserId, data } = schema.parse(body)
