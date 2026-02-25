@@ -21,6 +21,12 @@ export const initializeFirebase = async () => {
     const supported = await isSupported()
     if (!supported) return null
     
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      console.log('Firebase service worker registered:', registration)
+    }
+    
     const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
     messaging = getMessaging(app)
     return messaging

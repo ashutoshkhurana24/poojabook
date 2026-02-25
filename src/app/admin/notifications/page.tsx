@@ -9,6 +9,14 @@ export default function AdminNotificationsPage() {
 
   const handleSend = () => {
     if (!title || !body) return
+    
+    const notification = { title, body, timestamp: Date.now() }
+    const existing = JSON.parse(localStorage.getItem('poojabook_notifications') || '[]')
+    existing.push(notification)
+    localStorage.setItem('poojabook_notifications', JSON.stringify(existing))
+    
+    window.dispatchEvent(new CustomEvent('poojabook-notification', { detail: { title, body } }))
+    
     setShowNotif(true)
     setTimeout(() => setShowNotif(false), 5000)
   }
