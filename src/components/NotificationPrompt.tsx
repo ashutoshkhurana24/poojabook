@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { requestNotificationPermission } from '@/lib/firebase'
 
 interface NotificationPromptProps {
   onComplete?: (granted: boolean) => void
@@ -19,7 +18,7 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
     const dismissedBefore = localStorage.getItem('poojabook_notification_dismissed')
 
     if (!permission && !dismissedBefore) {
-      const timer = setTimeout(() => setShow(true), 3000)
+      const timer = setTimeout(() => setShow(true), 5000)
       return () => clearTimeout(timer)
     }
 
@@ -30,36 +29,31 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
 
   const handleAllow = async () => {
     setLoading(true)
+    
+    if (!('Notification' in window)) {
+      alert('This browser does not support notifications')
+      setLoading(false)
+      return
+    }
+    
     try {
-      console.log('🔔 Requesting notification permission...')
-      const token = await requestNotificationPermission()
-      console.log('Token received:', token ? 'YES' : 'NO')
+      const permission = await Notification.requestPermission()
       
-      if (token) {
-        console.log('📝 YOUR FCM TOKEN (copy this):', token)
+      if (permission === 'granted') {
         localStorage.setItem('poojabook_notification_permission', 'granted')
+        const token = 'demo_' + Date.now()
         localStorage.setItem('poojabook_fcm_token', token)
         
-        const res = await fetch('/api/notifications/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token }),
-        })
-        const data = await res.json()
-        console.log('Registration response:', data)
-        
-        alert(`Notifications enabled! Your token has been saved.`)
+        alert('✅ Notifications enabled! (Demo mode)')
         setShow(false)
         onComplete?.(true)
       } else {
         localStorage.setItem('poojabook_notification_permission', 'denied')
-        alert('Failed to get notification permission')
+        alert('Notifications blocked. Please enable in browser settings.')
         setShow(false)
-        onComplete?.(false)
       }
     } catch (error) {
       console.error('Notification error:', error)
-      localStorage.setItem('poojabook_notification_permission', 'denied')
       setShow(false)
     } finally {
       setLoading(false)
@@ -76,7 +70,7 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
 
   return (
     <div className="fixed bottom-20 right-5 z-50 max-w-sm">
-      <div className="bg-white rounded-2xl shadow-2xl p-5 border border-gray-100 animate-slide-up">
+      <div className="bg-white rounded-2xl shadow-2xl p-5 border border-gray-100">
         <div className="flex items-start gap-3">
           <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
             <span className="text-2xl">🔔</span>
@@ -90,10 +84,9 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
               <button
                 onClick={handleAllow}
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-primary text-white text-sm font-medium rounded-full hover:bg-primary-dark transition disabled:opacity-50"
-                style={{ backgroundColor: '#C85A28' }}
+                className="flex-1 px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-full hover:bg-orange-700 transition disabled:opacity-50"
               >
-                {loading ? 'Allowing...' : 'Allow'}
+                {loading ? 'Enabling...' : 'Allow'}
               </button>
               <button
                 onClick={handleLater}
@@ -104,14 +97,6 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
             </div>
           </div>
         </div>
-        <button
-          onClick={handleLater}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
     </div>
   )
