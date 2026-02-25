@@ -66,29 +66,40 @@ export default function AdminNotificationsPage() {
   }
 
   const handleTestSend = async () => {
-    if (!manualToken || !title || !body) {
-      setTestResult('Please enter token, title and body')
+    if (!title || !body) {
+      setTestResult('Please enter title and body')
       return
     }
     setSending(true)
     setTestResult('')
-    try {
-      const res = await fetch('/api/notifications/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: manualToken, title, body }),
+    
+    // Try browser notification first
+    if (Notification.permission === 'granted') {
+      new Notification(title, { 
+        body,
+        icon: '/favicon.svg',
+        tag: 'test-notification'
       })
-      const data = await res.json()
-      if (data.success) {
-        setTestResult('✅ Notification sent successfully!')
-      } else {
-        setTestResult('❌ ' + (data.error || 'Failed'))
+      setTestResult('✅ Browser notification shown!')
+    } else {
+      // Fallback to API
+      try {
+        const res = await fetch('/api/notifications/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, body }),
+        })
+        const data = await res.json()
+        if (data.success) {
+          setTestResult(data.data.demo ? '✅ Demo mode - notification sent locally!' : `✅ Sent to ${data.data.sent} users`)
+        } else {
+          setTestResult('❌ ' + (data.error || 'Failed'))
+        }
+      } catch (e) {
+        setTestResult('❌ Error: ' + String(e))
       }
-    } catch (error) {
-      setTestResult('❌ Error: ' + String(error))
-    } finally {
-      setSending(false)
     }
+    setSending(false)
   }
 
   return (
