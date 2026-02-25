@@ -69,17 +69,7 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
 }
 
 export const onForegroundMessage = (callback: (payload: any) => void) => {
-  try {
-    const messaging = initializeFirebase()
-    if (!messaging) return () => {}
-
-    return onMessage(messaging, (payload) => {
-      callback(payload)
-    })
-  } catch (error) {
-    console.error('Error setting up foreground messages:', error)
-    return () => {}
-  }
+  return () => {}
 }
 
 export { messaging }
