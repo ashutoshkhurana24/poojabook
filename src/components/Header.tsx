@@ -15,6 +15,7 @@ interface User {
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [notification, setNotification] = useState<{title: string, body: string} | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
@@ -26,6 +27,15 @@ export function Header() {
       })
       .catch(() => {})
   }, [pathname])
+
+  useEffect(() => {
+    const handleNotif = (e: CustomEvent) => {
+      setNotification(e.detail)
+      setTimeout(() => setNotification(null), 5000)
+    }
+    window.addEventListener('poojabook-notification', handleNotif as EventListener)
+    return () => window.removeEventListener('poojabook-notification', handleNotif as EventListener)
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -49,7 +59,25 @@ export function Header() {
   const isCustomer = user?.role === 'CUSTOMER'
 
   return (
-    <header className="bg-surface shadow-sm sticky top-0 z-50">
+    <>
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: '100px',
+          right: '20px',
+          backgroundColor: '#ea580c',
+          color: 'white',
+          padding: '16px 24px',
+          borderRadius: '12px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          zIndex: 99999,
+          maxWidth: '400px'
+        }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{notification.title}</div>
+          <div style={{ fontSize: '14px' }}>{notification.body}</div>
+        </div>
+      )}
+      <header className="bg-surface shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center gap-2">
@@ -161,5 +189,6 @@ export function Header() {
         </div>
       </div>
     </header>
+    </>
   )
 }
