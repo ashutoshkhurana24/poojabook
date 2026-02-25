@@ -2,12 +2,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js')
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyDemo-key',
-  authDomain: 'poojabook.firebaseapp.com',
-  projectId: 'poojabook',
-  storageBucket: 'poojabook.appspot.com',
-  messagingSenderId: '123456789',
-  appId: '1:123456789:web:abc123',
+  apiKey: 'AIzaSyBcv7anIkkK6nBdJ7YFuqjUze_CGc83ztM',
+  authDomain: 'poojabook-8ba7f.firebaseapp.com',
+  projectId: 'poojabook-8ba7f',
+  storageBucket: 'poojabook-8ba7f.firebasestorage.app',
+  messagingSenderId: '656611524011',
+  appId: '1:656611524011:web:c4a722b2516e61ea6de6ee'
 })
 
 const messaging = firebase.messaging()
