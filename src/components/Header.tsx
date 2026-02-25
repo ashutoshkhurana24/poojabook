@@ -15,8 +15,11 @@ interface User {
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [notifOpen, setNotifOpen] = useState(false)
+  const [notifications, setNotifications] = useState<Array<{title: string, body: string, time: string, read: boolean}>>([])
   const [notification, setNotification] = useState<{title: string, body: string} | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+  const notifRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -29,18 +32,59 @@ export function Header() {
   }, [pathname])
 
   useEffect(() => {
+    const stored = localStorage.getItem('poojabook_notifications')
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored)
+        const newNotifs = parsed.map((n: {title: string, body: string}) => ({
+          ...n,
+          time: new Date().toLocaleTimeString(),
+          read: false
+        }))
+        setNotifications(prev => [...newNotifs, ...prev].slice(0, 20))
+        localStorage.removeItem('poojabook_notifications')
+      } catch (e) {}
+    }
+  }, [])
+
+  useEffect(() => {
     const handleNotif = (e: CustomEvent) => {
+      const newNotif = { ...e.detail, time: new Date().toLocaleTimeString(), read: false }
+      setNotifications(prev => [newNotif, ...prev].slice(0, 20))
       setNotification(e.detail)
       setTimeout(() => setNotification(null), 5000)
     }
     window.addEventListener('poojabook-notification', handleNotif as EventListener)
-    return () => window.removeEventListener('poojabook-notification', handleNotif as EventListener)
+    
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'poojabook_notifications' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue)
+          const newNotifs = parsed.map((n: {title: string, body: string}) => ({
+            ...n,
+            time: new Date().toLocaleTimeString(),
+            read: false
+          }))
+          setNotifications(prev => [...newNotifs, ...prev].slice(0, 20))
+          localStorage.removeItem('poojabook_notifications')
+        } catch (e) {}
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+    
+    return () => {
+      window.removeEventListener('poojabook-notification', handleNotif as EventListener)
+      window.removeEventListener('storage', handleStorage)
+    }
   }, [])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false)
+      }
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setNotifOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -103,6 +147,56 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-4">
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                className="relative p-2 text-text-secondary hover:text-primary transition"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {notifications.filter(n => !n.read).length}
+                  </span>
+                )}
+              </button>
+              
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-surface rounded-xl shadow-lg border py-2 animate-in fade-in slide-in-from-top-2 z-50">
+                  <div className="px-4 py-2 border-b flex justify-between items-center">
+                    <p className="font-medium text-gray-900">Notifications</p>
+                    {notifications.length > 0 && (
+                      <button 
+                        onClick={() => setNotifications([])}
+                        className="text-xs text-red-500 hover:text-red-700"
+                      >
+                        Clear all
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <p className="px-4 py-6 text-center text-gray-500 text-sm">
+                        No notifications yet
+                      </p>
+                    ) : (
+                      notifications.map((n, i) => (
+                        <div 
+                          key={i} 
+                          className={`px-4 py-3 border-b hover:bg-background ${!n.read ? 'bg-orange-50' : ''}`}
+                        >
+                          <p className="font-medium text-sm text-gray-900">{n.title}</p>
+                          <p className="text-sm text-gray-600">{n.body}</p>
+                          <p className="text-xs text-gray-400 mt-1">{n.time}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            
             {user ? (
               <div className="relative" ref={menuRef}>
                 <button
