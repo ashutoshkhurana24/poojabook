@@ -1,5 +1,12 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging'
+import { getMessaging, getToken, isSupported } from 'firebase/messaging'
+
+console.log('Firebase env check:', {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? 'SET' : 'MISSING',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? 'SET' : 'MISSING',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? 'SET' : 'MISSING',
+  vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY ? 'SET' : 'MISSING',
+})
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
