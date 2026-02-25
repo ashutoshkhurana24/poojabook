@@ -10,7 +10,7 @@ const firebaseConfig = {
   appId: "1:656611524011:web:c4a722b2516e61ea6de6ee"
 }
 
-const vapidKey = "BANeFm5OPK4xeqRChzshD62AGSKTW7wsAVkVuI3gKNvEU6d56TLIAsyPinq-CwLNmTmmImlp6ENZH8FsadfVHaU"
+const vapidKey = "BHxiMVVhBVkUrmQOhvSFworCWYkWF8c_p751iJ9GTne0DmPjdhWziN13EHxtewqvm8MfOQkc1oBX6pOX-YrXNqw"
 
 let messaging: ReturnType<typeof getMessaging> | null = null
 
