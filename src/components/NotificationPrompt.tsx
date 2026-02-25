@@ -1,55 +1,58 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { requestNotificationPermission } from '@/lib/firebase'
+import { useEffect, useState } from 'react'
 
-interface NotificationPromptProps {
-  onComplete?: (granted: boolean) => void
+declare global {
+  interface Window {
+    OneSignal: any
+  }
 }
 
-export default function NotificationPrompt({ onComplete }: NotificationPromptProps) {
+export default function NotificationPrompt() {
   const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const permission = localStorage.getItem('poojabook_notification_permission')
-    const dismissedBefore = localStorage.getItem('poojabook_notification_dismissed')
+    const dismissed = localStorage.getItem('poojabook_notification_dismissed')
+    const enabled = localStorage.getItem('poojabook_notification_enabled')
 
-    if (!permission && !dismissedBefore) {
+    if (!dismissed && !enabled) {
       const timer = setTimeout(() => setShow(true), 5000)
       return () => clearTimeout(timer)
     }
-
-    if (permission === 'granted' && onComplete) {
-      onComplete(true)
-    }
-  }, [onComplete])
+  }, [])
 
   const handleAllow = async () => {
     setLoading(true)
     
     try {
-      const token = await requestNotificationPermission()
+      // Request browser notification permission
+      const permission = await Notification.requestPermission()
       
-      if (token) {
-        localStorage.setItem('poojabook_notification_permission', 'granted')
-        localStorage.setItem('poojabook_fcm_token', token)
+      if (permission === 'granted') {
+        localStorage.setItem('poojabook_notification_enabled', 'true')
         
-        // Save token to backend
-        await fetch('/api/notifications/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token }),
+        // Try OneSignal if available
+        if (window.OneSignal) {
+          await window.OneSignal.init({
+            appId: "YOUR_ONESIGNAL_APP_ID",
+            allowLocalhostAsSecureOrigin: true,
+            autoRegister: true,
+          })
+        }
+        
+        // Show test notification
+        new Notification('🔔 PoojaBook', {
+          body: 'Notifications enabled! You will receive updates about poojas.',
+          icon: '/favicon.svg'
         })
         
-        alert('✅ Notifications enabled! Token saved.')
+        alert('✅ Notifications enabled!')
         setShow(false)
-        onComplete?.(true)
       } else {
-        alert('Failed to get notification token')
+        alert('Please enable notifications in browser settings')
       }
     } catch (error) {
       console.error('Error:', error)
@@ -61,35 +64,34 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
 
   const handleLater = () => {
     localStorage.setItem('poojabook_notification_dismissed', 'true')
-    setDismissed(true)
     setShow(false)
   }
 
-  if (!show || dismissed) return null
+  if (!show) return null
 
   return (
     <div className="fixed bottom-20 right-5 z-50 max-w-sm">
       <div className="bg-white rounded-2xl shadow-2xl p-5 border border-gray-100">
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
             <span className="text-2xl">🔔</span>
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-gray-900 mb-1">Stay Updated!</h3>
             <p className="text-sm text-gray-600 mb-3">
-              Get notified about upcoming poojas, exclusive discounts, and festival reminders.
+              Get notified about upcoming poojas, discounts, and festivals.
             </p>
             <div className="flex gap-2">
               <button
                 onClick={handleAllow}
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-full hover:bg-orange-700 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-full hover:bg-orange-700"
               >
                 {loading ? 'Enabling...' : 'Allow'}
               </button>
               <button
                 onClick={handleLater}
-                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-full hover:bg-gray-200 transition"
+                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-full"
               >
                 Later
               </button>
