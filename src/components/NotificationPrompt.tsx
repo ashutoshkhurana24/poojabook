@@ -31,12 +31,14 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
   const handleAllow = async () => {
     setLoading(true)
     try {
-      console.log('Requesting notification permission...')
+      console.log('🔔 Requesting notification permission...')
       const token = await requestNotificationPermission()
-      console.log('Token received:', token ? 'yes' : 'no')
+      console.log('Token received:', token ? 'YES' : 'NO')
       
       if (token) {
+        console.log('📝 YOUR FCM TOKEN (copy this):', token)
         localStorage.setItem('poojabook_notification_permission', 'granted')
+        localStorage.setItem('poojabook_fcm_token', token)
         
         const res = await fetch('/api/notifications/register', {
           method: 'POST',
@@ -46,10 +48,12 @@ export default function NotificationPrompt({ onComplete }: NotificationPromptPro
         const data = await res.json()
         console.log('Registration response:', data)
         
+        alert(`Notifications enabled! Your token has been saved.`)
         setShow(false)
         onComplete?.(true)
       } else {
         localStorage.setItem('poojabook_notification_permission', 'denied')
+        alert('Failed to get notification permission')
         setShow(false)
         onComplete?.(false)
       }
