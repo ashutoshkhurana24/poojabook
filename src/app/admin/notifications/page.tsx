@@ -201,9 +201,6 @@ export default function AdminNotificationsPage() {
               </div>
             </div>
           </div>
-              )}
-            </div>
-          </div>
 
           {/* Quick Actions */}
           <div className="space-y-6">
