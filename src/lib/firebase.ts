@@ -41,36 +41,54 @@ export const initializeFirebase = async () => {
 export const requestNotificationPermission = async (): Promise<string | null> => {
   if (typeof window === 'undefined') return null
   
+  console.log('🔔 Starting notification permission flow...')
+  
   if (!('Notification' in window)) {
-    console.error('This browser does not support notifications')
+    console.error('❌ This browser does not support notifications')
     return null
   }
   
   try {
+    console.log('📢 Requesting notification permission...')
     const permission = await Notification.requestPermission()
-    console.log('Notification permission:', permission)
+    console.log('📯 Permission status:', permission)
+    
     if (permission !== 'granted') {
-      console.log('Notification permission not granted')
+      console.log('❌ Permission not granted:', permission)
       return null
     }
 
-    const messaging = await initializeFirebase()
-    if (!messaging) {
-      console.error('Failed to initialize messaging')
+    console.log('✅ Permission granted, initializing Firebase...')
+    
+    const supported = await isSupported()
+    console.log('📱 Messaging supported:', supported)
+    if (!supported) {
+      console.error('❌ Firebase Messaging not supported')
       return null
     }
+    
+    console.log('🔧 Firebase config:', firebaseConfig)
+    
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
+    console.log('📦 Firebase app:', app.name)
+    
+    const messaging = getMessaging(app)
+    console.log('💬 Messaging instance created')
 
     const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+    console.log('🔑 VAPID key exists:', !!vapidKey)
+    
     if (!vapidKey) {
-      console.error('VAPID key not configured')
+      console.error('❌ VAPID key not configured')
       return null
     }
 
+    console.log('🎫 Getting FCM token...')
     const token = await getToken(messaging, { vapidKey })
-    console.log('FCM Token obtained:', token ? 'yes' : 'no')
+    console.log('🎉 Token obtained:', token ? 'YES' : 'NO')
     return token
   } catch (error: any) {
-    console.error('Error getting notification permission:', error?.message || error)
+    console.error('❌ Error getting notification permission:', error?.message || error?.code || error)
     return null
   }
 }
