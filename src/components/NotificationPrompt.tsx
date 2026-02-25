@@ -14,7 +14,6 @@ export default function NotificationPrompt() {
   }, [])
 
   const handleClick = () => {
-    // Direct notification without any async
     if (!('Notification' in window)) {
       alert('This browser does not support notifications')
       return
@@ -55,8 +54,8 @@ export default function NotificationPrompt() {
 
   return (
     <div style={{
-fixed',
-      bottom      position: ': '100px',
+      position: 'fixed',
+      bottom: '100px',
       right: '20px',
       zIndex: 9999,
       maxWidth: '320px',
