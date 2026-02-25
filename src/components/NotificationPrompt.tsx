@@ -1,12 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
+
+declare global {
+  interface Window {
+    OneSignal: any
+  }
+}
 
 export default function NotificationPrompt() {
   const [show, setShow] = useState(false)
   const [notification, setNotification] = useState<{title: string, body: string} | null>(null)
+  const initialized = useRef(false)
 
   useEffect(() => {
+    if (initialized.current) return
+    initialized.current = true
+
     const dismissed = localStorage.getItem('poojabook_notification_dismissed')
     const enabled = localStorage.getItem('poojabook_notification_enabled')
 
@@ -14,8 +24,24 @@ export default function NotificationPrompt() {
       const timer = setTimeout(() => setShow(true), 5000)
       return () => clearTimeout(timer)
     }
+
+    // Initialize OneSignal
+    if (window.OneSignal) {
+      window.OneSignal.init({
+        appId: "75298ded-5296-49ac-870c-48738419e42fP",
+        allowLocalhostAsSecureOrigin: true,
+        autoRegister: false,
+      })
+    }
     
-    // Also listen for custom notification event
+    // Listen for OneSignal notifications
+    if (window.OneSignal) {
+      window.OneSignal.on('notificationDisplay', (event: any) => {
+        console.log('OneSignal notification shown:', event)
+      })
+    }
+
+    // Listen for custom notification event
     const handleNotif = (e: CustomEvent) => {
       setNotification(e.detail)
       setTimeout(() => setNotification(null), 5000)
@@ -24,11 +50,45 @@ export default function NotificationPrompt() {
     return () => window.removeEventListener('poojabook-notification', handleNotif as EventListener)
   }, [])
 
-  const handleAllow = () => {
+  const handleAllow = async () => {
     localStorage.setItem('poojabook_notification_enabled', 'true')
     setShow(false)
     
-    // Dispatch event that main page can listen to
+    // Initialize OneSignal and register
+    if (window.OneSignal) {
+      try {
+        await window.OneSignal.init({
+          appId: "75298ded-5296-49ac-870c-48738419e42fP",
+          allowLocalhostAsSecureOrigin: true,
+          autoRegister: true,
+        })
+        
+        // Get permission and register
+        const permission = await window.OneSignal.getNotificationPermission()
+        if (permission === 'default') {
+          await window.OneSignal.registerForPushNotifications()
+        }
+        
+        // Get player ID
+        const playerId = await window.OneSignal.getUserId()
+        console.log('OneSignal Player ID:', playerId)
+        
+        // Save to backend
+        if (playerId) {
+          await fetch('/api/notifications/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: playerId, source: 'onesignal' }),
+          })
+        }
+        
+        alert('✅ Subscribed to notifications!')
+      } catch (e) {
+        console.error('OneSignal error:', e)
+      }
+    }
+    
+    // Also dispatch event for in-app notification
     window.dispatchEvent(new CustomEvent('poojabook-notification', {
       detail: { title: '🔔 PoojaBook', body: 'Notifications enabled!' }
     }))
