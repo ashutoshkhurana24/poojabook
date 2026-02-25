@@ -35,7 +35,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
       </head>
       <body className={`${playfair.variable} ${dmSans.variable} antialiased min-h-screen`}>
         <SessionProvider>
