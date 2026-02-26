@@ -1,54 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getAuthUser } from '@/lib/auth'
-import { successResponse, errorResponse, unauthorized, forbidden } from '@/lib/api'
+import { successResponse, errorResponse, forbidden } from '@/lib/api'
+import { sendPushNotification } from '@/lib/firebase-admin'
 import { z } from 'zod'
-
-const FIREBASE_SERVER_KEY = process.env.FIREBASE_SERVER_KEY
-
-async function sendPushNotification(token: string, title: string, body: string, data?: Record<string, string>) {
-  if (!FIREBASE_SERVER_KEY) {
-    throw new Error('Firebase server key not configured')
-  }
-
-  const response = await fetch('https://fcm.googleapis.com/fcm/send', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `key=${FIREBASE_SERVER_KEY}`,
-    },
-    body: JSON.stringify({
-      to: token,
-      notification: {
-        title,
-        body,
-        icon: '/favicon.svg',
-        badge: '/favicon.svg',
-      },
-      data: data || {},
-      webpush: {
-        notification: {
-          vibrate: [200, 100, 200],
-          requireInteraction: true,
-        },
-      },
-    }),
-  })
-
-  if (!response.ok) {
-    const error = await response.text()
-    throw new Error(`FCM error: ${error}`)
-  }
-
-  return response.json()
-}
+import { requireRole } from '@/lib/api'
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await getAuthUser()
-    if (!auth || auth.role !== 'ADMIN') {
-      return forbidden('Only admins can send notifications')
-    }
+    const { response } = await requireRole('ADMIN')
+    if (response) return response
 
     const body = await request.json()
     const schema = z.object({
@@ -79,19 +39,19 @@ export async function POST(request: NextRequest) {
         },
         select: { notificationToken: true },
       })
-      tokens = users.map(u => u.notificationToken).filter(Boolean) as string[]
+      tokens = users.map((u) => u.notificationToken).filter(Boolean) as string[]
     } else {
       const users = await prisma.user.findMany({
         where: { notificationToken: { not: null } },
         select: { notificationToken: true },
       })
-      const userTokens = users.map(u => u.notificationToken).filter(Boolean) as string[]
-      
+      const userTokens = users.map((u) => u.notificationToken).filter(Boolean) as string[]
+
       const anonymousTokens = await prisma.notificationToken.findMany({
         select: { token: true },
       })
-      const anonTokens = anonymousTokens.map(t => t.token)
-      
+      const anonTokens = anonymousTokens.map((t) => t.token)
+
       tokens = [...userTokens, ...anonTokens]
     }
 
@@ -99,20 +59,15 @@ export async function POST(request: NextRequest) {
       return errorResponse('No users to notify')
     }
 
-    const results = await Promise.allSettled(
-      tokens.map(token => sendPushNotification(token, title, notificationBody, data))
-    )
-
-    const successful = results.filter(r => r.status === 'fulfilled').length
-    const failed = results.filter(r => r.status === 'rejected').length
+    const { successCount, failureCount } = await sendPushNotification(tokens, title, notificationBody, data)
 
     return successResponse({
-      sent: successful,
-      failed,
+      sent: successCount,
+      failed: failureCount,
       total: tokens.length,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error sending notification:', error)
-    return errorResponse(error.message || 'Failed to send notification')
+    return errorResponse(error instanceof Error ? error.message : 'Failed to send notification')
   }
 }

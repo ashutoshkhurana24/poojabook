@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Serve the service worker dynamically so Firebase env vars are injected at runtime
+        { source: '/firebase-messaging-sw.js', destination: '/api/firebase-sw' },
+      ],
+    }
+  },
 };
 
 export default nextConfig;
