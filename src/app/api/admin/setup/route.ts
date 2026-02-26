@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { action, secret } = body
     
-    if (secret !== 'poojabook-admin') {
+    if (!process.env.ADMIN_SETUP_SECRET || secret !== process.env.ADMIN_SETUP_SECRET) {
       return errorResponse('Invalid secret', 401)
     }
 

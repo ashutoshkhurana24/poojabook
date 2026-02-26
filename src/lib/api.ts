@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
+import { getAuthUser, type JWTPayload } from '@/lib/auth'
 
 export function successResponse(data: any, status = 200) {
   return NextResponse.json({ success: true, data }, { status })
@@ -28,7 +29,24 @@ export function notFound(message = 'Not found') {
   return errorResponse(message, 404)
 }
 
-export function serverError(error?: any) {
+export function serverError(error?: unknown) {
   console.error('Server error:', error)
   return errorResponse('Internal server error', 500)
+}
+
+type AuthGuardResult =
+  | { auth: JWTPayload; response: null }
+  | { auth: null; response: NextResponse }
+
+export async function requireAuth(): Promise<AuthGuardResult> {
+  const auth = await getAuthUser()
+  if (!auth) return { auth: null, response: unauthorized() }
+  return { auth, response: null }
+}
+
+export async function requireRole(role: string): Promise<AuthGuardResult> {
+  const auth = await getAuthUser()
+  if (!auth) return { auth: null, response: unauthorized() }
+  if (auth.role !== role) return { auth: null, response: forbidden() }
+  return { auth, response: null }
 }

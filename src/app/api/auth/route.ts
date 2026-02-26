@@ -20,6 +20,9 @@ const OTP_MAX_ATTEMPTS = 3
 const OTP_EXPIRY_MINUTES = 10
 
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
+const passwordResetRateLimitStore = new Map<string, { count: number; resetTime: number }>()
+const PASSWORD_RESET_WINDOW = 60 * 60 * 1000 // 1 hour
+const PASSWORD_RESET_MAX_ATTEMPTS = 3
 
 function checkRateLimit(phoneNumber: string): { allowed: boolean; remaining: number; resetTime: number } {
   const now = Date.now()
@@ -456,6 +459,18 @@ export async function POST(request: NextRequest) {
       const data = z.object({
         email: z.string().email('Invalid email address'),
       }).parse(body)
+
+      const resetRateKey = data.email.toLowerCase()
+      const resetRateRecord = passwordResetRateLimitStore.get(resetRateKey)
+      const now = Date.now()
+      if (resetRateRecord && now < resetRateRecord.resetTime && resetRateRecord.count >= PASSWORD_RESET_MAX_ATTEMPTS) {
+        return errorResponse('Too many password reset attempts. Please try again later.', 429)
+      }
+      if (!resetRateRecord || now >= resetRateRecord.resetTime) {
+        passwordResetRateLimitStore.set(resetRateKey, { count: 1, resetTime: now + PASSWORD_RESET_WINDOW })
+      } else {
+        resetRateRecord.count++
+      }
       
       const user = await prisma.user.findUnique({ 
         where: { email: data.email }
@@ -485,9 +500,8 @@ export async function POST(request: NextRequest) {
       
       console.log(`[DEV] Password reset token for ${data.email}: ${resetToken}`)
       
-      return successResponse({ 
+      return successResponse({
         message: 'If an account exists, a reset link has been sent to your email.',
-        devToken: process.env.NODE_ENV !== 'production' ? resetToken : undefined
       })
     }
 

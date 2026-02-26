@@ -1,12 +1,11 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getAuthUser } from '@/lib/auth'
-import { successResponse, forbidden, serverError } from '@/lib/api'
+import { successResponse, forbidden, serverError, requireRole } from '@/lib/api'
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await getAuthUser()
-    if (!auth || auth.role !== 'ADMIN') return forbidden()
+    const { auth, response } = await requireRole('ADMIN')
+    if (response) return response
 
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
@@ -14,7 +13,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
 
-    const where: any = {}
+    const where: { status?: string; vendorId?: string } = {}
     if (status) where.status = status
     if (vendorId) where.vendorId = vendorId
 
@@ -45,13 +44,13 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const auth = await getAuthUser()
-    if (!auth || auth.role !== 'ADMIN') return forbidden()
+    const { auth, response } = await requireRole('ADMIN')
+    if (response) return response
 
     const body = await request.json()
     const { orderId, vendorId, status } = body
 
-    const updateData: any = {}
+    const updateData: { vendorId?: string; status?: string } = {}
     if (vendorId) updateData.vendorId = vendorId
     if (status) updateData.status = status
 

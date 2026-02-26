@@ -32,6 +32,8 @@ model User {
   auditLogs       AuditLog[]
   otpVerifications OtpVerification[]
   notificationTokens NotificationToken[]
+
+  @@index([role])
 }
 
 model OtpVerification {
@@ -44,6 +46,9 @@ model OtpVerification {
   createdAt     DateTime @default(now())
   user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String?
+
+  @@index([phoneNumber])
+  @@index([expiresAt])
 }
 
 model PartnerProfile {
@@ -159,6 +164,9 @@ model PoojaSlot {
   updatedAt    DateTime @updatedAt
 
   orders       Order[]
+
+  @@index([poojaId])
+  @@index([date, isAvailable])
 }
 
 model AddOn {
@@ -207,6 +215,12 @@ model Order {
   payments         Payment[]
   notifications    Notification[]
   reviews          Review[]
+
+  @@index([customerId])
+  @@index([poojaId])
+  @@index([vendorId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model OrderItem {

@@ -1,17 +1,17 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getAuthUser, hashPassword } from '@/lib/auth'
-import { successResponse, forbidden, serverError } from '@/lib/api'
+import { hashPassword } from '@/lib/auth'
+import { successResponse, forbidden, serverError, requireRole } from '@/lib/api'
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await getAuthUser()
-    if (!auth || auth.role !== 'ADMIN') return forbidden()
+    const { auth, response } = await requireRole('ADMIN')
+    if (response) return response
 
     const { searchParams } = new URL(request.url)
     const verified = searchParams.get('verified')
 
-    const where: any = {}
+    const where: { isVerified?: boolean } = {}
     if (verified !== null) where.isVerified = verified === 'true'
 
     const vendors = await prisma.vendor.findMany({
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await getAuthUser()
-    if (!auth || auth.role !== 'ADMIN') return forbidden()
+    const { response } = await requireRole('ADMIN')
+    if (response) return response
 
     const body = await request.json()
     const { name, phone, email, businessName, description, languages, serviceAreas, password } =

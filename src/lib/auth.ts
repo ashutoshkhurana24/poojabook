@@ -2,7 +2,8 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'poojabook-secret-key-change-in-production'
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET) throw new Error('JWT_SECRET environment variable is not set')
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
@@ -40,10 +41,6 @@ export async function getAuthUser() {
   if (!payload) return null
   
   return payload
-}
-
-export function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString()
 }
 
 export function generateOrderNo(): string {

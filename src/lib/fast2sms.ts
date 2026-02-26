@@ -56,30 +56,5 @@ export async function sendOTPViaFast2SMS(phoneNumber: string, otp: string): Prom
   }
 }
 
-export function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString()
-}
-
-export async function hashOTP(otp: string): Promise<string> {
-  const salt = await import('bcryptjs').then(bcrypt => bcrypt.genSalt(10))
-  return import('bcryptjs').then(bcrypt => bcrypt.hash(otp, salt))
-}
-
-export async function verifyOTP(otp: string, hash: string): Promise<boolean> {
-  return import('bcryptjs').then(bcrypt => bcrypt.compare(otp, hash))
-}
-
-export function sanitizePhoneNumber(phone: string): string {
-  return phone.replace(/^\+91/, '').replace(/\D/g, '').slice(0, 10)
-}
-
-export function validatePhoneNumber(phone: string): boolean {
-  const cleaned = sanitizePhoneNumber(phone)
-  return /^[6789]\d{9}$/.test(cleaned)
-}
-
-export function maskPhoneNumber(phone: string): string {
-  const cleaned = sanitizePhoneNumber(phone)
-  if (cleaned.length !== 10) return phone
-  return cleaned.slice(0, 4) + ' ' + cleaned.slice(4)
-}
+// OTP and phone utilities are centralized in @/lib/twilio
+export { generateOTP, hashOTP, verifyOTP, sanitizePhoneNumber, validatePhoneNumber, maskPhoneNumber } from '@/lib/twilio'

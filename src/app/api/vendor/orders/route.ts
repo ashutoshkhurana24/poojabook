@@ -1,12 +1,11 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getAuthUser } from '@/lib/auth'
-import { successResponse, forbidden, serverError } from '@/lib/api'
+import { successResponse, forbidden, serverError, requireRole } from '@/lib/api'
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await getAuthUser()
-    if (!auth || auth.role !== 'VENDOR') return forbidden()
+    const { auth, response } = await requireRole('VENDOR')
+    if (response) return response
 
     const vendor = await prisma.vendor.findFirst({ where: { userId: auth.userId } })
     if (!vendor) return forbidden('Vendor not found')
@@ -15,7 +14,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const date = searchParams.get('date')
 
-    const where: any = { vendorId: vendor.id }
+    const where: { vendorId: string; status?: string; slot?: { date: string } } = { vendorId: vendor.id }
     if (status) where.status = status
     if (date) where.slot = { date }
 
@@ -38,8 +37,8 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const auth = await getAuthUser()
-    if (!auth || auth.role !== 'VENDOR') return forbidden()
+    const { auth, response } = await requireRole('VENDOR')
+    if (response) return response
 
     const vendor = await prisma.vendor.findFirst({ where: { userId: auth.userId } })
     if (!vendor) return forbidden('Vendor not found')
@@ -53,7 +52,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!order) return forbidden('Order not assigned to you')
 
-    const updateData: any = { status }
+    const updateData: { status: string; notes?: string } = { status }
     if (notes) {
       updateData.notes = `${order.notes || ''}\n[${new Date().toISOString()}] ${notes}`
     }
