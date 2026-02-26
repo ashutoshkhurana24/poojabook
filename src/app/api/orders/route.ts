@@ -56,6 +56,12 @@ export async function POST(request: NextRequest) {
     const data = createOrderSchema.parse(body)
     const { poojaId, panditId, slotId, slotDate, slotTime, attendeeName, attendeePhone, address, notes, addOnIds, mode } = data
 
+    // Allow admins to specify a different customer
+    let customerId = auth.userId
+    if (body.customerId && auth.role === 'ADMIN') {
+      customerId = body.customerId
+    }
+
     const pooja = await prisma.pooja.findUnique({ where: { id: poojaId } })
     if (!pooja) {
       return errorResponse('Invalid pooja')
@@ -110,7 +116,7 @@ export async function POST(request: NextRequest) {
       const newOrder = await tx.order.create({
         data: {
           orderNo: generateOrderNo(),
-          customerId: auth.userId,
+          customerId,
           poojaId,
           slotId: slot!.id,
           panditId: panditId || null,
