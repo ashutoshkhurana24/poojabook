@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 interface TourStep {
   id: string
@@ -70,65 +69,29 @@ const tourSteps: TourStep[] = [
 
 export default function WebsiteTour() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [isVisible, setIsVisible] = useState(true)
-  const [speaking, setSpeaking] = useState(false)
-  const synth = typeof window !== 'undefined' ? window.speechSynthesis : null
+  const [showPopup, setShowPopup] = useState(false)
 
-  const speak = (text: string) => {
-    if (!synth) return
-    synth.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.rate = 0.9
-    utterance.onstart = () => setSpeaking(true)
-    utterance.onend = () => setSpeaking(false)
-    synth.speak(utterance)
-  }
-
-  const stopSpeaking = () => {
-    if (synth) synth.cancel()
-    setSpeaking(false)
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => setShowPopup(true), 2000)
+    return () => clearTimeout(timer)
+  }, [])
 
   const nextStep = () => {
-    stopSpeaking()
     if (currentStep < tourSteps.length - 1) {
       setCurrentStep(currentStep + 1)
-      speak(tourSteps[currentStep + 1].message)
     } else {
-      closeTour()
+      setShowPopup(false)
     }
   }
 
   const prevStep = () => {
-    stopSpeaking()
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
-      speak(tourSteps[currentStep - 1].message)
     }
   }
 
   const closeTour = () => {
-    stopSpeaking()
-    setIsVisible(false)
-    localStorage.setItem('poojabook_tour_seen', 'true')
-  }
-
-  const restartTour = () => {
-    localStorage.removeItem('poojabook_tour_seen')
-    setCurrentStep(0)
-    setIsVisible(true)
-    speak(tourSteps[0].message)
-  }
-
-  if (!isVisible) {
-    return (
-      <button
-        onClick={restartTour}
-        className="fixed bottom-24 right-5 z-40 bg-primary text-white px-4 py-2 rounded-full shadow-lg hover:bg-primary-dark transition flex items-center gap-2"
-      >
-        <span>🎯</span> Take Tour
-      </button>
-    )
+    setShowPopup(false)
   }
 
   const step = tourSteps[currentStep]
@@ -136,64 +99,68 @@ export default function WebsiteTour() {
   const isFirstStep = currentStep === 0
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={() => {}} />
-      
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-6 animate-in zoom-in-95">
-        <button
-          onClick={closeTour}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          ✕
-        </button>
+    <>
+      {/* Floating Tour Button - Always Visible */}
+      <button
+        onClick={() => {
+          setCurrentStep(0)
+          setShowPopup(true)
+        }}
+        className="fixed bottom-24 right-5 z-40 bg-orange-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-orange-700 transition flex items-center gap-2"
+      >
+        <span>🎯</span> Tour
+      </button>
 
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-2xl">🎯</span>
-          <span className="text-sm text-gray-500">Step {currentStep + 1} of {tourSteps.length}</span>
-        </div>
-
-        <div className="w-full bg-gray-100 h-1 rounded-full mb-4">
-          <div
-            className="bg-primary h-1 rounded-full transition-all"
-            style={{ width: `${((currentStep + 1) / tourSteps.length) * 100}%` }}
-          />
-        </div>
-
-        <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-        <p className="text-gray-600 mb-6">{step.message}</p>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+      {/* Tour Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={closeTour} />
+          
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-6 animate-in zoom-in-95">
             <button
-              onClick={() => {
-                stopSpeaking()
-                speak(step.message)
-              }}
-              className={`p-2 rounded-full hover:bg-gray-100 transition ${speaking ? 'text-red-500' : 'text-gray-500'}`}
-              title={speaking ? 'Stop' : 'Read aloud'}
+              onClick={closeTour}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
             >
-              {speaking ? '🔊' : '🔈'}
+              ✕
             </button>
-          </div>
 
-          <div className="flex items-center gap-3">
-            {!isFirstStep && (
-              <button
-                onClick={prevStep}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
-              >
-                ← Back
-              </button>
-            )}
-            <button
-              onClick={nextStep}
-              className="px-6 py-2 bg-primary text-white rounded-full hover:bg-primary-dark transition"
-            >
-              {isLastStep ? 'Finish' : 'Next →'}
-            </button>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-2xl">🎯</span>
+              <span className="text-sm text-gray-500">Step {currentStep + 1} of {tourSteps.length}</span>
+            </div>
+
+            <div className="w-full bg-gray-100 h-1 rounded-full mb-4">
+              <div
+                className="bg-orange-600 h-1 rounded-full transition-all"
+                style={{ width: `${((currentStep + 1) / tourSteps.length) * 100}%` }}
+              />
+            </div>
+
+            <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
+            <p className="text-gray-600 mb-6">{step.message}</p>
+
+            <div className="flex items-center justify-between">
+              <div></div>
+              <div className="flex items-center gap-3">
+                {!isFirstStep && (
+                  <button
+                    onClick={prevStep}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                  >
+                    ← Back
+                  </button>
+                )}
+                <button
+                  onClick={nextStep}
+                  className="px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition"
+                >
+                  {isLastStep ? 'Finish' : 'Next →'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   )
 }
