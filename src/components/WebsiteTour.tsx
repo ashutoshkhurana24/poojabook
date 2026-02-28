@@ -106,9 +106,11 @@ export default function WebsiteTour() {
           setCurrentStep(0)
           setShowPopup(true)
         }}
-        className="fixed bottom-24 right-5 z-40 bg-orange-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-orange-700 transition flex items-center gap-2"
+        className="fixed bottom-32 right-5 z-[60] bg-orange-600 text-white px-5 py-3 rounded-full shadow-2xl hover:bg-orange-700 transition flex items-center gap-2 font-semibold"
+        style={{ boxShadow: '0 6px 25px rgba(234, 88, 12, 0.5)' }}
       >
-        <span>🎯</span> Tour
+        <span className="text-xl">🎯</span> 
+        <span>Take Tour</span>
       </button>
 
       {/* Tour Popup */}
