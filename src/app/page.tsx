@@ -77,7 +77,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-secondary/90 to-secondary py-24">
+      <section id="hero-section" className="relative bg-gradient-to-b from-secondary/90 to-secondary py-24">
         <div className="absolute inset-0 bg-[url('https://thumbs.dreamstime.com/b/vibrant-diwali-puja-thali-brimming-traditional-offerings-shimmering-diyas-fragrant-flowers-sweet-delicacies-symbolic-324123032.jpg')] bg-cover bg-center opacity-20" />
         <div className="relative container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
@@ -141,7 +141,7 @@ export default function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="py-16 bg-surface">
+      <section id="categories-section" className="py-16 bg-surface">
         <div className="container mx-auto px-4">
           <h2 className="font-heading text-3xl text-center mb-12">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -162,7 +162,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Poojas */}
-      <section className="py-16">
+      <section id="featured-section" className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
             <h2 className="font-heading text-3xl">Featured Poojas</h2>
@@ -210,10 +210,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <AuspiciousDaysSection />
+      <AuspiciousDaysSection id="auspicious-section" />
 
       {/* How It Works */}
-      <section className="py-16 bg-surface">
+      <section id="how-it-works-section" className="py-16 bg-surface">
         <div className="container mx-auto px-4">
           <h2 className="font-heading text-3xl text-center mb-12">How It Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -243,7 +243,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-secondary text-white">
+      <section id="partner-section" className="py-16 bg-secondary text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-heading text-3xl mb-4">Are You a Pandit or Temple?</h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">

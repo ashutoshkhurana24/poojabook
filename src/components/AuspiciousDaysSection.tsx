@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { getUpcomingAuspiciousDays, getDayName } from '@/lib/panchang'
 
-export default function AuspiciousDaysSection() {
+export default function AuspiciousDaysSection({ id }: { id?: string }) {
   const days = getUpcomingAuspiciousDays(8)
 
   return (
-    <section className="py-16 bg-gradient-to-b from-surface to-orange-50">
+    <section id={id} className="py-16 bg-gradient-to-b from-surface to-orange-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="font-heading text-3xl mb-2">🗓️ Upcoming Auspicious Days</h2>
