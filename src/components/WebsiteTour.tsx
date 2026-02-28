@@ -70,17 +70,16 @@ const tourSteps: TourStep[] = [
 
 export default function WebsiteTour() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
   const [speaking, setSpeaking] = useState(false)
   const tourShown = useRef(false)
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : null
 
   useEffect(() => {
-    const hasSeenTour = localStorage.getItem('poojabook_tour_seen')
-    if (!hasSeenTour && !tourShown.current) {
-      tourShown.current = true
-      setTimeout(() => setIsVisible(true), 2000)
-    }
+    const timer = setTimeout(() => {
+      setIsVisible(true)
+    }, 3000)
+    return () => clearTimeout(timer)
   }, [])
 
   const speak = (text: string) => {

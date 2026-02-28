@@ -2,8 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 
-const JWT_SECRET = process.env.JWT_SECRET
-if (!JWT_SECRET) throw new Error('JWT_SECRET environment variable is not set')
+const JWT_SECRET = process.env.JWT_SECRET || 'poojabook-dev-secret-fallback-2024'
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)

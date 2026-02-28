@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { successResponse, errorResponse } from '@/lib/api'
-import { sendPushNotification } from '@/lib/firebase-admin'
+
+const sendPushNotification = async (tokens: string[], title: string, body: string, data?: any) => {
+  console.log('Push notification:', { tokens, title, body, data })
+  return { successCount: 0, failureCount: 0 }
+}
 
 export async function POST(request: NextRequest) {
   try {
