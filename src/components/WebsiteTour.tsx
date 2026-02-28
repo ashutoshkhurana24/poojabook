@@ -72,15 +72,7 @@ export default function WebsiteTour() {
   const [currentStep, setCurrentStep] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
   const [speaking, setSpeaking] = useState(false)
-  const tourShown = useRef(false)
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : null
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true)
-    }, 3000)
-    return () => clearTimeout(timer)
-  }, [])
 
   const speak = (text: string) => {
     if (!synth) return
