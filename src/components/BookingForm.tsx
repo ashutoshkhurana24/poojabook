@@ -155,7 +155,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
 
       {!showPanditSelection ? (
         <>
-          <div>
+          <div data-tour="date-picker">
             <label className="block text-sm font-medium mb-2">Select Date</label>
             <div className="flex flex-wrap gap-2">
               {dates.slice(0, 7).map((date) => (
@@ -175,7 +175,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
             </div>
           </div>
 
-          <div>
+          <div data-tour="pandit-select">
             <label className="block text-sm font-medium mb-2">Choose Your Pandit</label>
             {pandits.length > 0 ? (
               <button
@@ -236,8 +236,8 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
         </div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Add-ons (Optional)</label>
+        <div data-tour="addons">
+          <label className="block text-sm font-medium mb-2">Add-ons (Optional)</label>
         <div className="space-y-2">
           {addons.map((addon) => (
             <label key={addon.id} className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
@@ -265,7 +265,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4 border-t">
+        <div data-tour="customer-info" className="space-y-4 pt-4 border-t">
         <h3 className="font-medium">Your Details</h3>
         
         <div>
@@ -336,6 +336,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
       ) : (
         <button
           type="submit"
+          data-tour="book-button"
           disabled={submitting || !attendeeName || !attendeePhone}
           className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition disabled:opacity-50"
         >

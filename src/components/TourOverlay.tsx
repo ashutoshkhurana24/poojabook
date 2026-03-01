@@ -230,7 +230,17 @@ export default function TourOverlay() {
                 </button>
               )}
               <button
-                onClick={goToNext}
+                onClick={() => {
+                  if (isLastStep) {
+                    endTour()
+                    setActive(false)
+                    setVisible(false)
+                    // Show congratulations - could redirect to /poojas
+                    window.location.href = '/poojas'
+                  } else {
+                    goToNext()
+                  }
+                }}
                 style={{
                   padding: '8px 20px',
                   borderRadius: '8px',
@@ -242,7 +252,7 @@ export default function TourOverlay() {
                   fontWeight: '500',
                 }}
               >
-                {isLastStep ? 'Finish 🎉' : 'Next →'}
+                {isLastStep ? 'Finish Tour 🪔' : 'Next →'}
               </button>
             </div>
           </div>
