@@ -48,10 +48,14 @@ export default function PoojasPage() {
       console.log('Fetching poojas from:', url)
       
       const res = await fetch(url)
+      console.log('Response status:', res.status)
       const data = await res.json()
       console.log('API response:', data)
+      console.log('Poojas array:', data?.data?.poojas)
       if (data.success) {
         setPoojas(data.data.poojas || [])
+      } else {
+        console.error('API error:', data.error)
       }
     } catch (err) {
       console.error('Failed to fetch poojas:', err)

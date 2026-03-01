@@ -8,8 +8,11 @@ export async function GET() {
       orderBy: { name: 'asc' },
     })
 
+    console.log('Categories found:', categories.length)
+
     return successResponse(categories)
   } catch (error) {
+    console.error('Categories API error:', error)
     return serverError(error)
   }
 }

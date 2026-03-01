@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
 
+    console.log('API /api/poojas called with:', { category, city, mode, search })
+
     const where: Prisma.PoojaWhereInput = { isActive: true }
 
     if (category && category.trim() !== '') {
@@ -38,6 +40,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    console.log('Prisma where:', JSON.stringify(where))
+
     const [poojas, total] = await Promise.all([
       prisma.pooja.findMany({
         where,
@@ -50,6 +54,8 @@ export async function GET(request: NextRequest) {
       }),
       prisma.pooja.count({ where }),
     ])
+
+    console.log('Found poojas:', poojas.length, 'total:', total)
 
     const poojasWithRating = poojas.map((pooja) => ({
       ...pooja,
