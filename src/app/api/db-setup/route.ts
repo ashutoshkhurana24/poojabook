@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { successResponse, errorResponse } from '@/lib/api'
-import { PrismaClient } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,11 +11,10 @@ export async function POST(request: NextRequest) {
       return errorResponse('Invalid secret', 401)
     }
 
-    const prismaClient = new PrismaClient()
-    await prismaClient.$connect()
-    await prismaClient.$executeRaw`SELECT 1`
+    await prisma.$connect()
+    await prisma.$executeRaw`SELECT 1`
     
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "User" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         email TEXT UNIQUE,
@@ -30,7 +28,7 @@ export async function POST(request: NextRequest) {
       )
     `
     
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "PoojaCategory" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         name TEXT NOT NULL,
@@ -42,7 +40,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "PoojaLocation" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         name TEXT NOT NULL,
@@ -59,7 +57,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Vendor" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "userId" TEXT UNIQUE,
@@ -74,7 +72,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Pooja" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         title TEXT NOT NULL,
@@ -93,7 +91,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "PoojaSlot" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "poojaId" TEXT,
@@ -109,7 +107,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "AddOn" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         name TEXT NOT NULL,
@@ -122,7 +120,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Order" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "orderNo" TEXT UNIQUE NOT NULL,
@@ -147,7 +145,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "OrderItem" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "orderId" TEXT NOT NULL,
@@ -157,7 +155,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Payment" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "orderId" TEXT NOT NULL,
@@ -171,7 +169,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Notification" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "orderId" TEXT NOT NULL,
@@ -186,7 +184,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Review" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "orderId" TEXT NOT NULL,
@@ -199,7 +197,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "AuditLog" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         "userId" TEXT NOT NULL,
@@ -212,7 +210,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$executeRaw`
+    await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "Coupon" (
         id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
         code TEXT UNIQUE NOT NULL,
@@ -229,7 +227,7 @@ export async function POST(request: NextRequest) {
       )
     `
 
-    await prismaClient.$disconnect()
+    await prisma.$disconnect()
     
     return successResponse({ message: 'All tables created successfully' })
   } catch (error) {
