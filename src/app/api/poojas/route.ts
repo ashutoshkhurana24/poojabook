@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
     ])
 
     console.log('Found poojas:', poojas.length, 'total:', total)
+    console.log('Sample pooja:', JSON.stringify(poojas[0]))
 
     const poojasWithRating = poojas.map((pooja) => ({
       ...pooja,

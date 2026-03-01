@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 
 interface PanditCardProps {
@@ -35,11 +34,9 @@ export default function PanditCard({ pandit, onSelect, selected }: PanditCardPro
         <div className="relative">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
             {pandit.photo ? (
-              <Image
+              <img
                 src={pandit.photo}
                 alt={pandit.name}
-                width={80}
-                height={80}
                 className="w-full h-full object-cover"
               />
             ) : (
