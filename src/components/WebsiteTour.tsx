@@ -120,7 +120,7 @@ export default function WebsiteTour() {
       {/* Floating Tour Button - Always Visible */}
       <button
         onClick={() => {
-          window.dispatchEvent(new CustomEvent('start-full-tour'))
+          window.dispatchEvent(new CustomEvent('start-poojabook-tour'))
         }}
         className="fixed bottom-32 right-5 z-[60] bg-orange-600 text-white px-5 py-3 rounded-full shadow-2xl hover:bg-orange-700 transition flex items-center gap-2 font-semibold"
         style={{ boxShadow: '0 6px 25px rgba(234, 88, 12, 0.5)' }}
