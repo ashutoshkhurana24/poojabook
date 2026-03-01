@@ -16,6 +16,24 @@ try {
   console.log('Prisma generate warning, continuing...');
 }
 
+// Only run db push and seed if DATABASE_URL points to a real database (not dummy)
+if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
+  try {
+    console.log('Running prisma db push...');
+    execSync('npx prisma db push', { stdio: 'inherit' });
+    
+    console.log('Running database seed...');
+    execSync('npx ts-node -O \'{"module":"CommonJS"}\' prisma/seed.ts', { 
+      stdio: 'inherit',
+      timeout: 120000 
+    });
+  } catch (e) {
+    console.log('Database seed warning, continuing...');
+  }
+} else {
+  console.log('Skipping db push and seed (using dummy DATABASE_URL)');
+}
+
 console.log('Running next build...');
 try {
   execSync('npx next build', { stdio: 'pipe', encoding: 'utf8' });
