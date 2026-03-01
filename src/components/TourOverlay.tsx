@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { TOUR_STEPS, getCurrentStep, setStep, endTour, isTourActive, isTourCompleted } from '@/lib/tour-steps'
 
 export default function TourOverlay() {
   const router = useRouter()
+  const pathname = usePathname()
   const [currentStep, setCurrentStep] = useState(-1)
   const [active, setActive] = useState(false)
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null)
@@ -45,6 +46,12 @@ export default function TourOverlay() {
       }
       return
     }
+
+    // Scroll to element first
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    
+    // Wait for scroll animation to complete
+    await new Promise(r => setTimeout(r, 500))
 
     const rect = element.getBoundingClientRect()
     setTargetRect(rect)
@@ -86,7 +93,7 @@ export default function TourOverlay() {
     setVisible(false)
   }, [])
 
-  // Initialize on mount
+  // Initialize on mount and when pathname changes
   useEffect(() => {
     if (typeof window === 'undefined') return
 
@@ -99,7 +106,7 @@ export default function TourOverlay() {
       setActive(true)
       findAndShowStep(step)
     }
-  }, [findAndShowStep])
+  }, [pathname, findAndShowStep])
 
   // Listen for tour start
   useEffect(() => {

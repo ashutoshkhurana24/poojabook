@@ -46,7 +46,7 @@ export default function PoojasPage({
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <aside className="lg:w-72 flex-shrink-0">
-            <div className="bg-surface rounded-2xl p-6 sticky top-24">
+            <div data-tour="filters" className="bg-surface rounded-2xl p-6 sticky top-24">
               <h2 className="font-heading text-xl mb-6">Filters</h2>
               
               <form method="get" className="space-y-6">
