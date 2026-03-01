@@ -36,12 +36,10 @@ export default async function PanditDetailPage({
             <div className="relative">
               <div className="w-40 h-40 rounded-full overflow-hidden bg-white/10 border-4 border-white/20">
                 {pandit.photo ? (
-                  <Image
+                  <img
                     src={pandit.photo}
                     alt={pandit.name}
-                    width={160}
-                    height={160}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-6xl">
