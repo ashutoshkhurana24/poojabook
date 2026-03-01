@@ -200,6 +200,7 @@ async function main() {
       duration: 60,
       basePrice: 1100,
       mode: 'IN_TEMPLE',
+      imageUrl: 'https://www.zodiacratna.com/wp-content/uploads/2024/04/Ganesh-Puja-2.jpg',
       categoryId: categories[0].id,
     },
     {
@@ -211,6 +212,7 @@ async function main() {
       duration: 90,
       basePrice: 2100,
       mode: 'IN_TEMPLE',
+      imageUrl: 'https://mypujapandit.com/uploads/images/diwali-lakshmi-puja-online-1758276971.jpeg',
       categoryId: categories[1].id,
     },
     {
@@ -222,6 +224,7 @@ async function main() {
       duration: 120,
       basePrice: 5100,
       mode: 'AT_HOME',
+      imageUrl: 'https://muktikshetragokarna.com/wp-content/uploads/2025/03/Navagraha-Shanti.webp',
       categoryId: categories[2].id,
     },
     {
@@ -233,6 +236,7 @@ async function main() {
       duration: 90,
       basePrice: 2500,
       mode: 'AT_HOME',
+      imageUrl: 'https://imgcdn.stablediffusionweb.com/2024/9/15/82b40ff8-b27b-499a-990d-056c784c0853.jpg',
       categoryId: categories[3].id,
     },
     {
@@ -244,6 +248,7 @@ async function main() {
       duration: 150,
       basePrice: 8100,
       mode: 'AT_HOME',
+      imageUrl: 'https://i.pinimg.com/736x/e7/15/09/e71509a00a71846ea5fe2eb2dad3c230.jpg',
       categoryId: categories[4].id,
     },
     {
@@ -255,6 +260,7 @@ async function main() {
       duration: 120,
       basePrice: 3100,
       mode: 'ONLINE',
+      imageUrl: 'https://img.freepik.com/premium-photo/lord-vishnu_933362-165.jpg',
       categoryId: categories[5].id,
     },
     {
@@ -266,6 +272,7 @@ async function main() {
       duration: 45,
       basePrice: 510,
       mode: 'AT_HOME',
+      imageUrl: 'https://img.freepik.com/premium-photo/hanuman-chalisa-s-spiritual-journey_875825-5428.jpg',
       categoryId: categories[6].id,
     },
     {
@@ -277,6 +284,7 @@ async function main() {
       duration: 180,
       basePrice: 10100,
       mode: 'IN_TEMPLE',
+      imageUrl: 'https://servdharm.com/cdn/shop/articles/durga-puja-celebrations-story_900x.jpg?v=1657454594',
       categoryId: categories[7].id,
     },
     {
@@ -288,6 +296,7 @@ async function main() {
       duration: 60,
       basePrice: 510,
       mode: 'ONLINE',
+      imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc1xYvL3-cczo-7dlZ8J6EXmbNvzTkjTsZTg&s',
       categoryId: categories[4].id,
     },
     {
@@ -299,6 +308,7 @@ async function main() {
       duration: 45,
       basePrice: 810,
       mode: 'AT_HOME',
+      imageUrl: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=800&q=80',
       categoryId: categories[3].id,
     },
     {
@@ -310,6 +320,7 @@ async function main() {
       duration: 60,
       basePrice: 1500,
       mode: 'IN_TEMPLE',
+      imageUrl: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=800&q=80',
       categoryId: categories[0].id,
     },
     {
@@ -321,6 +332,7 @@ async function main() {
       duration: 240,
       basePrice: 15100,
       mode: 'AT_HOME',
+      imageUrl: 'https://i.pinimg.com/736x/e7/15/09/e71509a00a71846ea5fe2eb2dad3c230.jpg',
       categoryId: categories[4].id,
     },
     {
@@ -332,6 +344,7 @@ async function main() {
       duration: 90,
       basePrice: 3100,
       mode: 'AT_HOME',
+      imageUrl: 'https://mypujapandit.com/uploads/images/diwali-lakshmi-puja-online-1758276971.jpeg',
       categoryId: categories[1].id,
     },
     {
@@ -343,6 +356,7 @@ async function main() {
       duration: 45,
       basePrice: 1100,
       mode: 'AT_HOME',
+      imageUrl: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=800&q=80',
       categoryId: categories[0].id,
     },
     {
@@ -354,6 +368,7 @@ async function main() {
       duration: 90,
       basePrice: 5100,
       mode: 'AT_HOME',
+      imageUrl: 'https://muktikshetragokarna.com/wp-content/uploads/2025/03/Navagraha-Shanti.webp',
       categoryId: categories[2].id,
     },
     {
@@ -365,6 +380,7 @@ async function main() {
       duration: 60,
       basePrice: 2100,
       mode: 'AT_HOME',
+      imageUrl: 'https://mypujapandit.com/uploads/images/diwali-lakshmi-puja-online-1758276971.jpeg',
       categoryId: categories[1].id,
     },
     {
@@ -376,6 +392,7 @@ async function main() {
       duration: 60,
       basePrice: 1800,
       mode: 'AT_HOME',
+      imageUrl: 'https://www.zodiacratna.com/wp-content/uploads/2024/04/Ganesh-Puja-2.jpg',
       categoryId: categories[0].id,
     },
     {
@@ -387,6 +404,7 @@ async function main() {
       duration: 30,
       basePrice: 510,
       mode: 'ONLINE',
+      imageUrl: 'https://mypujapandit.com/uploads/images/diwali-lakshmi-puja-online-1758276971.jpeg',
       categoryId: categories[1].id,
     },
     {
@@ -398,6 +416,7 @@ async function main() {
       duration: 75,
       basePrice: 2100,
       mode: 'AT_HOME',
+      imageUrl: 'https://img.freepik.com/premium-photo/lord-vishnu_933362-165.jpg',
       categoryId: categories[5].id,
     },
     {
@@ -409,6 +428,7 @@ async function main() {
       duration: 45,
       basePrice: 910,
       mode: 'AT_HOME',
+      imageUrl: 'https://img.freepik.com/premium-photo/lord-vishnu_933362-165.jpg',
       categoryId: categories[5].id,
     },
   ]

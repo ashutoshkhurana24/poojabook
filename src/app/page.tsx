@@ -13,6 +13,7 @@ interface Pooja {
   basePrice: number
   category: { name: string }
   mode: string
+  imageUrl?: string | null
 }
 
 interface Category {
@@ -251,8 +252,19 @@ export default function HomePage() {
                   href={`/poojas/${pooja.slug}`}
                   className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
                 >
-                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                    <span className="text-6xl">🪔</span>
+                  <div className="relative h-48 w-full overflow-hidden bg-orange-50">
+                    {pooja.imageUrl ? (
+                      <img
+                        src={pooja.imageUrl}
+                        alt={pooja.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                        <span className="text-6xl">🪔</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   </div>
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-2">

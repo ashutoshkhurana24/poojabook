@@ -11,6 +11,42 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.zodiacratna.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'mypujapandit.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'servdharm.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pinimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'imgcdn.stablediffusionweb.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'muktikshetragokarna.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.freepik.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'akm-img-a-in.tosshub.com',
+      },
     ],
   },
   async rewrites() {

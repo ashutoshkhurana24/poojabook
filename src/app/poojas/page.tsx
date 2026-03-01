@@ -11,6 +11,7 @@ interface Pooja {
   description: string
   basePrice: number
   mode: string
+  imageUrl?: string | null
   category: { name: string; slug: string }
 }
 
@@ -238,8 +239,27 @@ export default function PoojasPage() {
                     href={`/poojas/${pooja.slug}`}
                     className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
                   >
-                    <div className="h-40 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                      <span className="text-5xl">🪔</span>
+                    <div className="relative h-52 w-full overflow-hidden bg-orange-50">
+                      {pooja.imageUrl ? (
+                        <img
+                          src={pooja.imageUrl}
+                          alt={pooja.title}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                          <span className="text-5xl">🪔</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                      <div className="absolute top-3 right-3">
+                        <span className="bg-white/90 backdrop-blur-sm text-orange-700 text-xs font-bold px-3 py-1 rounded-full shadow">
+                          {pooja.mode === 'IN_TEMPLE' ? '🏛 Temple' : pooja.mode === 'AT_HOME' ? '🏠 At Home' : '💻 Online'}
+                        </span>
+                      </div>
                     </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2">

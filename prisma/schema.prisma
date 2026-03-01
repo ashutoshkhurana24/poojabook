@@ -117,6 +117,7 @@ model Pooja {
   duration     Int
   basePrice    Float
   mode         String   @default("IN_TEMPLE")
+  imageUrl     String?
   categoryId   String
   category     PoojaCategory @relation(fields: [categoryId], references: [id])
   isActive     Boolean  @default(true)
