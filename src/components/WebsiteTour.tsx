@@ -78,6 +78,21 @@ export default function WebsiteTour() {
     return () => clearTimeout(timer)
   }, [])
 
+  // Scroll to target section when step has a target (e.g. hero-section, categories-section)
+  useEffect(() => {
+    if (!showPopup) return
+    const step = tourSteps[currentStep]
+    if (step?.target) {
+      const el = document.getElementById(step.target)
+      if (el) {
+        const t = setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 100)
+        return () => clearTimeout(t)
+      }
+    }
+  }, [currentStep, showPopup])
+
   const nextStep = () => {
     if (currentStep < tourSteps.length - 1) {
       setCurrentStep(currentStep + 1)
