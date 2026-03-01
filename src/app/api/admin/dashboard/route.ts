@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { successResponse, serverError, requireRole } from '@/lib/api'
 
@@ -7,7 +6,6 @@ export async function GET() {
     const { response } = await requireRole('ADMIN')
     if (response) return response
 
-    const today = new Date().toISOString().split('T')[0]
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
     const [

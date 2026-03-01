@@ -15,31 +15,58 @@ interface Order {
   vendor?: { id: string; user: { name: string } }
 }
 
+interface Vendor {
+  id: string
+  businessName: string
+  user: { name: string }
+}
+
 export default function AdminOrdersPage() {
   const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
-  const [vendors, setVendors] = useState<any[]>([])
+  const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [assignVendor, setAssignVendor] = useState('')
+  const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/orders')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setOrders(data.data.orders)
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false))
-
-    fetch('/api/admin/vendors')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setVendors(data.data)
-      })
-      .catch(console.error)
-  }, [])
+    const checkAuth = async () => {
+      try {
+        const authRes = await fetch('/api/auth/me')
+        if (!authRes.ok) {
+          router.push('/login?redirect=/admin/orders')
+          return
+        }
+        
+        const userData = await authRes.json()
+        if (!userData.success || userData.data?.role !== 'ADMIN') {
+          router.push('/?unauthorized=true')
+          return
+        }
+        
+        setAuthorized(true)
+        
+        const [ordersRes, vendorsRes] = await Promise.all([
+          fetch('/api/admin/orders', { credentials: 'include' }),
+          fetch('/api/admin/vendors', { credentials: 'include' })
+        ])
+        
+        const ordersData = await ordersRes.json()
+        const vendorsData = await vendorsRes.json()
+        
+        if (ordersData.success) setOrders(ordersData.data.orders)
+        if (vendorsData.success) setVendors(vendorsData.data)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    checkAuth()
+  }, [router])
 
   const handleAssign = async () => {
     if (!selectedOrder || !assignVendor) return
@@ -48,11 +75,13 @@ export default function AdminOrdersPage() {
       const res = await fetch('/api/admin/orders', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ orderId: selectedOrder.id, vendorId: assignVendor, status: 'ASSIGNED' }),
       })
       const data = await res.json()
       if (data.success) {
-        setOrders(orders.map(o => o.id === selectedOrder.id ? { ...o, vendor: vendors.find(v => v.id === assignVendor)?.user } : o))
+        const vendor = vendors.find(v => v.id === assignVendor)
+        setOrders(orders.map(o => o.id === selectedOrder.id ? { ...o, vendor: vendor ? { id: vendor.id, user: vendor.user } : undefined } : o))
         setSelectedOrder(null)
       }
     } catch (err) {
@@ -65,6 +94,7 @@ export default function AdminOrdersPage() {
       const res = await fetch('/api/admin/orders', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ orderId, status }),
       })
       const data = await res.json()
@@ -78,7 +108,7 @@ export default function AdminOrdersPage() {
 
   const filteredOrders = filter ? orders.filter(o => o.status === filter) : orders
 
-  if (loading) {
+  if (loading || !authorized) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />

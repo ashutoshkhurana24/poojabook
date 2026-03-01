@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface Vendor {
   id: string
@@ -15,19 +16,42 @@ interface Vendor {
 }
 
 export default function AdminVendorsPage() {
+  const router = useRouter()
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
+  const [authorized, setAuthorized] = useState(false)
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '', businessName: '', description: '', password: ''
   })
 
   useEffect(() => {
-    fetchVendors()
-  }, [])
+    fetch('/api/auth/me')
+      .then((res) => {
+        if (!res.ok || res.status === 401) {
+          router.push('/login?redirect=/admin/vendors')
+          return null
+        }
+        return res.json()
+      })
+      .then((userData) => {
+        if (!userData || userData.data?.role !== 'ADMIN') {
+          router.push('/?unauthorized=true')
+          return null
+        }
+        setAuthorized(true)
+        return fetch('/api/admin/vendors', { credentials: 'include' })
+      })
+      .then((res) => res?.json())
+      .then((data) => {
+        if (data?.success) setVendors(data.data)
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [router])
 
   const fetchVendors = () => {
-    fetch('/api/admin/vendors')
+    fetch('/api/admin/vendors', { credentials: 'include' })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setVendors(data.data)
@@ -42,6 +66,7 @@ export default function AdminVendorsPage() {
       const res = await fetch('/api/admin/vendors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(formData),
       })
       const data = await res.json()
@@ -60,6 +85,7 @@ export default function AdminVendorsPage() {
       const res = await fetch('/api/admin/vendors', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ vendorId, isVerified: !isVerified }),
       })
       const data = await res.json()
@@ -71,7 +97,7 @@ export default function AdminVendorsPage() {
     }
   }
 
-  if (loading) {
+  if (loading || !authorized) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />

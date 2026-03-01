@@ -1,7 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+
+interface TopPooja {
+  poojaId: string
+  _count: { poojaId: number }
+  pooja: { id: string; title: string; slug: string; basePrice: number } | null
+}
 
 interface DashboardData {
   stats: {
@@ -10,23 +17,65 @@ interface DashboardData {
     activeVendors: number
     totalCustomers: number
   }
-  recentOrders: any[]
-  topPoojas: any[]
+  recentOrders: {
+    id: string
+    orderNo: string
+    totalAmount: number
+    status: string
+    createdAt: string
+    customer: { name: string; phone: string }
+    pooja: { title: string }
+  }[]
+  topPoojas: TopPooja[]
 }
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/admin/dashboard')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setData(data.data)
+    fetch('/api/auth/me')
+      .then((res) => {
+        if (!res.ok || res.status === 401) {
+          router.push('/login?redirect=/admin')
+          return null
+        }
+        return res.json()
+      })
+      .then((userData) => {
+        if (!userData || userData.data?.role !== 'ADMIN') {
+          router.push('/?unauthorized=true')
+          return null
+        }
+        return fetch('/api/admin/dashboard', { credentials: 'include' })
+      })
+      .then((res) => res?.json())
+      .then((response) => {
+        if (response?.success) setData(response.data)
       })
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [])
+  }, [router])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-xl mb-4">Unauthorized Access</p>
+          <p className="text-text-secondary">You must be an admin to view this page.</p>
+        </div>
+      </div>
+    )
+  }
 
   if (loading) {
     return (
@@ -84,7 +133,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {data?.recentOrders.map((order: any) => (
+                {data?.recentOrders.map((order) => (
                   <tr key={order.id} className="border-b last:border-0">
                     <td className="py-3 font-mono text-sm">{order.orderNo}</td>
                     <td className="py-3">
@@ -117,7 +166,7 @@ export default function AdminDashboard() {
           <p className="text-text-secondary text-center py-8">No data yet</p>
         ) : (
           <div className="space-y-4">
-            {data?.topPoojas.map((item: any, index: number) => (
+            {data?.topPoojas.map((item, index) => (
               <div key={item.poojaId} className="flex items-center justify-between p-4 bg-background rounded-lg">
                 <div className="flex items-center gap-4">
                   <span className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold">
