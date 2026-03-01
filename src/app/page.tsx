@@ -5,7 +5,15 @@ import Link from 'next/link'
 import LocationSelector from '@/components/LocationSelector'
 import AuspiciousDaysSection from '@/components/AuspiciousDaysSection'
 
-// Icon update deployed - Feb 24 2026
+const tourSteps = [
+  { title: 'Welcome!', message: 'Welcome to PoojaBook! Let me guide you through.' },
+  { title: 'Categories', message: 'Browse poojas by category like Ganesh, Lakshmi, and more.' },
+  { title: 'Featured', message: 'Check out our most popular poojas.' },
+  { title: 'Auspicious Days', message: 'Plan your pooja on sacred dates like Mahashivratri.' },
+  { title: 'How It Works', message: 'Browse, select, book - it\'s that easy!' },
+  { title: 'Partner', message: 'Are you a Pandit or Temple? Join us!' },
+]
+
 const featuredPoojas = [
   { title: 'Ganesh Puja', slug: 'ganesh-puja', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE', icon: '🐘' },
   { title: 'Lakshmi Puja', slug: 'lakshmi-puja', price: 2100, category: 'Lakshmi', mode: 'IN_TEMPLE', icon: '🪷' },
@@ -29,12 +37,15 @@ const categories = [
 export default function HomePage() {
   const [showBanner, setShowBanner] = useState(false)
   const [isDetecting, setIsDetecting] = useState(false)
+  const [tourStep, setTourStep] = useState(-1)
 
   useEffect(() => {
     const savedCity = localStorage.getItem('poojabook_user_city')
     if (!savedCity) {
       setShowBanner(true)
     }
+    // Auto show tour
+    setTimeout(() => setTourStep(0), 1500)
   }, [])
 
   const detectLocation = async () => {
@@ -76,6 +87,30 @@ export default function HomePage() {
 
   return (
     <div>
+      {/* TOUR POPUP - Always visible for testing */}
+      {tourStep >= 0 && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setTourStep(-1)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <button onClick={() => setTourStep(-1)} className="absolute top-3 right-4 text-2xl text-gray-400">×</button>
+            <div className="text-4xl mb-4 text-center">🎯</div>
+            <h3 className="text-xl font-bold text-center mb-2">{tourSteps[tourStep]?.title}</h3>
+            <p className="text-gray-600 text-center mb-6">{tourSteps[tourStep]?.message}</p>
+            <div className="flex justify-center gap-3">
+              {tourStep > 0 && (
+                <button onClick={() => setTourStep(tourStep - 1)} className="px-4 py-2 text-gray-600">← Back</button>
+              )}
+              <button 
+                onClick={() => tourStep < tourSteps.length - 1 ? setTourStep(tourStep + 1) : setTourStep(-1)}
+                className="px-6 py-2 bg-orange-600 text-white rounded-full font-medium"
+              >
+                {tourStep < tourSteps.length - 1 ? 'Next →' : 'Done'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section id="hero-section" className="relative bg-gradient-to-b from-secondary/90 to-secondary py-24">
         <div className="absolute inset-0 bg-[url('https://thumbs.dreamstime.com/b/vibrant-diwali-puja-thali-brimming-traditional-offerings-shimmering-diyas-fragrant-flowers-sweet-delicacies-symbolic-324123032.jpg')] bg-cover bg-center opacity-20" />
