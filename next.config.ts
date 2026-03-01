@@ -47,6 +47,26 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'akm-img-a-in.tosshub.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.mypoojabox.in',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.adotrip.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 't3.ftcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'eastindiantraveller.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thumbs.dreamstime.com',
+      },
     ],
   },
   async rewrites() {

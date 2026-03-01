@@ -284,7 +284,7 @@ async function main() {
       duration: 180,
       basePrice: 10100,
       mode: 'IN_TEMPLE',
-      imageUrl: 'https://servdharm.com/cdn/shop/articles/durga-puja-celebrations-story_900x.jpg?v=1657454594',
+      imageUrl: 'https://thumbs.dreamstime.com/b/illustration-durga-puja-also-known-as-durgotsava-sharodotsav-illustration-durga-puja-also-known-as-durgotsava-368072814.jpg',
       categoryId: categories[7].id,
     },
     {
@@ -296,7 +296,7 @@ async function main() {
       duration: 60,
       basePrice: 510,
       mode: 'ONLINE',
-      imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc1xYvL3-cczo-7dlZ8J6EXmbNvzTkjTsZTg&s',
+      imageUrl: 'https://eastindiantraveller.com/wp-content/uploads/2020/10/fb_img_1602601852796-1.jpg',
       categoryId: categories[4].id,
     },
     {
@@ -308,7 +308,7 @@ async function main() {
       duration: 45,
       basePrice: 810,
       mode: 'AT_HOME',
-      imageUrl: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=800&q=80',
+      imageUrl: 'https://www.adotrip.com/public/images/festivals/5de8a3fdb765e-Karthigai%20Deepam%20%20Places%20to%20See.jpg',
       categoryId: categories[3].id,
     },
     {
@@ -320,7 +320,7 @@ async function main() {
       duration: 60,
       basePrice: 1500,
       mode: 'IN_TEMPLE',
-      imageUrl: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=800&q=80',
+      imageUrl: 'https://www.mypoojabox.in/cdn/shop/articles/Saraswati_Puja_550a23a9-d09f-4d56-80dc-8f722596a516.jpg?v=1583262629',
       categoryId: categories[0].id,
     },
     {
@@ -356,7 +356,7 @@ async function main() {
       duration: 45,
       basePrice: 1100,
       mode: 'AT_HOME',
-      imageUrl: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?w=800&q=80',
+      imageUrl: 'https://t3.ftcdn.net/jpg/06/09/14/92/360_F_609149284_DqTdJNENau2wictRlltlHJuEK2cpqJWw.jpg',
       categoryId: categories[0].id,
     },
     {

@@ -244,7 +244,7 @@ export default function PoojasPage() {
                         <img
                           src={pooja.imageUrl}
                           alt={pooja.title}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none'
                           }}
