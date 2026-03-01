@@ -73,7 +73,7 @@ export default async function PoojaDetailPage({
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-surface rounded-2xl p-6 sticky top-24">
+            <div data-tour="booking-form" className="bg-surface rounded-2xl p-6 sticky top-24">
               <div className="text-3xl font-heading mb-2">₹{pooja.basePrice.toLocaleString()}</div>
               <p className="text-text-secondary text-sm mb-4">Base price (excludes add-ons & taxes)</p>
 

@@ -71,6 +71,7 @@ export default function TourOverlay() {
 
     const nextStep = TOUR_STEPS[nextIndex]
     setStep(nextIndex)
+    localStorage.setItem('poojabook_tour_active', 'true') // Ensure active flag is set
     setVisible(false)
 
     if (nextStep.route !== window.location.pathname) {
@@ -100,11 +101,18 @@ export default function TourOverlay() {
     const completed = isTourCompleted()
     if (completed) return
 
-    const tourActive = isTourActive()
-    if (tourActive) {
-      const step = getCurrentStep()
+    // Check if tour was in progress (has a step saved)
+    const step = getCurrentStep()
+    if (step > 0 || isTourActive()) {
       setActive(true)
-      findAndShowStep(step)
+      // Verify the step's route matches current page
+      const stepData = TOUR_STEPS[step]
+      if (stepData && stepData.route === window.location.pathname) {
+        findAndShowStep(step)
+      } else if (stepData && step < TOUR_STEPS.length - 1) {
+        // Wrong page, go to correct page
+        window.location.href = stepData.route
+      }
     }
   }, [pathname, findAndShowStep])
 
