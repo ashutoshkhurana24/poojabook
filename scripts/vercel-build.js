@@ -17,4 +17,12 @@ try {
 }
 
 console.log('Running next build...');
-execSync('npx next build', { stdio: 'inherit' });
+try {
+  execSync('npx next build', { stdio: 'pipe', encoding: 'utf8' });
+} catch (error) {
+  console.log('=== BUILD ERROR ===');
+  console.log('stdout:', error.stdout);
+  console.log('stderr:', error.stderr);
+  console.log('message:', error.message);
+  throw error;
+}
