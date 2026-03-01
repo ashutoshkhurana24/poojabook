@@ -22,6 +22,21 @@ interface Category {
   icon: string
 }
 
+const categoryImages: Record<string, string> = {
+  'durga': 'https://i.pinimg.com/236x/58/6f/51/586f514d8222cb2aec6463e92697a972.jpg',
+  'ganesh': 'https://i.pinimg.com/736x/60/aa/b1/60aab155a8e5a5d89a164a6ced57e2c3.jpg',
+  'hanuman': 'https://m.media-amazon.com/images/I/51Dz-SS9o0L._AC_UF894,1000_QL80_.jpg',
+  'lakshmi': 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg',
+  'vishnu': 'https://nepalyogahome.com/wp-content/uploads/2021/07/Lord-Vishnu.jpg',
+  'rudrabhishek': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfr8wpAx5QPx2huLZWP_FX3s_p1gRsA5PqFw&s',
+  'navgraha': 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg',
+  'satyanarayan': 'https://pujabooking.com/wp-content/uploads/2017/11/Shri-Satya-Narayan-Katha.jpg',
+  'ganga-aarti': 'https://eastindiantraveller.com/wp-content/uploads/2020/10/fb_img_1602601852796-1.jpg',
+  'guru': 'https://t3.ftcdn.net/jpg/06/09/14/92/360_F_609149284_DqTdJNENau2wictRlltlHJuEK2cpqJWw.jpg',
+  'karthigai': 'https://www.adotrip.com/public/images/festivals/5de8a3fdb765e-Karthigai%20Deepam%20%20Places%20to%20See.jpg',
+  'saraswati': 'https://www.mypoojabox.in/cdn/shop/articles/Saraswati_Puja_550a23a9-d09f-4d56-80dc-8f722596a516.jpg?v=1583262629',
+}
+
 export default function HomePage() {
   const [showBanner, setShowBanner] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -173,12 +188,24 @@ export default function HomePage() {
                 <Link
                   key={cat.slug}
                   href={`/poojas?category=${cat.slug}`}
-                  className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border"
+                  className="group bg-background rounded-2xl overflow-hidden text-center hover:shadow-lg transition border"
                 >
-                  <div className="text-4xl mb-3">{cat.icon || '🪔'}</div>
-                  <h3 className="font-semibold text-text-primary group-hover:text-primary transition">
+                  <div className="relative h-36 w-full overflow-hidden bg-orange-50">
+                    <img
+                      src={categoryImages[cat.slug] || ''}
+                      alt={cat.name}
+                      className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                        if (e.currentTarget.parentElement) {
+                          e.currentTarget.parentElement.style.background = 'linear-gradient(135deg, #f97316, #fbbf24)'
+                        }
+                      }}
+                    />
+                  </div>
+                  <p className="font-semibold text-text-primary group-hover:text-primary transition py-3">
                     {cat.name}
-                  </h3>
+                  </p>
                 </Link>
               ))}
             </div>

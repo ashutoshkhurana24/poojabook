@@ -67,6 +67,26 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'thumbs.dreamstime.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'm.media-amazon.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.etsystatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'nepalyogahome.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'artfactory.in',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pujabooking.com',
+      },
     ],
   },
   async rewrites() {
