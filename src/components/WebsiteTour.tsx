@@ -19,6 +19,7 @@ export default function WebsiteTour() {
   }, [])
 
   const handleStartTour = () => {
+    console.log('Tour button clicked!')
     startTour()
     window.dispatchEvent(new CustomEvent('start-poojabook-tour'))
   }
@@ -28,7 +29,7 @@ export default function WebsiteTour() {
   return (
     <button
       onClick={handleStartTour}
-      className="fixed bottom-32 right-5 z-[60] bg-orange-600 text-white px-5 py-3 rounded-full shadow-2xl hover:bg-orange-700 transition flex items-center gap-2 font-semibold"
+      className="fixed bottom-36 right-5 z-[70] bg-orange-600 text-white px-5 py-3 rounded-full shadow-2xl hover:bg-orange-700 transition flex items-center gap-2 font-semibold"
       style={{ boxShadow: '0 6px 25px rgba(234, 88, 12, 0.5)' }}
     >
       <span className="text-xl">🎯</span> 
