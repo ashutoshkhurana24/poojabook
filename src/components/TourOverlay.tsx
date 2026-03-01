@@ -98,19 +98,20 @@ export default function TourOverlay() {
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const completed = isTourCompleted()
-    if (completed) return
-
-    // Check if tour was in progress (has a step saved)
+    // Always check for active tour
     const step = getCurrentStep()
-    if (step > 0 || isTourActive()) {
+    const active = isTourActive()
+    const completed = isTourCompleted()
+    
+    console.log('TourOverlay init:', { step, active, completed, pathname })
+    
+    if (!completed && active) {
+      console.log('TourOverlay: Resuming tour at step', step)
       setActive(true)
-      // Verify the step's route matches current page
       const stepData = TOUR_STEPS[step]
       if (stepData && stepData.route === window.location.pathname) {
         findAndShowStep(step)
-      } else if (stepData && step < TOUR_STEPS.length - 1) {
-        // Wrong page, go to correct page
+      } else if (stepData) {
         window.location.href = stepData.route
       }
     }
@@ -118,8 +119,13 @@ export default function TourOverlay() {
 
   // Listen for tour start
   useEffect(() => {
+    console.log('TourOverlay: Setting up listener')
     const handleStart = () => {
-      if (isTourCompleted()) return
+      console.log('TourOverlay: Tour start event received!')
+      if (isTourCompleted()) {
+        console.log('TourOverlay: Tour already completed')
+        return
+      }
       setActive(true)
       findAndShowStep(0)
     }
