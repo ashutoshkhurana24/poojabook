@@ -91,7 +91,7 @@ export default function HomePage() {
             </p>
 
             {/* Search Box */}
-            <div className="bg-surface rounded-2xl p-4 shadow-xl">
+            <div data-tour="search" className="bg-surface rounded-2xl p-4 shadow-xl">
               {showBanner && (
                 <div className="mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-sm text-amber-800">
@@ -143,7 +143,7 @@ export default function HomePage() {
       </section>
 
       {/* Categories */}
-      <section id="categories-section" className="py-16 bg-surface">
+      <section id="categories-section" data-tour="categories" className="py-16 bg-surface">
         <div className="container mx-auto px-4">
           <h2 className="font-heading text-3xl text-center mb-12">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -164,7 +164,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Poojas */}
-      <section id="featured-section" className="py-16">
+      <section id="featured-section" data-tour="featured" className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
             <h2 className="font-heading text-3xl">Featured Poojas</h2>
