@@ -1,12 +1,20 @@
 import Razorpay from 'razorpay'
+import crypto from 'crypto'
 
-export const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
-})
+let razorpay: Razorpay | null = null
+
+function getRazorpay() {
+  if (!razorpay) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID || '',
+      key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+    })
+  }
+  return razorpay
+}
 
 export const createRazorpayOrder = async (amount: number, currency: string = 'INR') => {
-  const order = await razorpay.orders.create({
+  const order = await getRazorpay().orders.create({
     amount: Math.round(amount * 100),
     currency,
     receipt: `poojabook_${Date.now()}`,
@@ -14,9 +22,7 @@ export const createRazorpayOrder = async (amount: number, currency: string = 'IN
   return order
 }
 
-export const verifyPayment = async (razorpayOrderId: string, razorpayPaymentId: string, razorpaySignature: string) => {
-  const crypto = require('crypto')
-  
+export const verifyPayment = (razorpayOrderId: string, razorpayPaymentId: string, razorpaySignature: string) => {
   const generatedSignature = crypto
     .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
     .update(`${razorpayOrderId}|${razorpayPaymentId}`)
