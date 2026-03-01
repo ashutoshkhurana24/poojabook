@@ -32,15 +32,22 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   useEffect(() => {
     Promise.resolve(params).then(({ id }) => {
-      fetch(`/api/orders/${id}`)
-        .then((res) => res.json())
+      fetch('/api/auth/me')
+        .then((res) => {
+          if (!res.ok) {
+            router.push(`/login?redirect=/my-orders/${id}`)
+            return null
+          }
+          return fetch(`/api/orders/${id}`)
+        })
+        .then((res) => res?.json())
         .then((data) => {
-          if (data.success) setOrder(data.data)
+          if (data?.success) setOrder(data.data)
         })
         .catch(console.error)
         .finally(() => setLoading(false))
     })
-  }, [params])
+  }, [params, router])
 
   const handleCancel = async () => {
     if (!confirm('Are you sure you want to cancel this order?')) return

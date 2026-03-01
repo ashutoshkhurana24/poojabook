@@ -6,35 +6,46 @@ import LocationSelector from '@/components/LocationSelector'
 import AuspiciousDaysSection from '@/components/AuspiciousDaysSection'
 import WebsiteTour from '@/components/WebsiteTour'
 
-const featuredPoojas = [
-  { title: 'Ganesh Puja', slug: 'ganesh-puja', price: 1100, category: 'Ganesh', mode: 'IN_TEMPLE', icon: '🐘' },
-  { title: 'Lakshmi Puja', slug: 'lakshmi-puja', price: 2100, category: 'Lakshmi', mode: 'IN_TEMPLE', icon: '🪷' },
-  { title: 'Navgraha Shanti', slug: 'navgraha-shanti', price: 5100, category: 'Navgraha', mode: 'AT_HOME', icon: '🌟' },
-  { title: 'Satyanarayan Puja', slug: 'satyanarayan-puja', price: 2500, category: 'Satyanarayan', mode: 'AT_HOME', icon: '🔱' },
-  { title: 'Rudrabhishek', slug: 'rudrabhishek', price: 8100, category: 'Rudrabhishek', mode: 'AT_HOME', icon: '🕉️' },
-  { title: 'Hanuman Chalisa', slug: 'hanuman-chalisa', price: 510, category: 'Hanuman', mode: 'AT_HOME', icon: '🐒' },
-]
+interface Pooja {
+  id: string
+  title: string
+  slug: string
+  basePrice: number
+  category: { name: string }
+  mode: string
+}
 
-const categories = [
-  { name: 'Ganesh', slug: 'ganesh', icon: '🐘' },
-  { name: 'Lakshmi', slug: 'lakshmi', icon: '🪷' },
-  { name: 'Navgraha', slug: 'navgraha', icon: '🌟' },
-  { name: 'Satyanarayan', slug: 'satyanarayan', icon: '🔱' },
-  { name: 'Rudrabhishek', slug: 'rudrabhishek', icon: '🕉️' },
-  { name: 'Vishnu', slug: 'vishnu', icon: '🐚' },
-  { name: 'Hanuman', slug: 'hanuman', icon: '🐒' },
-  { name: 'Durga', slug: 'durga', icon: '⚔️' },
-]
+interface Category {
+  name: string
+  slug: string
+  icon: string
+}
 
 export default function HomePage() {
-  const [showBanner, setShowBanner] = useState(false)
+  const [showBanner, setShowBanner] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('poojabook_user_city')
+    }
+    return false
+  })
   const [isDetecting, setIsDetecting] = useState(false)
+  const [featuredPoojas, setFeaturedPoojas] = useState<Pooja[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const savedCity = localStorage.getItem('poojabook_user_city')
-    if (!savedCity) {
-      setShowBanner(true)
-    }
+    Promise.all([
+      fetch('/api/poojas?limit=6').then(res => res.json()),
+      fetch('/api/categories').then(res => res.json()).catch(() => ({ success: true, data: [] }))
+    ]).then(([poojasRes, categoriesRes]) => {
+      if (poojasRes.success) {
+        setFeaturedPoojas(poojasRes.data.poojas || [])
+      }
+      if (categoriesRes.success) {
+        setCategories(categoriesRes.data || [])
+      }
+    }).catch(console.error)
+    .finally(() => setLoading(false))
   }, [])
 
   const detectLocation = async () => {
@@ -146,20 +157,66 @@ export default function HomePage() {
       <section id="categories-section" data-tour="categories" className="py-16 bg-surface">
         <div className="container mx-auto px-4">
           <h2 className="font-heading text-3xl text-center mb-12">Browse by Category</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {categories.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/poojas?category=${cat.slug}`}
-                className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border"
-              >
-                <div className="text-4xl mb-3">{cat.icon}</div>
-                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">
-                  {cat.name}
-                </h3>
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-background rounded-2xl p-6 animate-pulse">
+                  <div className="text-4xl mb-3">🪔</div>
+                  <div className="h-5 bg-gray-200 rounded mx-auto w-20"></div>
+                </div>
+              ))}
+            </div>
+          ) : categories.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {categories.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/poojas?category=${cat.slug}`}
+                  className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border"
+                >
+                  <div className="text-4xl mb-3">{cat.icon || '🪔'}</div>
+                  <h3 className="font-semibold text-text-primary group-hover:text-primary transition">
+                    {cat.name}
+                  </h3>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <Link href="/poojas?category=ganesh" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">🐘</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Ganesh</h3>
               </Link>
-            ))}
-          </div>
+              <Link href="/poojas?category=lakshmi" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">🪷</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Lakshmi</h3>
+              </Link>
+              <Link href="/poojas?category=navgraha" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">🌟</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Navgraha</h3>
+              </Link>
+              <Link href="/poojas?category=satyanarayan" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">🔱</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Satyanarayan</h3>
+              </Link>
+              <Link href="/poojas?category=rudrabhishek" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">🕉️</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Rudrabhishek</h3>
+              </Link>
+              <Link href="/poojas?category=vishnu" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">🐚</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Vishnu</h3>
+              </Link>
+              <Link href="/poojas?category=hanuman" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">🐒</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Hanuman</h3>
+              </Link>
+              <Link href="/poojas?category=durga" className="group bg-background rounded-2xl p-6 text-center hover:shadow-lg transition border">
+                <div className="text-4xl mb-3">⚔️</div>
+                <h3 className="font-semibold text-text-primary group-hover:text-primary transition">Durga</h3>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -173,42 +230,94 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredPoojas.map((pooja) => (
-              <Link
-                key={pooja.slug}
-                href={`/poojas/${pooja.slug}`}
-                className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
-              >
-                <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                  <span className="text-6xl">{pooja.icon}</span>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-1 bg-accent/20 text-accent-dark text-xs rounded-full">
-                      {pooja.category}
-                    </span>
-                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
-                      {pooja.mode.replace('_', ' ')}
-                    </span>
-                  </div>
-                  <h3 className="font-heading text-xl mb-2 group-hover:text-primary transition">
-                    {pooja.title}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span className="text-warning">★</span>
-                      <span className="text-sm font-medium">4.8</span>
-                      <span className="text-text-secondary text-sm">(124)</span>
-                    </div>
-                    <div className="text-primary font-semibold">
-                      ₹{pooja.price.toLocaleString()}
-                    </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-surface rounded-2xl overflow-hidden animate-pulse">
+                  <div className="h-48 bg-gray-200"></div>
+                  <div className="p-6 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : featuredPoojas.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredPoojas.map((pooja) => (
+                <Link
+                  key={pooja.id}
+                  href={`/poojas/${pooja.slug}`}
+                  className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
+                >
+                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <span className="text-6xl">🪔</span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-2 py-1 bg-accent/20 text-accent-dark text-xs rounded-full">
+                        {pooja.category?.name}
+                      </span>
+                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                        {pooja.mode?.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <h3 className="font-heading text-xl mb-2 group-hover:text-primary transition">
+                      {pooja.title}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <span className="text-warning">★</span>
+                        <span className="text-sm font-medium">4.8</span>
+                        <span className="text-text-secondary text-sm">(124)</span>
+                      </div>
+                      <div className="text-primary font-semibold">
+                        ₹{pooja.basePrice?.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {['ganesh-puja', 'lakshmi-puja', 'navgraha-shanti', 'satyanarayan-puja', 'rudrabhishek', 'hanuman-chalisa'].map((slug) => (
+                <Link
+                  key={slug}
+                  href={`/poojas/${slug}`}
+                  className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
+                >
+                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <span className="text-6xl">🪔</span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-2 py-1 bg-accent/20 text-accent-dark text-xs rounded-full">
+                        General
+                      </span>
+                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                        Available
+                      </span>
+                    </div>
+                    <h3 className="font-heading text-xl mb-2 group-hover:text-primary transition">
+                      {slug.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <span className="text-warning">★</span>
+                        <span className="text-sm font-medium">4.8</span>
+                        <span className="text-text-secondary text-sm">(124)</span>
+                      </div>
+                      <div className="text-primary font-semibold">
+                        From ₹1,100
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 interface Order {
@@ -14,19 +15,31 @@ interface Order {
 }
 
 export default function MyOrdersPage() {
+  const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    fetch('/api/orders')
-      .then((res) => res.json())
+    fetch('/api/auth/me')
+      .then((res) => {
+        if (!res.ok) {
+          router.push('/login?redirect=/my-orders')
+          return null
+        }
+        return res.json()
+      })
       .then((data) => {
-        if (data.success) setOrders(data.data)
+        if (!data) return
+        return fetch('/api/orders')
+      })
+      .then((res) => res?.json())
+      .then((data) => {
+        if (data?.success) setOrders(data.data)
       })
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [])
+  }, [router])
 
   const filteredOrders = filter === 'all' 
     ? orders 

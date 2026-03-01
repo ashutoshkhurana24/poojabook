@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 
 interface MockPaymentProps {
   orderId: string
@@ -14,8 +14,6 @@ interface MockPaymentProps {
 export default function MockPayment({
   orderId,
   amount,
-  customerName,
-  customerPhone,
   onSuccess,
   onFailure,
 }: MockPaymentProps) {
@@ -39,20 +37,33 @@ export default function MockPayment({
 
     const mockPaymentId = 'pay_mock_' + Date.now()
 
-    await fetch('/api/payment/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        orderId,
-        razorpayOrderId: 'mock_order_' + orderId,
-        razorpayPaymentId: mockPaymentId,
-        razorpaySignature: 'mock_signature',
-      }),
-    })
+    try {
+      const res = await fetch('/api/payment/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          razorpayOrderId: 'mock_order_' + orderId,
+          razorpayPaymentId: mockPaymentId,
+          razorpaySignature: 'mock_signature',
+        }),
+      })
 
-    setLoading(false)
-    setShowPopup(false)
-    onSuccess(mockPaymentId)
+      const data = await res.json()
+
+      if (!data.success) {
+        setError(data.error || 'Payment verification failed')
+        setLoading(false)
+        return
+      }
+
+      setLoading(false)
+      setShowPopup(false)
+      onSuccess(mockPaymentId)
+    } catch {
+      setError('Payment failed. Please try again.')
+      setLoading(false)
+    }
   }
 
   const handleFailure = () => {
