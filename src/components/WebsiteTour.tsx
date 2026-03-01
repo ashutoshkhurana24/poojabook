@@ -70,8 +70,10 @@ const tourSteps: TourStep[] = [
 export default function WebsiteTour() {
   const [currentStep, setCurrentStep] = useState(0)
   const [showPopup, setShowPopup] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const timer = setTimeout(() => setShowPopup(true), 2000)
     return () => clearTimeout(timer)
   }, [])
@@ -97,6 +99,8 @@ export default function WebsiteTour() {
   const step = tourSteps[currentStep]
   const isLastStep = currentStep === tourSteps.length - 1
   const isFirstStep = currentStep === 0
+
+  if (!mounted) return null
 
   return (
     <>
