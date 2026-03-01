@@ -122,10 +122,7 @@ export default function TourOverlay() {
     console.log('TourOverlay: Setting up listener')
     const handleStart = () => {
       console.log('TourOverlay: Tour start event received!')
-      if (isTourCompleted()) {
-        console.log('TourOverlay: Tour already completed')
-        return
-      }
+      localStorage.removeItem('poojabook_tour_completed') // Allow restart even if completed before
       setActive(true)
       findAndShowStep(0)
     }

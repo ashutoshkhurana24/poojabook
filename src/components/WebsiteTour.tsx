@@ -20,10 +20,6 @@ export default function WebsiteTour() {
 
   const handleStartTour = () => {
     console.log('Tour button clicked!')
-    // Clear previous tour state to restart
-    localStorage.removeItem('poojabook_tour_completed')
-    localStorage.removeItem('poojabook_tour_step')
-    localStorage.removeItem('poojabook_tour_active')
     startTour()
     window.dispatchEvent(new CustomEvent('start-poojabook-tour'))
   }
