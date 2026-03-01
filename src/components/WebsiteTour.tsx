@@ -115,8 +115,6 @@ export default function WebsiteTour() {
   const isLastStep = currentStep === tourSteps.length - 1
   const isFirstStep = currentStep === 0
 
-  if (!mounted) return null
-
   return (
     <>
       {/* Floating Tour Button - Always Visible */}
@@ -132,8 +130,8 @@ export default function WebsiteTour() {
         <span>Take Tour</span>
       </button>
 
-      {/* Tour Popup */}
-      {showPopup && (
+      {/* Tour Popup - Auto shows after 2 seconds */}
+      {mounted && showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeTour} />
           
