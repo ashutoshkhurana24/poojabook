@@ -75,6 +75,8 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    return serverError(error)
+    console.error('Poojas API error:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    return NextResponse.json({ success: false, error: 'Internal server error: ' + message }, { status: 500 })
   }
 }

@@ -31,7 +31,8 @@ export function notFound(message = 'Not found') {
 
 export function serverError(error?: unknown) {
   console.error('Server error:', error)
-  return errorResponse('Internal server error', 500)
+  const message = error instanceof Error ? error.message : String(error)
+  return errorResponse('Internal server error: ' + message, 500)
 }
 
 type AuthGuardResult =

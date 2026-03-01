@@ -27,6 +27,7 @@ export default function PoojasPage() {
   const [poojas, setPoojas] = useState<Pooja[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const categoryFromUrl = searchParams.get('category') || ''
   const modeFromUrl = searchParams.get('mode') || ''
@@ -38,6 +39,7 @@ export default function PoojasPage() {
 
   const fetchPoojas = useCallback(async (cat: string, mod: string, searchTerm: string) => {
     setLoading(true)
+    setError(null)
     try {
       const params = new URLSearchParams()
       if (cat && cat.trim() !== '') params.set('category', cat.trim())
@@ -51,14 +53,20 @@ export default function PoojasPage() {
       console.log('Response status:', res.status)
       const data = await res.json()
       console.log('API response:', data)
-      console.log('Poojas array:', data?.data?.poojas)
-      if (data.success) {
-        setPoojas(data.data.poojas || [])
+      
+      if (res.ok && data.success) {
+        const poojasArray = data.data?.poojas || data.poojas || []
+        console.log('Poojas array:', poojasArray)
+        setPoojas(Array.isArray(poojasArray) ? poojasArray : [])
       } else {
         console.error('API error:', data.error)
+        setError(data.error || 'Failed to load poojas')
+        setPoojas([])
       }
     } catch (err) {
       console.error('Failed to fetch poojas:', err)
+      setError('Failed to load poojas. Please try again.')
+      setPoojas([])
     } finally {
       setLoading(false)
     }
@@ -197,6 +205,18 @@ export default function PoojasPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : error ? (
+              <div className="text-center py-20 bg-surface rounded-2xl">
+                <p className="text-6xl mb-4">😔</p>
+                <p className="text-2xl font-heading">Could not load poojas</p>
+                <p className="text-gray-500 mt-2">{error}</p>
+                <button 
+                  onClick={() => fetchPoojas(categoryFromUrl, modeFromUrl, searchFromUrl)} 
+                  className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                >
+                  Try Again
+                </button>
               </div>
             ) : poojas.length === 0 ? (
               <div className="text-center py-20 bg-surface rounded-2xl">
