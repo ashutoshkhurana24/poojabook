@@ -22,6 +22,17 @@ interface Category {
   icon: string
 }
 
+const categoryConfig: Record<string, { url: string; position: string }> = {
+  'durga': { url: 'https://miro.medium.com/v2/resize:fit:2000/1*szbNklJFDPngqSnlZ9gysw.jpeg', position: 'object-center' },
+  'ganesh': { url: 'https://i.pinimg.com/736x/60/aa/b1/60aab155a8e5a5d89a164a6ced57e2c3.jpg', position: 'object-center' },
+  'hanuman': { url: 'https://m.media-amazon.com/images/I/51Dz-SS9o0L._AC_UF894,1000_QL80_.jpg', position: 'object-center' },
+  'lakshmi': { url: 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg', position: 'object-top' },
+  'navgraha': { url: 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg', position: 'object-center' },
+  'rudrabhishek': { url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfr8wpAx5QPx2huLZWP_FX3s_p1gRsA5PqFw&s', position: 'object-center' },
+  'satyanarayan': { url: 'https://pujabooking.com/wp-content/uploads/2017/11/Shri-Satya-Narayan-Katha.jpg', position: 'object-top' },
+  'vishnu': { url: 'https://nepalyogahome.com/wp-content/uploads/2021/07/Lord-Vishnu.jpg', position: 'object-top' },
+}
+
 const categoryImages: Record<string, string> = {
   'durga': 'https://miro.medium.com/v2/resize:fit:2000/1*szbNklJFDPngqSnlZ9gysw.jpeg',
   'ganesh': 'https://i.pinimg.com/736x/60/aa/b1/60aab155a8e5a5d89a164a6ced57e2c3.jpg',
@@ -191,10 +202,10 @@ export default function HomePage() {
                   className="group bg-background rounded-2xl overflow-hidden text-center hover:shadow-lg transition border"
                 >
                   <div className="relative h-36 w-full overflow-hidden bg-orange-50">
-                      <img
-                        src={categoryImages[cat.slug] || ''}
-                        alt={cat.name}
-                        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                    <img
+                      src={categoryConfig[cat.slug]?.url || categoryImages[cat.slug] || ''}
+                      alt={cat.name}
+                      className={`absolute inset-0 h-full w-full object-cover ${categoryConfig[cat.slug]?.position || 'object-center'} transition-transform duration-300 group-hover:scale-105`}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none'
                         if (e.currentTarget.parentElement) {
