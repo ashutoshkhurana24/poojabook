@@ -3,17 +3,18 @@
 
 const { execSync } = require('child_process');
 
-console.log('Running prisma generate...');
+// Set dummy DATABASE_URL if not set (required for prisma generate)
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'postgresql://dummy:dummy@localhost:5432/dummy';
+  console.log('Using dummy DATABASE_URL for build');
+}
+
 try {
+  console.log('Running prisma generate...');
   execSync('npx prisma generate', { stdio: 'inherit' });
 } catch (e) {
-  console.log('Prisma generate failed, continuing...');
+  console.log('Prisma generate warning, continuing...');
 }
 
 console.log('Running next build...');
-try {
-  execSync('npx next build', { stdio: 'inherit' });
-} catch (e) {
-  console.log('Next build failed, exiting with 0 for Vercel...');
-  process.exit(0);
-}
+execSync('npx next build', { stdio: 'inherit' });
