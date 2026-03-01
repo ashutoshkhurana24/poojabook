@@ -40,12 +40,16 @@ export default function PoojasPage() {
     setLoading(true)
     try {
       const params = new URLSearchParams()
-      if (cat) params.set('category', cat)
-      if (mod) params.set('mode', mod)
-      if (searchTerm) params.set('search', searchTerm)
+      if (cat && cat.trim() !== '') params.set('category', cat.trim())
+      if (mod && mod.trim() !== '') params.set('mode', mod.trim())
+      if (searchTerm && searchTerm.trim() !== '') params.set('search', searchTerm.trim())
       
-      const res = await fetch(`/api/poojas?${params.toString()}`)
+      const url = params.toString() ? `/api/poojas?${params.toString()}` : '/api/poojas'
+      console.log('Fetching poojas from:', url)
+      
+      const res = await fetch(url)
       const data = await res.json()
+      console.log('API response:', data)
       if (data.success) {
         setPoojas(data.data.poojas || [])
       }

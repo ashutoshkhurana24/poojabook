@@ -15,25 +15,25 @@ export async function GET(request: NextRequest) {
 
     const where: Prisma.PoojaWhereInput = { isActive: true }
 
-    if (category) {
-      where.category = { slug: category }
+    if (category && category.trim() !== '') {
+      where.category = { slug: category.trim().toLowerCase() }
     }
 
-    if (mode) {
-      where.mode = mode
+    if (mode && mode.trim() !== '') {
+      where.mode = mode.trim()
     }
 
-    if (search) {
+    if (search && search.trim() !== '') {
       where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+        { title: { contains: search.trim(), mode: 'insensitive' } },
+        { description: { contains: search.trim(), mode: 'insensitive' } },
       ]
     }
 
-    if (city) {
+    if (city && city.trim() !== '') {
       where.poojaSlots = {
         some: {
-          location: { city: { contains: city } },
+          location: { city: { contains: city.trim() } },
         },
       }
     }
