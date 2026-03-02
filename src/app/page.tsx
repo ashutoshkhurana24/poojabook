@@ -188,9 +188,9 @@ export default function HomePage() {
                   className="group bg-background rounded-2xl overflow-hidden text-center hover:shadow-lg transition border"
                 >
                   <div className="relative h-36 w-full overflow-hidden bg-orange-50">
-                    {(cat.imageUrl || CATEGORY_CONFIG[cat.slug]?.url) ? (
+                    {(CATEGORY_CONFIG[cat.slug]?.url || cat.imageUrl) ? (
                       <img
-                        src={cat.imageUrl || CATEGORY_CONFIG[cat.slug]?.url || ''}
+                        src={CATEGORY_CONFIG[cat.slug]?.url || cat.imageUrl || ''}
                         alt={cat.name}
                         className={`absolute inset-0 h-full w-full ${cat.slug === 'ganesh' ? 'object-contain' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
                         style={{ 
