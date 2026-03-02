@@ -23,7 +23,7 @@ interface Category {
 }
 
 const categoryConfig: Record<string, { url: string; position: string }> = {
-  'durga': { url: 'https://t3.ftcdn.net/jpg/14/66/07/36/360_F_1466073688_F9OMHEK9O8OJV8Ur3KR8bt381xZlt8km.jpg', position: 'object-center' },
+  'durga': { url: 'https://servdharm.com/cdn/shop/articles/durga-puja-celebrations-story_900x.jpg?v=1657454594', position: 'object-center' },
   'ganesh': { url: 'https://static.wixstatic.com/media/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg/v1/fill/w_480,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg', position: 'object-center' },
   'hanuman': { url: 'https://artworkbird.co.in/wp-content/uploads/2024/04/202e48b6-6376-4a4d-a424-47cd71101674.jpg', position: 'object-center' },
   'lakshmi': { url: 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg', position: 'object-top' },
@@ -202,17 +202,20 @@ export default function HomePage() {
                   className="group bg-background rounded-2xl overflow-hidden text-center hover:shadow-lg transition border"
                 >
                   <div className="relative h-36 w-full overflow-hidden bg-orange-50">
-                    <img
-                      src={categoryConfig[cat.slug]?.url || categoryImages[cat.slug] || ''}
-                      alt={cat.name}
-                      className={`absolute inset-0 h-full w-full object-cover ${categoryConfig[cat.slug]?.position || 'object-center'} transition-transform duration-300 group-hover:scale-105`}
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none'
-                        if (e.currentTarget.parentElement) {
-                          e.currentTarget.parentElement.style.background = 'linear-gradient(135deg, #f97316, #fbbf24)'
-                        }
-                      }}
-                    />
+                    {cat.slug === 'durga' ? (
+                      <img
+                        src={categoryConfig[cat.slug]?.url || ''}
+                        alt={cat.name}
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        style={{ objectPosition: '50% 10%' }}
+                      />
+                    ) : (
+                      <img
+                        src={categoryConfig[cat.slug]?.url || categoryImages[cat.slug] || ''}
+                        alt={cat.name}
+                        className={`absolute inset-0 h-full w-full object-cover ${categoryConfig[cat.slug]?.position || 'object-center'} transition-transform duration-300 group-hover:scale-105`}
+                      />
+                    )}
                   </div>
                   <p className="font-semibold text-text-primary group-hover:text-primary transition py-3">
                     {cat.name}
