@@ -20,6 +20,7 @@ interface Category {
   name: string
   slug: string
   icon: string
+  imageUrl?: string | null
 }
 
 const categoryConfig: Record<string, { url: string; position: string }> = {
@@ -202,33 +203,18 @@ export default function HomePage() {
                   className="group bg-background rounded-2xl overflow-hidden text-center hover:shadow-lg transition border"
                 >
                   <div className="relative h-36 w-full overflow-hidden bg-orange-50">
-                    {cat.slug === 'durga' ? (
+                    {cat.imageUrl ? (
                       <img
-                        src={categoryConfig[cat.slug]?.url || ''}
+                        src={cat.imageUrl}
                         alt={cat.name}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        style={{ objectPosition: '50% 10%' }}
-                      />
-                    ) : cat.slug === 'ganesh' ? (
-                      <img
-                        src={categoryConfig[cat.slug]?.url || ''}
-                        alt={cat.name}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        style={{ objectPosition: '50% 15%' }}
-                      />
-                    ) : cat.slug === 'hanuman' ? (
-                      <img
-                        src={categoryConfig[cat.slug]?.url || ''}
-                        alt={cat.name}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        style={{ objectPosition: '50% 10%' }}
+                        className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                          cat.slug === 'durga' || cat.slug === 'hanuman' ? 'object-top' : 'object-center'
+                        }`}
                       />
                     ) : (
-                      <img
-                        src={categoryConfig[cat.slug]?.url || categoryImages[cat.slug] || ''}
-                        alt={cat.name}
-                        className={`absolute inset-0 h-full w-full object-cover ${categoryConfig[cat.slug]?.position || 'object-center'} transition-transform duration-300 group-hover:scale-105`}
-                      />
+                      <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                        <span className="text-4xl">{cat.icon}</span>
+                      </div>
                     )}
                   </div>
                   <p className="font-semibold text-text-primary group-hover:text-primary transition py-3">

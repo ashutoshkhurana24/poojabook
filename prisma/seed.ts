@@ -6,46 +6,57 @@ async function main() {
   console.log('Seeding database...')
 
   // Categories
+  const categoryImages: Record<string, string> = {
+    'ganesh': 'https://i.pinimg.com/736x/60/aa/b1/60aab155a8e5a5d89a164a6ced57e2c3.jpg',
+    'lakshmi': 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg',
+    'navgraha': 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg',
+    'satyanarayan': 'https://pujabooking.com/wp-content/uploads/2017/11/Shri-Satya-Narayan-Katha.jpg',
+    'rudrabhishek': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfr8wpAx5QPx2huLZWP_FX3s_p1gRsA5PqFw&s',
+    'vishnu': 'https://nepalyogahome.com/wp-content/uploads/2021/07/Lord-Vishnu.jpg',
+    'hanuman': 'https://m.media-amazon.com/images/I/51Dz-SS9o0L._AC_UF894,1000_QL80_.jpg',
+    'Durga': 'https://miro.medium.com/v2/resize:fit:2000/1*szbNklJFDPngqSnlZ9gysw.jpeg',
+  }
+
   const categories = await Promise.all([
     prisma.poojaCategory.upsert({
       where: { slug: 'ganesh' },
       update: {},
-      create: { name: 'Ganesh', slug: 'ganesh', icon: '🐘', description: 'Lord Ganesha poojas for new beginnings' },
+      create: { name: 'Ganesh', slug: 'ganesh', icon: '🐘', description: 'Lord Ganesha poojas for new beginnings', imageUrl: categoryImages['ganesh'] },
     }),
     prisma.poojaCategory.upsert({
       where: { slug: 'lakshmi' },
       update: {},
-      create: { name: 'Lakshmi', slug: 'lakshmi', icon: '💰', description: 'Goddess Lakshmi poojas for wealth' },
+      create: { name: 'Lakshmi', slug: 'lakshmi', icon: '💰', description: 'Goddess Lakshmi poojas for wealth', imageUrl: categoryImages['lakshmi'] },
     }),
     prisma.poojaCategory.upsert({
       where: { slug: 'navgraha' },
       update: {},
-      create: { name: 'Navgraha', slug: 'navgraha', icon: '🪐', description: 'Navgraha shanti poojas' },
+      create: { name: 'Navgraha', slug: 'navgraha', icon: '🪐', description: 'Navgraha shanti poojas', imageUrl: categoryImages['navgraha'] },
     }),
     prisma.poojaCategory.upsert({
       where: { slug: 'satyanarayan' },
       update: {},
-      create: { name: 'Satyanarayan', slug: 'satyanarayan', icon: '🔱', description: 'Satyanarayan Katha and puja' },
+      create: { name: 'Satyanarayan', slug: 'satyanarayan', icon: '🔱', description: 'Satyanarayan Katha and puja', imageUrl: categoryImages['satyanarayan'] },
     }),
     prisma.poojaCategory.upsert({
       where: { slug: 'rudrabhishek' },
       update: {},
-      create: { name: 'Rudrabhishek', slug: 'rudrabhishek', icon: '🗿', description: 'Lord Shiva abhishek' },
+      create: { name: 'Rudrabhishek', slug: 'rudrabhishek', icon: '🗿', description: 'Lord Shiva abhishek', imageUrl: categoryImages['rudrabhishek'] },
     }),
     prisma.poojaCategory.upsert({
       where: { slug: 'vishnu' },
       update: {},
-      create: { name: 'Vishnu', slug: 'vishnu', icon: '🪷', description: 'Lord Vishnu poojas' },
+      create: { name: 'Vishnu', slug: 'vishnu', icon: '🪷', description: 'Lord Vishnu poojas', imageUrl: categoryImages['vishnu'] },
     }),
     prisma.poojaCategory.upsert({
       where: { slug: 'hanuman' },
       update: {},
-      create: { name: 'Hanuman', slug: 'hanuman', icon: '🐒', description: 'Hanuman Chalisa and pooja' },
+      create: { name: 'Hanuman', slug: 'hanuman', icon: '🐒', description: 'Hanuman Chalisa and pooja', imageUrl: categoryImages['hanuman'] },
     }),
     prisma.poojaCategory.upsert({
       where: { slug: 'Durga' },
       update: {},
-      create: { name: 'Durga', slug: 'Durga', icon: '⚔️', description: 'Goddess Durga poojas' },
+      create: { name: 'Durga', slug: 'Durga', icon: '⚔️', description: 'Goddess Durga poojas', imageUrl: categoryImages['Durga'] },
     }),
   ])
   console.log('Categories created')

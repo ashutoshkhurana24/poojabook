@@ -102,6 +102,7 @@ model PoojaCategory {
   slug        String   @unique
   description String?
   icon        String?
+  imageUrl    String?
   poojas      Pooja[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
