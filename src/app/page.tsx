@@ -25,8 +25,8 @@ interface Category {
 
 const CATEGORY_CONFIG: Record<string, { url: string; objectPosition: string }> = {
   'durga':        { url: 'https://servdharm.com/cdn/shop/articles/durga-puja-celebrations-story_900x.jpg?v=1657454594', objectPosition: '50% 0%' },
-  'ganesh':       { url: 'https://static.wixstatic.com/media/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg/v1/fill/w_480,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg', objectPosition: '50% 0%' },
-  'hanuman':      { url: 'https://artworkbird.co.in/wp-content/uploads/2024/04/202e48b6-6376-4a4d-a424-47cd71101674.jpg', objectPosition: '50% 0%' },
+  'ganesh':       { url: 'https://5.imimg.com/data5/SELLER/Default/2023/3/BW/GW/DI/24594283/81cldsqdb4l-sl1500--500x500.jpg', objectPosition: '50% 0%' },
+  'hanuman':      { url: 'https://i0.wp.com/yourspositively.com/wp-content/uploads/2020/07/Use-this-featured-Hanuman-1.jpg?fit=640%2C426&ssl=1', objectPosition: '50% 0%' },
   'lakshmi':      { url: 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg', objectPosition: '50% 0%' },
   'navgraha':     { url: 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg', objectPosition: '50% center' },
   'rudrabhishek': { url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfr8wpAx5QPx2huLZWP_FX3s_p1gRsA5PqFw&s', objectPosition: '50% center' },
