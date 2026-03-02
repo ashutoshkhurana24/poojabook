@@ -26,16 +26,32 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
   const [showPayment, setShowPayment] = useState(false)
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null)
   const [paymentSuccess, setPaymentSuccess] = useState(false)
+  const [premiumOnly, setPremiumOnly] = useState(false)
+  const [currentUser, setCurrentUser] = useState<any>(null)
 
   useEffect(() => {
-    fetch(`/api/pandits?category=${categorySlug || 'ganesh'}&limit=4`)
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.user) {
+          setCurrentUser(data.user)
+          setAttendeeName(data.user.name || '')
+          setAttendeePhone(data.user.phone || '')
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    const premiumParam = premiumOnly ? '&premium=true' : ''
+    fetch(`/api/pandits?category=${categorySlug || 'ganesh'}&limit=4${premiumParam}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
           setPandits(data.data)
         }
       })
-  }, [categorySlug])
+  }, [categorySlug, premiumOnly])
 
   const generateDates = () => {
     const dates = []
@@ -176,7 +192,20 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
           </div>
 
           <div data-tour="pandit-select">
-            <label className="block text-sm font-medium mb-2">Choose Your Pandit</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium">Choose Your Pandit</label>
+              <button
+                type="button"
+                onClick={() => setPremiumOnly(!premiumOnly)}
+                className={`text-sm px-3 py-1 rounded-full transition ${
+                  premiumOnly 
+                    ? 'bg-yellow-400 text-yellow-900 font-medium' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                ⭐ Premium Only
+              </button>
+            </div>
             {pandits.length > 0 ? (
               <button
                 type="button"
@@ -274,7 +303,8 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
             type="text"
             value={attendeeName}
             onChange={(e) => setAttendeeName(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
+            readOnly={!!currentUser?.name}
+            className={`w-full px-4 py-2 rounded-lg border focus:border-primary outline-none ${currentUser?.name ? 'bg-gray-50 cursor-not-allowed' : ''}`}
             required
           />
         </div>
@@ -286,7 +316,8 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
             value={attendeePhone}
             onChange={(e) => setAttendeePhone(e.target.value)}
             placeholder="+91 9876543210"
-            className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
+            readOnly={!!currentUser?.phone}
+            className={`w-full px-4 py-2 rounded-lg border focus:border-primary outline-none ${currentUser?.phone ? 'bg-gray-50 cursor-not-allowed' : ''}`}
             required
           />
         </div>

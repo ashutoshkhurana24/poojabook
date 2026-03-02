@@ -217,6 +217,7 @@ export async function POST(request: NextRequest) {
         phone: z.string().optional(),
         city: z.string().optional(),
         agreeToTerms: z.boolean(),
+        otpVerified: z.boolean().optional(),
       }).parse(body)
 
       if (data.password !== data.confirmPassword) {
@@ -224,7 +225,32 @@ export async function POST(request: NextRequest) {
       }
 
       const phone = data.phone ? sanitizePhoneNumber(data.phone) : undefined
-      const phoneVerified = phone ? true : false
+
+      // If phone is provided, require OTP verification
+      if (phone && !data.otpVerified) {
+        return errorResponse('Phone verification required. Please verify your phone number first.')
+      }
+
+      // Verify the OTP was actually verified for this phone
+      if (phone && data.otpVerified) {
+        const verifiedOtp = await prisma.otpVerification.findFirst({
+          where: {
+            phoneNumber: phone,
+            isUsed: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        })
+        
+        if (!verifiedOtp) {
+          return errorResponse('Invalid or expired OTP verification. Please verify your phone again.')
+        }
+
+        // Check if verification was recent (within last 10 minutes)
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
+        if (verifiedOtp.createdAt < tenMinutesAgo) {
+          return errorResponse('OTP verification expired. Please verify your phone again.')
+        }
+      }
 
       const existingUser = await prisma.user.findFirst({
         where: { 
@@ -249,7 +275,7 @@ export async function POST(request: NextRequest) {
           passwordHash,
           role: 'CUSTOMER',
           isVerified: true,
-          phoneVerified: phoneVerified || false,
+          phoneVerified: !!phone,
           emailVerified: true,
           city: data.city || null,
         },

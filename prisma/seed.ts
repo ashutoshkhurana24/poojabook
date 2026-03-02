@@ -467,14 +467,14 @@ async function main() {
       }).catch(() => {})
     }
 
-    // Create slots for next 14 days
+    // Create slots for next 60 days - all available
     const today = new Date()
-    for (let i = 1; i <= 14; i++) {
+    for (let i = 1; i <= 60; i++) {
       const date = new Date(today)
       date.setDate(date.getDate() + i)
       const dateStr = date.toISOString().split('T')[0]
 
-      const times = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00']
+      const times = ['07:00', '08:00', '09:00', '10:00', '11:00', '16:00', '17:00', '18:00']
       for (const time of times) {
         const location = locations[Math.floor(Math.random() * locations.length)]
         const vendor = [vendorData1, vendorData2, vendorData3][Math.floor(Math.random() * 3)]
@@ -486,8 +486,8 @@ async function main() {
             vendorId: vendor.id,
             date: dateStr,
             startTime: time,
-            capacity: Math.floor(Math.random() * 3) + 1,
-            bookedCount: Math.floor(Math.random() * 2),
+            capacity: 5,
+            bookedCount: 0,
             isAvailable: true,
           },
         }).catch(() => {})
@@ -500,7 +500,7 @@ async function main() {
   const pandits = [
     {
       name: 'Pandit Ramesh Sharma',
-      photo: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400',
+      photo: null,
       bio: 'Vedic scholar with 25 years of experience performing Ganesh, Lakshmi, and Satyanarayan poojas. Based in Mumbai, served 5000+ families.',
       experienceYears: 25,
       languages: JSON.stringify(['Hindi', 'Sanskrit', 'Marathi', 'English']),
@@ -512,10 +512,11 @@ async function main() {
       totalPoojasCompleted: 5420,
       isVerified: true,
       verificationBadge: 'Vedic Certified',
+      isPremium: true,
     },
     {
       name: 'Pandit Suresh Iyer',
-      photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
+      photo: null,
       bio: 'Traditional Tamil Brahmin pandit specializing in South Indian rituals. Expert in Rudrabhishek and Navgraha Shanti.',
       experienceYears: 22,
       languages: JSON.stringify(['Tamil', 'Telugu', 'Sanskrit', 'English']),
@@ -527,10 +528,11 @@ async function main() {
       totalPoojasCompleted: 4100,
       isVerified: true,
       verificationBadge: 'Traditional Expert',
+      isPremium: true,
     },
     {
       name: 'Pandit Arun Tripathi',
-      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+      photo: null,
       bio: 'Varanasi-based purohit with expertise in Ganga Aarti, Rudrabhishek, and all Kashi rituals. Performed over 10,000 poojas.',
       experienceYears: 30,
       languages: JSON.stringify(['Hindi', 'Sanskrit', 'Bhojpuri']),
@@ -542,10 +544,11 @@ async function main() {
       totalPoojasCompleted: 10200,
       isVerified: true,
       verificationBadge: 'Kashi Purohit',
+      isPremium: true,
     },
     {
       name: 'Pandit Venkatesh Bhat',
-      photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400',
+      photo: null,
       bio: 'Expert in Vaishnavite poojas, Vishnu Sahasranamam, and South Indian traditions. Based in Bangalore.',
       experienceYears: 18,
       languages: JSON.stringify(['Kannada', 'Tamil', 'Telugu', 'Sanskrit']),
@@ -557,10 +560,11 @@ async function main() {
       totalPoojasCompleted: 2800,
       isVerified: true,
       verificationBadge: 'Vaishnav Expert',
+      isPremium: false,
     },
     {
       name: 'Pandit Mahendra Dixit',
-      photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400',
+      photo: null,
       bio: 'Specialized in Durga puja, Navgraha Shanti, and Mahashivratri celebrations. Based in Kolkata.',
       experienceYears: 28,
       languages: JSON.stringify(['Bengali', 'Hindi', 'Sanskrit']),
@@ -572,10 +576,11 @@ async function main() {
       totalPoojasCompleted: 7500,
       isVerified: true,
       verificationBadge: 'Shakti Expert',
+      isPremium: false,
     },
     {
       name: 'Pandit Prashant Joshi',
-      photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+      photo: null,
       bio: 'Modern approach pandit who combines traditional rituals with virtual pooja services. Expert in Hanuman Chalisa and Satyanarayan.',
       experienceYears: 15,
       languages: JSON.stringify(['Marathi', 'Hindi', 'English', 'Sanskrit']),
@@ -587,6 +592,7 @@ async function main() {
       totalPoojasCompleted: 1800,
       isVerified: true,
       verificationBadge: 'Online Expert',
+      isPremium: false,
     },
   ]
 

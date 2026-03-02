@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const city = searchParams.get('city')
     const category = searchParams.get('category')
+    const premium = searchParams.get('premium')
     const limit = parseInt(searchParams.get('limit') || '10')
 
     const where: any = {
@@ -17,10 +18,13 @@ export async function GET(request: NextRequest) {
     if (category) {
       where.specializations = { contains: category }
     }
+    if (premium === 'true') {
+      where.isPremium = true
+    }
 
     const pandits = await prisma.pandit.findMany({
       where,
-      orderBy: [{ isVerified: 'desc' }, { rating: 'desc' }],
+      orderBy: [{ isPremium: 'desc' }, { isVerified: 'desc' }, { rating: 'desc' }],
       take: limit,
     })
 

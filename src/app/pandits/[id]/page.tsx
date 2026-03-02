@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
+const getPanditAvatar = (name: string) => 
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=f97316&color=fff&size=200&bold=true&font-size=0.4`
+
 export default async function PanditDetailPage({
   params,
 }: {
@@ -35,17 +38,11 @@ export default async function PanditDetailPage({
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative">
               <div className="w-40 h-40 rounded-full overflow-hidden bg-white/10 border-4 border-white/20">
-                {pandit.photo ? (
-                  <img
-                    src={pandit.photo}
-                    alt={pandit.name}
-                    className="w-full h-full object-cover object-center"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-6xl">
-                    🧑‍🎓
-                  </div>
-                )}
+                <img
+                  src={getPanditAvatar(pandit.name)}
+                  alt={pandit.name}
+                  className="w-full h-full object-cover object-center"
+                />
               </div>
               {pandit.isVerified && (
                 <div className="absolute bottom-0 right-0 bg-primary text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">

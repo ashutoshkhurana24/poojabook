@@ -2,6 +2,9 @@
 
 import Link from 'next/link'
 
+const getPanditAvatar = (name: string) => 
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=f97316&color=fff&size=200&bold=true&font-size=0.4`
+
 interface PanditCardProps {
   pandit: {
     id: string
@@ -18,6 +21,7 @@ interface PanditCardProps {
     totalPoojasCompleted: number
     isVerified: boolean
     verificationBadge?: string | null
+    isPremium?: boolean
   }
   onSelect?: (panditId: string) => void
   selected?: boolean
@@ -33,15 +37,11 @@ export default function PanditCard({ pandit, onSelect, selected }: PanditCardPro
       <div className="flex items-start gap-4">
         <div className="relative">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-            {pandit.photo ? (
-              <img
-                src={pandit.photo}
-                alt={pandit.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="text-3xl">🧑‍🎓</span>
-            )}
+            <img
+              src={getPanditAvatar(pandit.name)}
+              alt={pandit.name}
+              className="w-full h-full object-cover"
+            />
           </div>
           {pandit.isVerified && (
             <div className="absolute -bottom-1 -right-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -53,6 +53,11 @@ export default function PanditCard({ pandit, onSelect, selected }: PanditCardPro
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-heading text-lg font-semibold">{pandit.name}</h3>
+            {pandit.isPremium && (
+              <span className="bg-yellow-400 text-yellow-900 text-xs px-2 py-0.5 rounded-full font-bold">
+                ⭐ Premium
+              </span>
+            )}
             {pandit.isVerified && pandit.verificationBadge && (
               <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                 {pandit.verificationBadge}
