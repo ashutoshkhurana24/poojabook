@@ -23,30 +23,15 @@ interface Category {
   imageUrl?: string | null
 }
 
-const categoryConfig: Record<string, { url: string; position: string }> = {
-  'durga': { url: 'https://servdharm.com/cdn/shop/articles/durga-puja-celebrations-story_900x.jpg?v=1657454594', position: 'object-top' },
-  'ganesh': { url: 'https://static.wixstatic.com/media/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg/v1/fill/w_480,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg', position: 'object-center' },
-  'hanuman': { url: 'https://artworkbird.co.in/wp-content/uploads/2024/04/202e48b6-6376-4a4d-a424-47cd71101674.jpg', position: 'object-center' },
-  'lakshmi': { url: 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg', position: 'object-top' },
-  'navgraha': { url: 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg', position: 'object-center' },
-  'rudrabhishek': { url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfr8wpAx5QPx2huLZWP_FX3s_p1gRsA5PqFw&s', position: 'object-center' },
-  'satyanarayan': { url: 'https://pujabooking.com/wp-content/uploads/2017/11/Shri-Satya-Narayan-Katha.jpg', position: 'object-top' },
-  'vishnu': { url: 'https://nepalyogahome.com/wp-content/uploads/2021/07/Lord-Vishnu.jpg', position: 'object-top' },
-}
-
-const categoryImages: Record<string, string> = {
-  'durga': 'https://miro.medium.com/v2/resize:fit:2000/1*szbNklJFDPngqSnlZ9gysw.jpeg',
-  'ganesh': 'https://i.pinimg.com/736x/60/aa/b1/60aab155a8e5a5d89a164a6ced57e2c3.jpg',
-  'hanuman': 'https://m.media-amazon.com/images/I/51Dz-SS9o0L._AC_UF894,1000_QL80_.jpg',
-  'lakshmi': 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg',
-  'vishnu': 'https://nepalyogahome.com/wp-content/uploads/2021/07/Lord-Vishnu.jpg',
-  'rudrabhishek': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfr8wpAx5QPx2huLZWP_FX3s_p1gRsA5PqFw&s',
-  'navgraha': 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg',
-  'satyanarayan': 'https://pujabooking.com/wp-content/uploads/2017/11/Shri-Satya-Narayan-Katha.jpg',
-  'ganga-aarti': 'https://eastindiantraveller.com/wp-content/uploads/2020/10/fb_img_1602601852796-1.jpg',
-  'guru': 'https://t3.ftcdn.net/jpg/06/09/14/92/360_F_609149284_DqTdJNENau2wictRlltlHJuEK2cpqJWw.jpg',
-  'karthigai': 'https://www.adotrip.com/public/images/festivals/5de8a3fdb765e-Karthigai%20Deepam%20%20Places%20to%20See.jpg',
-  'saraswati': 'https://www.mypoojabox.in/cdn/shop/articles/Saraswati_Puja_550a23a9-d09f-4d56-80dc-8f722596a516.jpg?v=1583262629',
+const CATEGORY_CONFIG: Record<string, { url: string; objectPosition: string }> = {
+  'durga':        { url: 'https://servdharm.com/cdn/shop/articles/durga-puja-celebrations-story_900x.jpg?v=1657454594', objectPosition: '50% 0%' },
+  'ganesh':       { url: 'https://static.wixstatic.com/media/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg/v1/fill/w_480,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/a32553_a9b6b4312b484d60814e7684faf56b55~mv2.jpg', objectPosition: '50% 0%' },
+  'hanuman':      { url: 'https://artworkbird.co.in/wp-content/uploads/2024/04/202e48b6-6376-4a4d-a424-47cd71101674.jpg', objectPosition: '50% 0%' },
+  'lakshmi':      { url: 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg', objectPosition: '50% 0%' },
+  'navgraha':     { url: 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg', objectPosition: '50% center' },
+  'rudrabhishek': { url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfr8wpAx5QPx2huLZWP_FX3s_p1gRsA5PqFw&s', objectPosition: '50% center' },
+  'satyanarayan': { url: 'https://pujabooking.com/wp-content/uploads/2017/11/Shri-Satya-Narayan-Katha.jpg', objectPosition: '50% 0%' },
+  'vishnu':       { url: 'https://nepalyogahome.com/wp-content/uploads/2021/07/Lord-Vishnu.jpg', objectPosition: '50% 0%' },
 }
 
 export default function HomePage() {
@@ -203,13 +188,13 @@ export default function HomePage() {
                   className="group bg-background rounded-2xl overflow-hidden text-center hover:shadow-lg transition border"
                 >
                   <div className="relative h-36 w-full overflow-hidden bg-orange-50">
-                    {(cat.imageUrl || categoryConfig[cat.slug]?.url) ? (
+                    {(cat.imageUrl || CATEGORY_CONFIG[cat.slug]?.url) ? (
                       <img
-                        src={cat.imageUrl || categoryConfig[cat.slug]?.url || ''}
+                        src={cat.imageUrl || CATEGORY_CONFIG[cat.slug]?.url || ''}
                         alt={cat.name}
                         className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105`}
                         style={{ 
-                          objectPosition: cat.slug === 'ganesh' || cat.slug === 'hanuman' ? '50% 0%' : (categoryConfig[cat.slug]?.position || 'center')
+                          objectPosition: cat.slug === 'ganesh' || cat.slug === 'hanuman' ? '50% 0%' : (CATEGORY_CONFIG[cat.slug]?.objectPosition || 'center')
                         }}
                       />
                     ) : (
