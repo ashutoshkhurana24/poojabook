@@ -5,6 +5,7 @@ import Link from 'next/link'
 import LocationSelector from '@/components/LocationSelector'
 import AuspiciousDaysSection from '@/components/AuspiciousDaysSection'
 import WebsiteTour from '@/components/WebsiteTour'
+import PanditMatchmaker from '@/components/PanditMatchmaker'
 
 interface Pooja {
   id: string
@@ -45,6 +46,7 @@ export default function HomePage() {
   const [featuredPoojas, setFeaturedPoojas] = useState<Pooja[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [matchmakerOpen, setMatchmakerOpen] = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -161,6 +163,13 @@ export default function HomePage() {
                   Search
                 </button>
               </form>
+              
+              <button 
+                onClick={() => setMatchmakerOpen(true)}
+                className="mt-6 bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto"
+              >
+                🪔 Find My Perfect Pooja
+              </button>
             </div>
           </div>
         </div>
@@ -407,6 +416,8 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      <PanditMatchmaker open={matchmakerOpen} onClose={() => setMatchmakerOpen(false)} />
     </div>
   )
 }
