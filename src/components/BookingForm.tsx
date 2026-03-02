@@ -56,6 +56,16 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
       })
   }, [categorySlug, premiumOnly])
 
+  useEffect(() => {
+    const hasPremiumAddon = selectedAddons.includes('1')
+    if (hasPremiumAddon && pandits.length > 0) {
+      const premiumPandit = pandits.find(p => p.isPremium)
+      if (premiumPandit && !selectedPandit) {
+        setSelectedPandit(premiumPandit.id)
+      }
+    }
+  }, [selectedAddons, pandits, selectedPandit])
+
   const generateDates = () => {
     const dates = []
     for (let i = 0; i < 14; i++) {
@@ -69,7 +79,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
   const dates = generateDates()
 
   const addons: { id: string; name: string; price: number; desc: string }[] = [
-    { id: '1', name: 'Premium Pandit', price: 500, desc: 'Highly experienced senior pandit' },
+    { id: '1', name: '⭐ Premium Pandit Upgrade', price: 500, desc: 'Highly experienced senior Pandit with 15+ years experience' },
     { id: '2', name: 'Samagri Kit', price: 300, desc: 'All items pre-arranged and delivered' },
     { id: '3', name: 'Prasad Delivery', price: 200, desc: 'Prasad delivered to your home' },
   ]
@@ -199,17 +209,6 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
           <div data-tour="pandit-select" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <label className="block text-sm font-semibold text-gray-700">🧑‍🎓 Choose Your Pandit</label>
-              <button
-                type="button"
-                onClick={() => setPremiumOnly(!premiumOnly)}
-                className={`text-sm px-4 py-2 rounded-full font-medium transition ${
-                  premiumOnly 
-                    ? 'bg-yellow-400 text-yellow-900 shadow-sm' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                ⭐ Premium Only
-              </button>
             </div>
             {pandits.length > 0 ? (
               <button
@@ -225,7 +224,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-gray-800">{selectedPanditData.name}</p>
-                        {selectedPanditData.isPremium && <span className="bg-yellow-400 text-yellow-900 text-xs px-2 py-0.5 rounded-full font-bold">⭐</span>}
+                        {selectedPanditData.isPremium && <span className="bg-yellow-400 text-yellow-900 text-xs px-2 py-0.5 rounded-full font-bold">⭐ Premium</span>}
                       </div>
                       <p className="text-sm text-gray-500">{selectedPanditData.city}, {selectedPanditData.state}</p>
                       <p className="text-sm text-gray-500">⭐ {selectedPanditData.rating} • {selectedPanditData.experienceYears} years exp.</p>
