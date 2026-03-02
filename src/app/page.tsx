@@ -192,7 +192,7 @@ export default function HomePage() {
                       <img
                         src={cat.imageUrl || CATEGORY_CONFIG[cat.slug]?.url || ''}
                         alt={cat.name}
-                        className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105`}
+                        className={`absolute inset-0 h-full w-full ${cat.slug === 'ganesh' ? 'object-contain' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
                         style={{ 
                           objectPosition: cat.slug === 'ganesh' || cat.slug === 'hanuman' ? '50% 0%' : (CATEGORY_CONFIG[cat.slug]?.objectPosition || 'center')
                         }}

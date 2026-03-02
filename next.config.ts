@@ -5,6 +5,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'static.wixstatic.com' },
       { protocol: 'https', hostname: 'artworkbird.co.in' },
       { protocol: 'https', hostname: 'servdharm.com' },
+      { protocol: 'https', hostname: 'www.bhaktiphotos.com' },
     ],
   },
   async rewrites() {
