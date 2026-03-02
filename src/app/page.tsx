@@ -35,6 +35,75 @@ const CATEGORY_CONFIG: Record<string, { url: string; objectPosition: string }> =
   'vishnu':       { url: 'https://nepalyogahome.com/wp-content/uploads/2021/07/Lord-Vishnu.jpg', objectPosition: '50% 0%' },
 }
 
+const TESTIMONIALS = [
+  {
+    id: 1,
+    name: 'Priya Sharma',
+    location: 'Mumbai, Maharashtra',
+    avatar: 'PS',
+    rating: 5,
+    pooja: 'Griha Pravesh Puja',
+    review: 'The pandit was incredibly knowledgeable and performed the ceremony with such devotion. Our new home truly feels blessed. The entire booking process was seamless — from selecting the date to the pandit arriving on time.',
+    date: 'February 2026',
+    verified: true,
+  },
+  {
+    id: 2,
+    name: 'Rajesh Iyer',
+    location: 'Chennai, Tamil Nadu',
+    avatar: 'RI',
+    rating: 5,
+    pooja: 'Satyanarayan Puja',
+    review: "Being away from home in Chennai, I was worried about finding a trusted pandit. PoojaBook made it incredibly easy. The pandit spoke Tamil fluently and the puja was performed exactly as we do it back home in Kerala.",
+    date: 'January 2026',
+    verified: true,
+  },
+  {
+    id: 3,
+    name: 'Anita Gupta',
+    location: 'Delhi',
+    avatar: 'AG',
+    rating: 5,
+    pooja: 'Lakshmi Puja',
+    review: 'We booked the Lakshmi Puja for Diwali and it was a divine experience. The pandit brought all the samagri, explained every step to our children, and made the entire family feel connected to our traditions.',
+    date: 'November 2025',
+    verified: true,
+  },
+  {
+    id: 4,
+    name: 'Vikram Mehta',
+    location: 'Bangalore, Karnataka',
+    avatar: 'VM',
+    rating: 5,
+    pooja: 'Rudrabhishek',
+    review: 'I have attended many Rudrabhishek ceremonies but this one was exceptional. The pandit from PoojaBook was deeply learned in Vedic traditions. Highly recommend to anyone seeking authentic spiritual experiences.',
+    date: 'December 2025',
+    verified: true,
+  },
+  {
+    id: 5,
+    name: 'Sunita Reddy',
+    location: 'Hyderabad, Telangana',
+    avatar: 'SR',
+    rating: 5,
+    pooja: 'Navgraha Shanti',
+    review: 'My father was going through a very difficult phase and we decided to perform Navgraha Shanti. The transformation after the puja has been remarkable. The pandit was punctual, professional and spiritually uplifting.',
+    date: 'January 2026',
+    verified: true,
+  },
+  {
+    id: 6,
+    name: 'Deepak Joshi',
+    location: 'Varanasi, UP',
+    avatar: 'DJ',
+    rating: 5,
+    pooja: 'Ganga Aarti',
+    review: 'Even though I live in Varanasi, I used PoojaBook to book a private Ganga Aarti for my family visiting from the US. It was the most memorable experience of their trip. Everything was perfectly organized.',
+    date: 'February 2026',
+    verified: true,
+  },
+]
+
 export default function HomePage() {
   const [showBanner, setShowBanner] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -47,6 +116,30 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [matchmakerOpen, setMatchmakerOpen] = useState(false)
+  const [activeTestimonial, setActiveTestimonial] = useState(0)
+  const [visibleTestimonials, setVisibleTestimonials] = useState(3)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth < 640) setVisibleTestimonials(1)
+        else if (window.innerWidth < 1024) setVisibleTestimonials(2)
+        else setVisibleTestimonials(3)
+      }
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTestimonial(prev => 
+        prev >= TESTIMONIALS.length - visibleTestimonials ? 0 : prev + 1
+      )
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [activeTestimonial, visibleTestimonials])
 
   useEffect(() => {
     Promise.all([
@@ -396,6 +489,135 @@ export default function HomePage() {
               </div>
               <h3 className="font-heading text-xl mb-2">Divine Experience</h3>
               <p className="text-text-secondary">Enjoy authentic pooja experience.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 bg-gradient-to-b from-orange-50 to-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <p className="text-orange-500 font-medium uppercase tracking-wider text-sm mb-2">
+              What Devotees Say
+            </p>
+            <h2 className="text-4xl font-serif text-gray-800 mb-3">
+              Blessed Experiences
+            </h2>
+            <p className="text-gray-500 max-w-xl mx-auto">
+              Join thousands of families who have experienced divine ceremonies through PoojaBook
+            </p>
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <div className="flex gap-1">
+                {[1,2,3,4,5].map(star => (
+                  <span key={star} className="text-yellow-400 text-2xl">★</span>
+                ))}
+              </div>
+              <span className="text-3xl font-bold text-gray-800">4.9</span>
+              <span className="text-gray-400">/ 5 · Based on 2,400+ bookings</span>
+            </div>
+          </div>
+
+          <div className="relative overflow-hidden">
+            <div
+              className="flex gap-6 transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${activeTestimonial * (100 / visibleTestimonials)}%)` }}
+            >
+              {TESTIMONIALS.map((t) => (
+                <div
+                  key={t.id}
+                  className="min-w-[calc(33.333%-16px)] md:min-w-[calc(50%-12px)] min-w-[calc(100%-0px)] bg-white rounded-2xl p-6 shadow-md border border-orange-100 flex-shrink-0"
+                >
+                  <div className="flex gap-1 mb-3">
+                    {[1,2,3,4,5].map(star => (
+                      <span key={star} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 leading-relaxed mb-5 text-sm">
+                    "{t.review}"
+                  </p>
+                  <div className="mb-4">
+                    <span className="bg-orange-100 text-orange-700 text-xs px-3 py-1 rounded-full font-medium">
+                      🪔 {t.pooja}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-sm">
+                        {t.avatar}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1">
+                          <p className="font-semibold text-gray-800 text-sm">{t.name}</p>
+                          {t.verified && (
+                            <span className="text-green-500 text-xs">✓</span>
+                          )}
+                        </div>
+                        <p className="text-gray-400 text-xs">{t.location}</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-300 text-xs">{t.date}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setActiveTestimonial(Math.max(0, activeTestimonial - 1))}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-orange-500 hover:bg-orange-50 transition disabled:opacity-30"
+              disabled={activeTestimonial === 0}
+            >
+              ←
+            </button>
+            <button
+              onClick={() => setActiveTestimonial(Math.min(TESTIMONIALS.length - visibleTestimonials, activeTestimonial + 1))}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-orange-500 hover:bg-orange-50 transition disabled:opacity-30"
+              disabled={activeTestimonial === TESTIMONIALS.length - visibleTestimonials}
+            >
+              →
+            </button>
+          </div>
+
+          <div className="flex justify-center gap-2 mt-8">
+            {Array.from({ length: TESTIMONIALS.length - visibleTestimonials + 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveTestimonial(i)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  activeTestimonial === i ? 'bg-orange-500 w-6' : 'bg-orange-200'
+                }`}
+              />
+            ))}
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-8 mt-12 pt-8 border-t border-orange-100">
+            <div className="flex items-center gap-2 text-gray-500">
+              <span className="text-2xl">🙏</span>
+              <div>
+                <p className="font-bold text-gray-800">10,000+</p>
+                <p className="text-xs">Poojas Completed</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-gray-500">
+              <span className="text-2xl">⭐</span>
+              <div>
+                <p className="font-bold text-gray-800">4.9/5</p>
+                <p className="text-xs">Average Rating</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-gray-500">
+              <span className="text-2xl">🏛</span>
+              <div>
+                <p className="font-bold text-gray-800">500+</p>
+                <p className="text-xs">Verified Pandits</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-gray-500">
+              <span className="text-2xl">📍</span>
+              <div>
+                <p className="font-bold text-gray-800">50+ Cities</p>
+                <p className="text-xs">Across India</p>
+              </div>
             </div>
           </div>
         </div>
