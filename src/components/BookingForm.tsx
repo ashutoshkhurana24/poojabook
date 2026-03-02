@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import PanditCard from './PanditCard'
 import MockPayment from './MockPayment'
 
+const getPanditAvatar = (name: string) => 
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e67e22&color=fff&bold=true&size=128`
+
 export default function BookingForm({ poojaId, basePrice, categorySlug }: { 
   poojaId: string; 
   basePrice: number;
@@ -164,25 +167,26 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
   const selectedPanditData = pandits.find(p => p.id === selectedPandit)
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">{error}</div>
+        <div className="bg-red-100 text-red-700 p-4 rounded-lg text-sm">{error}</div>
       )}
 
       {!showPanditSelection ? (
         <>
-          <div data-tour="date-picker">
-            <label className="block text-sm font-medium mb-2">Select Date</label>
+          {/* Date Selection */}
+          <div data-tour="date-picker" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+            <label className="block text-sm font-semibold text-gray-700 mb-3">📅 Select Date</label>
             <div className="flex flex-wrap gap-2">
               {dates.slice(0, 7).map((date) => (
                 <button
                   key={date}
                   type="button"
                   onClick={() => setSelectedDate(date)}
-                  className={`px-3 py-2 rounded-lg text-sm transition ${
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition ${
                     selectedDate === date || (!selectedDate && date === dates[0])
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 border hover:border-primary'
+                      ? 'bg-primary text-white shadow-md'
+                      : 'bg-gray-50 border border-gray-200 hover:border-primary hover:bg-orange-50'
                   }`}
                 >
                   {new Date(date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
@@ -191,15 +195,16 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
             </div>
           </div>
 
-          <div data-tour="pandit-select">
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium">Choose Your Pandit</label>
+          {/* Pandit Selection */}
+          <div data-tour="pandit-select" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-semibold text-gray-700">🧑‍🎓 Choose Your Pandit</label>
               <button
                 type="button"
                 onClick={() => setPremiumOnly(!premiumOnly)}
-                className={`text-sm px-3 py-1 rounded-full transition ${
+                className={`text-sm px-4 py-2 rounded-full font-medium transition ${
                   premiumOnly 
-                    ? 'bg-yellow-400 text-yellow-900 font-medium' 
+                    ? 'bg-yellow-400 text-yellow-900 shadow-sm' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -210,23 +215,27 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
               <button
                 type="button"
                 onClick={() => setShowPanditSelection(true)}
-                className="w-full p-4 border-2 border-dashed border-primary/30 rounded-lg text-left hover:border-primary transition"
+                className="w-full p-5 border-2 border-dashed border-primary/30 rounded-xl text-left hover:border-primary hover:bg-orange-50/50 transition bg-gray-50"
               >
                 {selectedPanditData ? (
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      {selectedPanditData.photo ? (
-                        <img src={selectedPanditData.photo} alt="" className="w-full h-full rounded-full object-cover" />
-                      ) : '🧑‍🎓'}
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+                      <img src={getPanditAvatar(selectedPanditData.name)} alt="" className="w-full h-full object-cover" />
                     </div>
-                    <div>
-                      <p className="font-medium">{selectedPanditData.name}</p>
-                      <p className="text-sm text-text-secondary">{selectedPanditData.city} • {selectedPanditData.rating}⭐</p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-gray-800">{selectedPanditData.name}</p>
+                        {selectedPanditData.isPremium && <span className="bg-yellow-400 text-yellow-900 text-xs px-2 py-0.5 rounded-full font-bold">⭐</span>}
+                      </div>
+                      <p className="text-sm text-gray-500">{selectedPanditData.city}, {selectedPanditData.state}</p>
+                      <p className="text-sm text-gray-500">⭐ {selectedPanditData.rating} • {selectedPanditData.experienceYears} years exp.</p>
                     </div>
-                    <span className="ml-auto text-primary">Change</span>
+                    <span className="text-primary font-medium">Change</span>
                   </div>
                 ) : (
-                  <p className="text-primary font-medium">Select a Pandit →</p>
+                  <div className="flex items-center justify-center py-2">
+                    <p className="text-primary font-medium text-lg">Select a Pandit →</p>
+                  </div>
                 )}
               </button>
             ) : (
@@ -235,18 +244,18 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
           </div>
         </>
       ) : (
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium">Choose Your Pandit</label>
+        <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <label className="block text-sm font-semibold text-gray-700">🧑‍🎓 Choose Your Pandit</label>
             <button
               type="button"
               onClick={() => setShowPanditSelection(false)}
               className="text-sm text-primary hover:underline"
             >
-              {selectedPandit ? 'Change' : 'Skip'}
+              {selectedPandit ? 'Done' : 'Skip'}
             </button>
           </div>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
             {pandits.map((pandit) => (
               <div
                 key={pandit.id}
@@ -254,104 +263,144 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
                   setSelectedPandit(pandit.id)
                   setShowPanditSelection(false)
                 }}
-                className={`p-2 border-2 rounded-lg cursor-pointer transition ${
-                  selectedPandit === pandit.id ? 'border-primary' : 'border-transparent hover:border-primary/30'
+                className={`p-4 border-2 rounded-xl cursor-pointer transition ${
+                  selectedPandit === pandit.id 
+                    ? 'border-primary bg-orange-50' 
+                    : 'border-gray-100 hover:border-primary/50 hover:bg-gray-50'
                 }`}
               >
-                <PanditCard pandit={pandit} selected={selectedPandit === pandit.id} />
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-400 to-yellow-400">
+                    <img src={getPanditAvatar(pandit.name)} alt={pandit.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-semibold text-gray-800">{pandit.name}</p>
+                      {pandit.isPremium && <span className="bg-yellow-400 text-yellow-900 text-xs px-2 py-0.5 rounded-full font-bold">⭐ Premium</span>}
+                      {pandit.isVerified && <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">✓ Verified</span>}
+                    </div>
+                    <p className="text-sm text-gray-500">{pandit.city}, {pandit.state}</p>
+                    <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                      <span>⭐ {pandit.rating}</span>
+                      <span>•</span>
+                      <span>{pandit.experienceYears} years exp.</span>
+                      <span>•</span>
+                      <span>{pandit.totalReviews} reviews</span>
+                    </div>
+                    {pandit.bio && (
+                      <p className="text-xs text-gray-400 mt-2 line-clamp-2">{pandit.bio}</p>
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-        <div data-tour="addons">
-          <label className="block text-sm font-medium mb-2">Add-ons (Optional)</label>
-        <div className="space-y-2">
+      {/* Add-ons Section */}
+      <div data-tour="addons" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+        <label className="block text-sm font-semibold text-gray-700 mb-4">✨ Add-ons (Optional)</label>
+        <div className="space-y-3">
           {addons.map((addon) => (
-            <label key={addon.id} className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={selectedAddons.includes(addon.id)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedAddons([...selectedAddons, addon.id])
-                    } else {
-                      setSelectedAddons(selectedAddons.filter(id => id !== addon.id))
-                    }
-                  }}
-                  className="rounded"
-                />
+            <label 
+              key={addon.id} 
+              className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition ${
+                selectedAddons.includes(addon.id) 
+                  ? 'border-primary bg-orange-50' 
+                  : 'border-gray-100 hover:border-primary/50'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={selectedAddons.includes(addon.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedAddons([...selectedAddons, addon.id])
+                      } else {
+                        setSelectedAddons(selectedAddons.filter(id => id !== addon.id))
+                      }
+                    }}
+                    className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                </div>
                 <div>
-                  <span className="font-medium">{addon.name}</span>
+                  <span className="font-medium text-gray-800">{addon.name}</span>
                   <p className="text-xs text-gray-500">{addon.desc}</p>
                 </div>
               </div>
-              <span className="text-primary">+₹{addon.price}</span>
+              <span className="text-primary font-semibold">+₹{addon.price}</span>
             </label>
           ))}
         </div>
       </div>
 
-        <div data-tour="customer-info" className="space-y-4 pt-4 border-t">
-        <h3 className="font-medium">Your Details</h3>
+      {/* Customer Details */}
+      <div data-tour="customer-info" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+        <h3 className="font-semibold text-gray-700 mb-4">👤 Your Details</h3>
         
-        <div>
-          <label className="block text-sm mb-1">Full Name *</label>
-          <input
-            type="text"
-            value={attendeeName}
-            onChange={(e) => setAttendeeName(e.target.value)}
-            readOnly={!!currentUser?.name}
-            className={`w-full px-4 py-2 rounded-lg border focus:border-primary outline-none ${currentUser?.name ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-            required
-          />
-        </div>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Full Name *</label>
+            <input
+              type="text"
+              value={attendeeName}
+              onChange={(e) => setAttendeeName(e.target.value)}
+              readOnly={!!currentUser?.name}
+              className={`w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition ${currentUser?.name ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm mb-1">Phone Number *</label>
-          <input
-            type="tel"
-            value={attendeePhone}
-            onChange={(e) => setAttendeePhone(e.target.value)}
-            placeholder="+91 9876543210"
-            readOnly={!!currentUser?.phone}
-            className={`w-full px-4 py-2 rounded-lg border focus:border-primary outline-none ${currentUser?.phone ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-            required
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Phone Number *</label>
+            <input
+              type="tel"
+              value={attendeePhone}
+              onChange={(e) => setAttendeePhone(e.target.value)}
+              placeholder="+91 9876543210"
+              readOnly={!!currentUser?.phone}
+              className={`w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition ${currentUser?.phone ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm mb-1">Notes (Optional)</label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={2}
-            placeholder="Any specific requirements..."
-            className="w-full px-4 py-2 rounded-lg border focus:border-primary outline-none"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Notes (Optional)</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              placeholder="Any specific requirements..."
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-        <div className="flex justify-between text-sm">
-          <span>Base Price</span>
-          <span>₹{basePrice.toLocaleString()}</span>
-        </div>
-        {addOnTotal > 0 && (
-          <div className="flex justify-between text-sm">
-            <span>Add-ons</span>
-            <span>₹{addOnTotal.toLocaleString()}</span>
+      {/* Price Summary */}
+      <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+        <div className="space-y-3">
+          <div className="flex justify-between text-gray-600">
+            <span>Base Price</span>
+            <span>₹{basePrice.toLocaleString()}</span>
           </div>
-        )}
-        <div className="flex justify-between text-sm">
-          <span>Tax (18%)</span>
-          <span>₹{tax.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between font-semibold text-lg pt-2 border-t">
-          <span>Total</span>
-          <span>₹{total.toLocaleString()}</span>
+          {addOnTotal > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span>Add-ons</span>
+              <span>₹{addOnTotal.toLocaleString()}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-gray-600">
+            <span>Tax (18%)</span>
+            <span>₹{tax.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between font-bold text-xl text-gray-800 pt-3 border-t border-gray-200">
+            <span>Total</span>
+            <span className="text-primary">₹{total.toLocaleString()}</span>
+          </div>
         </div>
       </div>
 
