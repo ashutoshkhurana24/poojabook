@@ -7,7 +7,7 @@ async function main() {
 
   // Categories
   const categoryImages: Record<string, string> = {
-    'ganesh': 'https://i.pinimg.com/736x/b9/ba/d4/b9bad421aae5926c963b0d1acece8d3f.jpg',
+    'ganesh': 'https://www.bhaktiphotos.com/wp-content/uploads/2018/04/Download-SRI-GANESH-Free-PNG-Transparent-Image.jpg',
     'lakshmi': 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg',
     'navgraha': 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg',
     'satyanarayan': 'https://pujabooking.com/wp-content/uploads/2017/11/Shri-Satya-Narayan-Katha.jpg',
