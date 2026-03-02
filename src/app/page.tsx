@@ -63,8 +63,8 @@ export default function HomePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/poojas?limit=6').then(res => res.json()),
-      fetch('/api/categories').then(res => res.json()).catch(() => ({ success: true, data: [] }))
+      fetch('/api/poojas?limit=6', { next: { revalidate: 60 } }).then(res => res.json()),
+      fetch('/api/categories', { next: { revalidate: 60 } }).then(res => res.json()).catch(() => ({ success: true, data: [] }))
     ]).then(([poojasRes, categoriesRes]) => {
       if (poojasRes.success) {
         setFeaturedPoojas(poojasRes.data.poojas || [])
@@ -203,12 +203,12 @@ export default function HomePage() {
                   className="group bg-background rounded-2xl overflow-hidden text-center hover:shadow-lg transition border"
                 >
                   <div className="relative h-36 w-full overflow-hidden bg-orange-50">
-                    {cat.imageUrl ? (
+                    {(cat.imageUrl || categoryConfig[cat.slug]?.url) ? (
                       <img
-                        src={cat.imageUrl}
+                        src={cat.imageUrl || categoryConfig[cat.slug]?.url || ''}
                         alt={cat.name}
                         className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
-                          cat.slug === 'durga' || cat.slug === 'hanuman' ? 'object-top' : 'object-center'
+                          cat.slug === 'durga' || cat.slug === 'hanuman' ? 'object-top' : categoryConfig[cat.slug]?.position || 'object-center'
                         }`}
                       />
                     ) : (

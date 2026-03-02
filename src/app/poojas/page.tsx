@@ -50,7 +50,7 @@ export default function PoojasPage() {
       const url = params.toString() ? `/api/poojas?${params.toString()}` : '/api/poojas'
       console.log('Fetching poojas from:', url)
       
-      const res = await fetch(url)
+      const res = await fetch(url, { next: { revalidate: 60 } })
       console.log('Response status:', res.status)
       const data = await res.json()
       console.log('API response:', data)
@@ -75,7 +75,7 @@ export default function PoojasPage() {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await fetch('/api/categories')
+      const res = await fetch('/api/categories', { next: { revalidate: 60 } })
       const data = await res.json()
       if (data.success) {
         setCategories(data.data || [])

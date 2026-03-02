@@ -66,15 +66,26 @@ export async function GET(request: NextRequest) {
       languages: [],
     }))
 
-    return successResponse({
-      poojas: poojasWithRating,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          poojas: poojasWithRating,
+          pagination: {
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit),
+          },
+        },
       },
-    })
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 's-maxage=60, stale-while-revalidate=300',
+        },
+      }
+    )
   } catch (error) {
     console.error('Poojas API error:', error)
     const message = error instanceof Error ? error.message : String(error)
