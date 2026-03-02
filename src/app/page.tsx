@@ -207,9 +207,10 @@ export default function HomePage() {
                       <img
                         src={cat.imageUrl || categoryConfig[cat.slug]?.url || ''}
                         alt={cat.name}
-                        className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
-                          cat.slug === 'durga' || cat.slug === 'hanuman' ? 'object-top' : categoryConfig[cat.slug]?.position || 'object-center'
-                        }`}
+                        className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105`}
+                        style={{ 
+                          objectPosition: cat.slug === 'ganesh' || cat.slug === 'hanuman' ? '50% 0%' : (categoryConfig[cat.slug]?.position || 'center')
+                        }}
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
