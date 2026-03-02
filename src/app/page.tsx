@@ -25,7 +25,7 @@ interface Category {
 
 const CATEGORY_CONFIG: Record<string, { url: string; objectPosition: string }> = {
   'durga':        { url: 'https://servdharm.com/cdn/shop/articles/durga-puja-celebrations-story_900x.jpg?v=1657454594', objectPosition: '50% 0%' },
-  'ganesh':       { url: 'https://5.imimg.com/data5/SELLER/Default/2023/3/BW/GW/DI/24594283/81cldsqdb4l-sl1500--500x500.jpg', objectPosition: '50% 0%' },
+  'ganesh':       { url: 'https://i.pinimg.com/736x/b9/ba/d4/b9bad421aae5926c963b0d1acece8d3f.jpg', objectPosition: '50% 0%' },
   'hanuman':      { url: 'https://i0.wp.com/yourspositively.com/wp-content/uploads/2020/07/Use-this-featured-Hanuman-1.jpg?fit=640%2C426&ssl=1', objectPosition: '50% 0%' },
   'lakshmi':      { url: 'https://i.etsystatic.com/21961301/r/il/0738f0/2800145575/il_fullxfull.2800145575_l1yw.jpg', objectPosition: '50% 0%' },
   'navgraha':     { url: 'https://artfactory.in/product_pictures/Navgraha%20Yantra-CP11008.jpg', objectPosition: '50% center' },
