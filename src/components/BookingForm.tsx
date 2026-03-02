@@ -185,15 +185,15 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
       {!showPanditSelection ? (
         <>
           {/* Date Selection */}
-          <div data-tour="date-picker" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">📅 Select Date</label>
+          <div data-tour="date-picker" className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">📅 Select Date</label>
             <div className="flex flex-wrap gap-2">
               {dates.slice(0, 7).map((date) => (
                 <button
                   key={date}
                   type="button"
                   onClick={() => setSelectedDate(date)}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition ${
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
                     selectedDate === date || (!selectedDate && date === dates[0])
                       ? 'bg-primary text-white shadow-md'
                       : 'bg-gray-50 border border-gray-200 hover:border-primary hover:bg-orange-50'
@@ -206,15 +206,15 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
           </div>
 
           {/* Pandit Selection */}
-          <div data-tour="pandit-select" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
+          <div data-tour="pandit-select" className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
               <label className="block text-sm font-semibold text-gray-700">🧑‍🎓 Choose Your Pandit</label>
             </div>
             {pandits.length > 0 ? (
               <button
                 type="button"
                 onClick={() => setShowPanditSelection(true)}
-                className="w-full p-5 border-2 border-dashed border-primary/30 rounded-xl text-left hover:border-primary hover:bg-orange-50/50 transition bg-gray-50"
+                className="w-full p-4 border-2 border-dashed border-primary/30 rounded-xl text-left hover:border-primary hover:bg-orange-50/50 transition bg-gray-50"
               >
                 {selectedPanditData ? (
                   <div className="flex items-center gap-4">
@@ -298,47 +298,45 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
       )}
 
       {/* Add-ons Section */}
-      <div data-tour="addons" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-        <label className="block text-sm font-semibold text-gray-700 mb-4">✨ Add-ons (Optional)</label>
-        <div className="space-y-3">
+      <div data-tour="addons" className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+        <label className="block text-sm font-semibold text-gray-700 mb-3">✨ Add-ons (Optional)</label>
+        <div className="space-y-2">
           {addons.map((addon) => (
             <label 
               key={addon.id} 
-              className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition ${
+              className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition ${
                 selectedAddons.includes(addon.id) 
                   ? 'border-primary bg-orange-50' 
                   : 'border-gray-100 hover:border-primary/50'
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={selectedAddons.includes(addon.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedAddons([...selectedAddons, addon.id])
-                      } else {
-                        setSelectedAddons(selectedAddons.filter(id => id !== addon.id))
-                      }
-                    }}
-                    className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                </div>
+                <input
+                  type="checkbox"
+                  checked={selectedAddons.includes(addon.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedAddons([...selectedAddons, addon.id])
+                    } else {
+                      setSelectedAddons(selectedAddons.filter(id => id !== addon.id))
+                    }
+                  }}
+                  className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
                 <div>
-                  <span className="font-medium text-gray-800">{addon.name}</span>
+                  <span className="font-medium text-gray-800 text-sm">{addon.name}</span>
                   <p className="text-xs text-gray-500">{addon.desc}</p>
                 </div>
               </div>
-              <span className="text-primary font-semibold">+₹{addon.price}</span>
+              <span className="text-primary font-semibold whitespace-nowrap">+₹{addon.price}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* Customer Details */}
-      <div data-tour="customer-info" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-        <h3 className="font-semibold text-gray-700 mb-4">👤 Your Details</h3>
+      <div data-tour="customer-info" className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+        <h3 className="font-semibold text-gray-700 mb-3">👤 Your Details</h3>
         
         <div className="space-y-4">
           <div>
@@ -380,8 +378,8 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
       </div>
 
       {/* Price Summary */}
-      <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-        <div className="space-y-3">
+      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+        <div className="space-y-2">
           <div className="flex justify-between text-gray-600">
             <span>Base Price</span>
             <span>₹{basePrice.toLocaleString()}</span>
