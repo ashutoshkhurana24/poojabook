@@ -151,12 +151,6 @@ export default function PanditMatchmaker({ open, onClose }: { open: boolean; onC
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
       
       <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        <button 
-          onClick={handleClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl z-10"
-        >
-          ✕
-        </button>
 
         {loading && (
           <div className="p-12">
@@ -228,14 +222,25 @@ export default function PanditMatchmaker({ open, onClose }: { open: boolean; onC
 
         {!loading && !recommendation && !error && (
           <>
-            <div className="bg-gradient-to-r from-orange-500 to-yellow-500 p-4">
-              <div className="flex items-center justify-between text-white">
-                <span className="font-medium">🪔 AI Pooja Matchmaker</span>
-                <span className="text-sm opacity-90">Step {step + 1} of {QUESTIONS.length}</span>
+            <div className="bg-gradient-to-r from-orange-500 to-yellow-500 p-4 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span>🪔</span>
+                  <span className="text-white font-semibold">AI Pooja Matchmaker</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-white/80 text-sm">Step {step + 1} of {QUESTIONS.length}</span>
+                  <button
+                    onClick={handleClose}
+                    className="text-white/80 hover:text-white transition text-xl leading-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
-              <div className="mt-2 h-1 bg-white/30 rounded-full overflow-hidden">
+              <div className="mt-3 h-1 bg-white/30 rounded-full">
                 <div 
-                  className="h-full bg-white transition-all duration-300"
+                  className="h-full bg-white rounded-full transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>
