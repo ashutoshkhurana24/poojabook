@@ -13,10 +13,23 @@ export default async function PoojaDetailPage({
 }) {
   const { slug } = await params
 
-  const pooja = await prisma.pooja.findUnique({
-    where: { slug },
-    include: { category: true },
-  })
+  let pooja = null
+  let attempts = 0
+  while (!pooja && attempts < 3) {
+    try {
+      pooja = await prisma.pooja.findUnique({
+        where: { slug },
+        include: { category: true },
+      })
+    } catch (e) {
+      attempts++
+      if (attempts === 3) {
+        console.error('Failed to fetch pooja after 3 attempts:', e)
+        throw e
+      }
+      await new Promise(r => setTimeout(r, 500))
+    }
+  }
 
   if (!pooja) {
     return notFound()
