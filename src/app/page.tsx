@@ -496,7 +496,7 @@ export default function HomePage() {
 
       {/* Testimonials */}
       <section className="py-16 bg-gradient-to-b from-orange-50 to-white">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <p className="text-orange-500 font-medium uppercase tracking-wider text-sm mb-2">
               What Devotees Say
@@ -520,20 +520,20 @@ export default function HomePage() {
 
           <div className="relative overflow-hidden">
             <div
-              className="flex gap-6 transition-transform duration-500 ease-in-out"
+              className="flex gap-6 transition-transform duration-500 ease-in-out items-start"
               style={{ transform: `translateX(-${activeTestimonial * (100 / visibleTestimonials)}%)` }}
             >
               {TESTIMONIALS.map((t) => (
                 <div
                   key={t.id}
-                  className="min-w-[calc(33.333%-16px)] md:min-w-[calc(50%-12px)] min-w-[calc(100%-0px)] bg-white rounded-2xl p-6 shadow-md border border-orange-100 flex-shrink-0"
+                  className="min-w-[85vw] sm:min-w-[320px] max-w-[380px] bg-white rounded-2xl p-5 shadow-md border border-orange-100 flex-shrink-0"
                 >
                   <div className="flex gap-1 mb-3">
                     {[1,2,3,4,5].map(star => (
                       <span key={star} className="text-yellow-400">★</span>
                     ))}
                   </div>
-                  <p className="text-gray-600 leading-relaxed mb-5 text-sm">
+                  <p className="text-gray-600 leading-relaxed mb-4 text-sm line-clamp-4">
                     "{t.review}"
                   </p>
                   <div className="mb-4">
