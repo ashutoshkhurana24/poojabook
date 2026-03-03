@@ -3,8 +3,34 @@
 
 const { execSync } = require('child_process');
 
-// Check if should skip database operations (set in Vercel project settings)
-const skipDb = process.env.SKIP_DB_SEED === 'true';
+// Check if running on Vercel (VERCEL env var is always set during Vercel builds)
+const isVercel = !!process.env.VERCEL;
+
+// Skip db operations on Vercel to avoid connection pool exhaustion on Supabase
+// The database is already seeded from the first deployment
+if (isVercel) {
+  console.log('Running on Vercel - skipping db push and seed');
+  
+  // Still run prisma generate
+  try {
+    console.log('Running prisma generate...');
+    execSync('npx prisma generate', { stdio: 'inherit' });
+  } catch (e) {
+    console.log('Prisma generate warning, continuing...');
+  }
+  
+  console.log('Running next build...');
+  try {
+    execSync('npx next build', { stdio: 'pipe', encoding: 'utf8' });
+  } catch (error) {
+    console.log('=== BUILD ERROR ===');
+    console.log('stdout:', error.stdout);
+    console.log('stderr:', error.stderr);
+    console.log('message:', error.message);
+    throw error;
+  }
+  process.exit(0);
+}
 
 // Add connection_limit=5 to DATABASE_URL to prevent connection pool exhaustion
 if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('connection_limit')) {
@@ -26,11 +52,7 @@ try {
   console.log('Prisma generate warning, continuing...');
 }
 
-// Skip db push and seed to avoid connection pool exhaustion on Supabase pooler
-// Database schema is already up to date and seeded
-if (skipDb) {
-  console.log('Skipping db push and seed (SKIP_DB_SEED=true)');
-} else if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
+if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
   try {
     console.log('Running prisma db push...');
     execSync('npx prisma db push', { stdio: 'inherit' });
