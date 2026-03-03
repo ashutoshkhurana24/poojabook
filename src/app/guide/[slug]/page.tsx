@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 import { getPoojaGuide, POOJA_GUIDES } from '@/lib/poojaGuides'
 import GuideDetail from '@/components/guide/GuideDetail'
 
-interface Props {
-  params: { slug: string }
+type Props = {
+  params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
@@ -12,7 +12,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const guide = getPoojaGuide(params.slug)
+  const { slug } = await params
+  const guide = getPoojaGuide(slug)
   if (!guide) return {}
 
   const title = `${guide.name} — Complete Guide, Samagri & Process | PoojaBook`
@@ -34,8 +35,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function GuideDetailPage({ params }: Props) {
-  const guide = getPoojaGuide(params.slug)
+export default async function GuideDetailPage({ params }: Props) {
+  const { slug } = await params
+  const guide = getPoojaGuide(slug)
   if (!guide) notFound()
 
   return <GuideDetail guide={guide} />

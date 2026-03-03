@@ -4,8 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
-  WhatsappShareButton, TwitterShareButton, FacebookShareButton,
-  WhatsappIcon, TwitterIcon, FacebookIcon,
+  WhatsappShareButton, FacebookShareButton,
+  WhatsappIcon, FacebookIcon,
 } from 'react-share'
 import { POOJA_GUIDES, DIFFICULTY_COLORS, type PoojaGuide } from '@/lib/poojaGuides'
 
@@ -29,23 +29,31 @@ function SectionHeading({ id, icon, title }: { id: string; icon: string; title: 
 export default function GuideDetail({ guide }: { guide: PoojaGuide }) {
   const [copiedMantra, setCopiedMantra] = useState<string | null>(null)
 
+  // Null-safe field access
+  const samagri       = guide.samagri       ?? []
+  const benefits      = guide.benefits      ?? []
+  const relatedPoojas = guide.relatedPoojas ?? []
+  const mantras       = guide.mantras       ?? []
+  const process       = guide.process       ?? []
+  const whenToPerform = guide.whenToPerform ?? []
+
   const shareUrl =
     typeof window !== 'undefined'
       ? window.location.href
-      : `https://poojabook.vercel.app/guide/${guide.slug}`
+      : `https://poojabook.in/guide/${guide.slug}`
   const shareTitle = `${guide.name} — Complete Guide | PoojaBook`
 
   const copyMantra = (text: string) => {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(text).catch(() => {})
     setCopiedMantra(text)
     setTimeout(() => setCopiedMantra(null), 2000)
   }
 
-  const essential   = guide.samagri.filter(s => s.essential)
-  const optional    = guide.samagri.filter(s => !s.essential)
-  const relatedFull = guide.relatedPoojas
-    .map(slug => POOJA_GUIDES.find(g => g.slug === slug))
-    .filter(Boolean) as PoojaGuide[]
+  const essential   = samagri.filter(s => s.essential)
+  const optional    = samagri.filter(s => !s.essential)
+  const relatedFull = relatedPoojas
+    .map(s => POOJA_GUIDES.find(g => g.slug === s))
+    .filter((g): g is PoojaGuide => Boolean(g))
 
   const bookingUrl = guide.bookingCTA?.url || `/poojas?search=${encodeURIComponent(guide.name)}`
 
@@ -147,7 +155,7 @@ export default function GuideDetail({ guide }: { guide: PoojaGuide }) {
             )}
 
             {/* ── WHEN TO PERFORM ────────────────────────────────────────── */}
-            {(guide.whenToPerform || guide.bestTime) && (
+            {guide.bestTime && (
               <motion.section variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
                 <SectionHeading id="when" icon="🗓️" title="When to Perform?" />
                 <div className="grid sm:grid-cols-2 gap-4 mb-5">
@@ -157,20 +165,20 @@ export default function GuideDetail({ guide }: { guide: PoojaGuide }) {
                   </div>
                   <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4">
                     <p className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-2">📅 Best Days</p>
-                    <p className="font-semibold text-purple-800">{guide.bestTime.days.join(' · ')}</p>
+                    <p className="font-semibold text-purple-800">{(guide.bestTime.days ?? []).join(' · ')}</p>
                   </div>
                   <div className="bg-yellow-50 border border-yellow-100 rounded-2xl p-4">
                     <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-2">🌙 Best Tithis</p>
-                    <p className="font-semibold text-yellow-800">{guide.bestTime.tithis.join(' · ')}</p>
+                    <p className="font-semibold text-yellow-800">{(guide.bestTime.tithis ?? []).join(' · ')}</p>
                   </div>
                   <div className="bg-green-50 border border-green-100 rounded-2xl p-4">
                     <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-2">🌟 Occasions</p>
-                    <p className="font-semibold text-green-800 text-sm">{guide.bestTime.occasions.join(', ')}</p>
+                    <p className="font-semibold text-green-800 text-sm">{(guide.bestTime.occasions ?? []).join(', ')}</p>
                   </div>
                 </div>
-                {guide.whenToPerform && (
+                {whenToPerform.length > 0 && (
                   <ul className="space-y-2">
-                    {guide.whenToPerform.map((reason, i) => (
+                    {whenToPerform.map((reason, i) => (
                       <li key={i} className="flex items-start gap-2.5 text-sm text-text-secondary">
                         <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
                         {reason}
@@ -236,20 +244,20 @@ export default function GuideDetail({ guide }: { guide: PoojaGuide }) {
             </motion.section>
 
             {/* ── PROCESS ────────────────────────────────────────────────── */}
-            {guide.process && guide.process.length > 0 && (
+            {process.length > 0 && (
               <motion.section variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
                 <SectionHeading id="process" icon="📋" title="Step-by-Step Process" />
                 <div className="mb-4 inline-flex items-center gap-2 bg-amber-50 text-amber-700 text-sm px-4 py-2 rounded-full border border-amber-200">
                   ⏱ Total Duration: <strong>{guide.duration}</strong>
                 </div>
                 <div className="space-y-4">
-                  {guide.process.map((step, i) => (
+                  {process.map((step, i) => (
                     <div key={step.step} className="flex gap-4">
                       <div className="flex flex-col items-center flex-shrink-0">
                         <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
                           {step.step}
                         </div>
-                        {i < guide.process!.length - 1 && (
+                        {i < process.length - 1 && (
                           <div className="w-0.5 h-full bg-primary/20 mt-1" />
                         )}
                       </div>
@@ -267,25 +275,27 @@ export default function GuideDetail({ guide }: { guide: PoojaGuide }) {
             )}
 
             {/* ── BENEFITS ───────────────────────────────────────────────── */}
-            <motion.section variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
-              <SectionHeading id="benefits" icon="✨" title="Benefits & Significance" />
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {guide.benefits.map((b, i) => (
-                  <div key={i} className="bg-surface border rounded-2xl p-5 hover:shadow-md transition">
-                    <div className="text-3xl mb-2">{b.icon}</div>
-                    <h3 className="font-semibold text-gray-800 mb-1">{b.benefit}</h3>
-                    <p className="text-sm text-text-secondary">{b.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.section>
+            {benefits.length > 0 && (
+              <motion.section variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+                <SectionHeading id="benefits" icon="✨" title="Benefits & Significance" />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {benefits.map((b, i) => (
+                    <div key={i} className="bg-surface border rounded-2xl p-5 hover:shadow-md transition">
+                      <div className="text-3xl mb-2">{b.icon}</div>
+                      <h3 className="font-semibold text-gray-800 mb-1">{b.benefit}</h3>
+                      <p className="text-sm text-text-secondary">{b.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.section>
+            )}
 
             {/* ── MANTRAS ────────────────────────────────────────────────── */}
-            {guide.mantras && guide.mantras.length > 0 && (
+            {mantras.length > 0 && (
               <motion.section variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
                 <SectionHeading id="mantras" icon="🕉️" title="Key Mantras" />
                 <div className="space-y-4">
-                  {guide.mantras.map((mantra, i) => (
+                  {mantras.map((mantra, i) => (
                     <div key={i} className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-2xl p-5">
                       <div className="flex items-center justify-between mb-3">
                         <div>
@@ -333,9 +343,15 @@ export default function GuideDetail({ guide }: { guide: PoojaGuide }) {
               <WhatsappShareButton url={shareUrl} title={shareTitle}>
                 <WhatsappIcon size={36} round />
               </WhatsappShareButton>
-              <TwitterShareButton url={shareUrl} title={shareTitle}>
-                <TwitterIcon size={36} round />
-              </TwitterShareButton>
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white hover:opacity-80 transition"
+                aria-label="Share on X (Twitter)"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
               <FacebookShareButton url={shareUrl}>
                 <FacebookIcon size={36} round />
               </FacebookShareButton>

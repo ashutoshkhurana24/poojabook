@@ -588,6 +588,19 @@ export const POOJA_GUIDES: PoojaGuide[] = [
       tithis: ['Ashtami', 'Ekadashi'],
       occasions: ['Janmashtami', 'Gita Jayanti', 'Every Wednesday'],
     },
+    whatIsThis: {
+      summary: 'Krishna Puja is the worship of Lord Krishna — the eighth avatar of Lord Vishnu, the divine embodiment of love, wisdom, joy, and the supreme teacher of the Bhagavad Gita.',
+      details: 'Lord Krishna was born on Ashtami (8th lunar day) in the month of Shravan, celebrated as Janmashtami. He is worshipped as Bal Gopal (the divine child), Govinda (protector of cows), and Yogeshwar (master of yoga). Devotees offer butter, mishri, and tulsi — Krishna\'s favourite offerings — and recite the Hare Krishna Mahamantra or Bhagavad Gita.',
+      significance: 'Krishna\'s teachings in the Bhagavad Gita are the foundation of Hindu philosophy. Worshipping Krishna brings inner joy, wisdom, loving relationships, and ultimately moksha (liberation) through the path of Bhakti yoga.',
+    },
+    whenToPerform: [
+      'Janmashtami (Shravan Krishna Ashtami) — Krishna\'s birth anniversary',
+      'Every Wednesday — considered auspicious for Krishna worship',
+      'Ekadashi — a sacred day for Vishnu and Krishna devotees',
+      'Gita Jayanti (Margashirsha Shukla Ekadashi)',
+      'During ISKCON-style daily worship (morning program)',
+      'When seeking guidance, wisdom, or relief from sorrow',
+    ],
     samagri: [
       { item: 'Krishna idol or Bal Gopal',       quantity: '1',       essential: true  },
       { item: 'Yellow or peacock blue flowers',  quantity: 'Handful', essential: true  },
@@ -704,6 +717,19 @@ export const POOJA_GUIDES: PoojaGuide[] = [
       tithis: ['Dwitiya', 'Tritiya', 'Panchami', 'Dashami'],
       occasions: ['Before construction begins', 'When Vastu doshas are identified', 'After purchasing land'],
     },
+    whatIsThis: {
+      summary: 'Vastu Puja is a Vedic ritual to propitiate Vastu Purush — the cosmic spirit who governs the energies of land and built spaces — ensuring harmony, health, and prosperity in the home.',
+      details: 'Vastu Shastra is an ancient Hindu science of architecture and spatial arrangement. When a home or office has Vastu doshas (directional imbalances), it can cause illness, financial problems, and family conflicts. Vastu Puja remedies these without requiring structural changes — through mantras, havan, and the installation of a Vastu Yantra at the Brahmasthan (center of the building).',
+      significance: 'Performing Vastu Puja before construction begins ensures the building is aligned with cosmic energies from day one. For existing homes, it corrects doshas and restores balance, dramatically improving the quality of life for the residents.',
+    },
+    whenToPerform: [
+      'Before beginning construction of a new home or office',
+      'When moving into a new home (alongside Griha Pravesh)',
+      'When family members are experiencing unexplained illness or misfortune',
+      'When financial problems persist despite hard work',
+      'After purchasing land or property',
+      'When a Jyotish identifies Vastu doshas in the horoscope',
+    ],
     samagri: [
       { item: 'Vastu Yantra',               quantity: '1',       essential: true  },
       { item: 'Copper plate for yantra',    quantity: '1',       essential: true  },
