@@ -8,6 +8,16 @@ const nextConfig = {
       { protocol: 'https', hostname: 'www.bhaktiphotos.com' },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'Permissions-Policy', value: 'geolocation=(self)' },
+        ],
+      },
+    ]
+  },
   async rewrites() {
     return {
       beforeFiles: [
