@@ -3,11 +3,11 @@
 
 const { execSync } = require('child_process');
 
-// Add connection_limit=1 to DATABASE_URL to prevent connection pool exhaustion
+// Add connection_limit=5 to DATABASE_URL to prevent connection pool exhaustion
 if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('connection_limit')) {
   const separator = process.env.DATABASE_URL.includes('?') ? '&' : '?';
-  process.env.DATABASE_URL = process.env.DATABASE_URL + separator + 'connection_limit=1';
-  console.log('Added connection_limit=1 to DATABASE_URL');
+  process.env.DATABASE_URL = process.env.DATABASE_URL + separator + 'connection_limit=5';
+  console.log('Added connection_limit=5 to DATABASE_URL');
 }
 
 // Set dummy DATABASE_URL if not set (required for prisma generate)
