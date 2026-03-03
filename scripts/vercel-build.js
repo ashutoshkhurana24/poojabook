@@ -23,8 +23,11 @@ try {
   console.log('Prisma generate warning, continuing...');
 }
 
-// Only run db push and seed if DATABASE_URL points to a real database (not dummy)
-if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
+// Skip db push and seed on Vercel to avoid connection pool exhaustion
+// Database schema is already up to date and seeded
+const isVercel = process.env.VERCEL === 'true';
+
+if (!isVercel && process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
   try {
     console.log('Running prisma db push...');
     execSync('npx prisma db push', { stdio: 'inherit' });
@@ -38,7 +41,7 @@ if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('dummy')) {
     console.log('Database seed warning, continuing...');
   }
 } else {
-  console.log('Skipping db push and seed (using dummy DATABASE_URL)');
+  console.log('Skipping db push and seed on Vercel (database already seeded)');
 }
 
 console.log('Running next build...');
