@@ -760,6 +760,136 @@ export const POOJA_GUIDES: PoojaGuide[] = [
     relatedPoojas: ['griha-pravesh', 'ganesh-puja', 'lakshmi-puja'],
     bookingCTA: { text: 'Book Vastu Puja with Expert Pandit', url: '/poojas/vastu-puja' },
   },
+
+  // ── Vishnu Puja ───────────────────────────────────────────────────────────
+  {
+    id: 'vishnu-puja',
+    name: 'Vishnu Puja',
+    icon: '🔱',
+    category: 'Thanksgiving & Blessings',
+    deity: 'Lord Vishnu (The Preserver)',
+    slug: 'vishnu-puja',
+    shortDesc: 'Invoke the sustainer of the universe for peace and protection',
+    duration: '45–60 minutes',
+    difficulty: 'Medium',
+    region: 'Pan India',
+    bestTime: {
+      time: 'Morning (7 AM – 10 AM)',
+      days: ['Thursday', 'Ekadashi', 'Purnima'],
+      tithis: ['Ekadashi', 'Purnima', 'Dvadashi'],
+      occasions: ['Vaikunta Ekadashi', 'Kartik month', 'Every Thursday', 'After achieving a goal'],
+    },
+    whatIsThis: {
+      summary: 'Vishnu Puja is the worship of Lord Vishnu — the all-pervading preserver and sustainer of the universe, one of the principal deities of the Hindu Trinity.',
+      details: 'Lord Vishnu is the protector who descends to Earth in different forms (avatars) whenever dharma is threatened. His ten avatars (Dashavatara) include Matsya, Kurma, Varaha, Narasimha, Vamana, Parashurama, Rama, Krishna, Buddha, and Kalki. Vishnu is depicted resting on the cosmic serpent Shesha in the ocean of milk, with Goddess Lakshmi at his feet. He holds a conch (Shankha), discus (Sudarshana Chakra), lotus, and mace (Gada).',
+      significance: 'Performing Vishnu Puja removes fear, grants protection, ensures preservation of all that is good in life, and is the foundation of Vaishnavism — one of the largest traditions in Hinduism.',
+    },
+    whenToPerform: [
+      'Every Thursday — Vishnu\'s sacred day (Guruvar)',
+      'Ekadashi (11th lunar day) — most sacred for Vishnu devotees',
+      'Vaikunta Ekadashi (Margashirsha) — the holiest Vishnu day',
+      'Kartik month — considered the holiest month for Vishnu worship',
+      'Purnima (full moon) — for Satyanarayan and Vishnu Sahasranama',
+      'Before beginning an important new chapter in life',
+    ],
+    samagri: [
+      { item: 'Vishnu idol or Shaligram',          quantity: '1',       essential: true  },
+      { item: 'Tulsi (Holy Basil) leaves',          quantity: 'Handful', essential: true  },
+      { item: 'Yellow/white flowers',               quantity: 'Handful', essential: true  },
+      { item: 'Panchamrit (5 sacred liquids)',       quantity: '1 bowl',  essential: true  },
+      { item: 'Ghee diya',                          quantity: '1',       essential: true  },
+      { item: 'Incense sticks',                     quantity: '5',       essential: true  },
+      { item: 'Yellow cloth (aasan)',               quantity: '1',       essential: false },
+      { item: 'Camphor',                            quantity: 'Pieces',  essential: false },
+      { item: 'Betel leaves & nuts',               quantity: '5 each',  essential: false },
+      { item: 'Fruits (banana, coconut)',           quantity: '5 each',  essential: false },
+    ],
+    process: [
+      { step: 1, title: 'Purification',            duration: '10 min', desc: 'Take a bath and wear clean yellow or white clothes — Vishnu\'s sacred colors.' },
+      { step: 2, title: 'Set Up the Altar',        duration: '5 min',  desc: 'Place Vishnu idol on a yellow cloth. Arrange tulsi, flowers, and samagri.' },
+      { step: 3, title: 'Panchamrit Abhishek',     duration: '10 min', desc: 'Bathe the idol with panchamrit while chanting "Om Namo Narayanaya".' },
+      { step: 4, title: 'Offer Tulsi & Flowers',   duration: '5 min',  desc: 'Tulsi is Vishnu\'s most beloved offering — offer fresh leaves with each mantra.' },
+      { step: 5, title: 'Vishnu Sahasranama',      duration: '20 min', desc: 'Recite the 1000 names of Vishnu (Vishnu Sahasranama) or listen to a recording.' },
+      { step: 6, title: 'Aarti',                   duration: '5 min',  desc: 'Perform Vishnu aarti with the diya, singing "Jai Jagdish Hare".' },
+      { step: 7, title: 'Prasad & Meditation',     duration: '10 min', desc: 'Distribute tulsi-based prasad and meditate on Vishnu\'s peaceful form.' },
+    ],
+    benefits: [
+      { benefit: 'Protection & Preservation',  icon: '🛡️', desc: 'Vishnu\'s grace protects family, health, and prosperity' },
+      { benefit: 'Peace & Stability',          icon: '☮️', desc: 'Brings long-lasting peace and stability to life' },
+      { benefit: 'Dharma & Righteousness',     icon: '⚖️', desc: 'Strengthens adherence to righteous living and moral values' },
+      { benefit: 'Moksha (Liberation)',         icon: '🕉️', desc: 'Vishnu\'s devotion is the path of Bhakti leading to liberation' },
+      { benefit: 'Fulfillment of Desires',     icon: '⭐', desc: 'Sincere Vishnu worship fulfills both material and spiritual desires' },
+    ],
+    mantras: [
+      { name: 'Vishnu Mool Mantra',   text: 'Om Namo Bhagavate Vasudevaya',                               repetitions: 108 },
+      { name: 'Vishnu Gayatri',       text: 'Om Narayanaya Vidmahe\nVasudevaya Dhimahi\nTanno Vishnu Prachodayat', repetitions: 21 },
+    ],
+    relatedPoojas: ['satyanarayan-puja', 'lakshmi-puja', 'krishna-puja'],
+    bookingCTA: { text: 'Book Vishnu Puja with Expert Pandit', url: '/poojas/vishnu-puja' },
+  },
+
+  // ── Matsya Puja ───────────────────────────────────────────────────────────
+  {
+    id: 'matsya-puja',
+    name: 'Matsya Puja',
+    icon: '🐟',
+    category: 'Thanksgiving & Blessings',
+    deity: 'Matsya (First Avatar of Lord Vishnu)',
+    slug: 'matsya-puja',
+    shortDesc: 'Worship the fish avatar of Vishnu for protection and salvation',
+    duration: '30–45 minutes',
+    difficulty: 'Easy',
+    region: 'Pan India (especially coastal regions)',
+    bestTime: {
+      time: 'Morning (Sunrise)',
+      days: ['Thursday', 'Ekadashi'],
+      tithis: ['Ekadashi', 'Purnima'],
+      occasions: ['Matsya Jayanti', 'Vaikunta Ekadashi', 'During floods or water-related dangers', 'Kartik month'],
+    },
+    whatIsThis: {
+      summary: 'Matsya Puja is the worship of Matsya — the fish avatar, the first of the ten Dashavatara of Lord Vishnu — who saved the Vedas and the progenitor Manu from the great flood.',
+      details: 'According to the Matsya Purana, a great fish appeared to sage Manu and warned him of an impending deluge that would destroy all life. The fish — Lord Vishnu in disguise — guided Manu\'s boat to safety and recovered the stolen Vedas from the demon Shankhasura. Matsya is worshipped particularly by fishing communities, sailors, and those seeking protection from water-related dangers.',
+      significance: 'Matsya Puja symbolizes the preservation of sacred knowledge and life itself. It is performed for protection during travel over water, for the welfare of fishing communities, and to commemorate the cyclical destruction and regeneration of the world.',
+    },
+    whenToPerform: [
+      'Matsya Jayanti — the birth anniversary of the Matsya avatar',
+      'Before sea or river voyages for safe travel',
+      'During floods or heavy monsoon for protection',
+      'On Ekadashi and Purnima days',
+      'By fishing communities for bountiful catch and safety',
+      'During Kartik month (Vishnu\'s month)',
+    ],
+    samagri: [
+      { item: 'Matsya/Vishnu idol or photo',     quantity: '1',       essential: true  },
+      { item: 'Tulsi leaves',                    quantity: 'Handful', essential: true  },
+      { item: 'Yellow flowers',                  quantity: 'Handful', essential: true  },
+      { item: 'Gangajal or clean water',         quantity: '500 ml',  essential: true  },
+      { item: 'Ghee diya',                       quantity: '1',       essential: true  },
+      { item: 'Incense sticks',                  quantity: '5',       essential: true  },
+      { item: 'Coconut',                         quantity: '1',       essential: true  },
+      { item: 'Yellow cloth',                    quantity: '1',       essential: false },
+    ],
+    process: [
+      { step: 1, title: 'Invocation',            duration: '5 min',  desc: 'Invoke Lord Vishnu in his Matsya form with "Om Namo Narayanaya" 108 times.' },
+      { step: 2, title: 'Abhishek',              duration: '10 min', desc: 'Bathe the idol with Gangajal while chanting the Matsya avatar mantras.' },
+      { step: 3, title: 'Flower & Tulsi Offering', duration: '5 min', desc: 'Offer yellow flowers and tulsi leaves — both dear to Lord Vishnu.' },
+      { step: 4, title: 'Matsya Stotram',        duration: '10 min', desc: 'Recite the Matsya Stotram or Dashavatara Stotram (the hymn of 10 avatars).' },
+      { step: 5, title: 'Aarti',                 duration: '5 min',  desc: 'Perform aarti and pray for protection, safe travels, and preservation of wisdom.' },
+      { step: 6, title: 'Prasad',                duration: '5 min',  desc: 'Distribute fruits and sweets as prasad. Offer a portion to flowing water.' },
+    ],
+    benefits: [
+      { benefit: 'Protection from Danger',   icon: '🛡️', desc: 'Protects during floods, sea voyages, and water-related activities' },
+      { benefit: 'Preservation of Knowledge',icon: '📚', desc: 'Blesses students and scholars with retention of sacred wisdom' },
+      { benefit: 'Salvation',                icon: '🕉️', desc: 'Vishnu\'s grace through Matsya leads devotees toward moksha' },
+      { benefit: 'Abundance',                icon: '🐟', desc: 'Blesses fishing communities with bountiful catch and prosperity' },
+    ],
+    mantras: [
+      { name: 'Matsya Avatar Mantra', text: 'Om Matsya Roopaya Namah\nNamo Matsya Roopine\nShri Vishave Namah',         repetitions: 108 },
+      { name: 'Dashavatara Sloka',   text: 'Matsya Koormo Varahascha\nNarasimhascha Vamanah\nRamo Ramascha Krishnascha\nBuddho Kalki cha Te Dasha', repetitions: 11 },
+    ],
+    relatedPoojas: ['vishnu-puja', 'satyanarayan-puja', 'ganesh-puja'],
+    bookingCTA: { text: 'Book Matsya Puja with Expert Pandit', url: '/poojas/matsya-puja' },
+  },
 ]
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -767,6 +897,9 @@ export const POOJA_GUIDES: PoojaGuide[] = [
 export function getPoojaGuide(slug: string): PoojaGuide | undefined {
   return POOJA_GUIDES.find(g => g.slug === slug)
 }
+
+/** O(1) lookup — use this in listing pages to conditionally show "Learn More" */
+export const GUIDE_SLUG_SET: ReadonlySet<string> = new Set(POOJA_GUIDES.map(g => g.slug))
 
 export const GUIDE_CATEGORIES = [
   'All',
