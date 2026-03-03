@@ -232,11 +232,11 @@ export default function PoojasPage() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
                 {poojas.map((pooja) => (
                   <div
                     key={pooja.id}
-                    className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
+                    className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group flex flex-col h-full"
                   >
                     <div className="relative h-52 w-full overflow-hidden bg-orange-50">
                       {pooja.imageUrl ? (
@@ -260,7 +260,7 @@ export default function PoojasPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="p-5">
+                    <div className="p-5 flex flex-col flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="px-2 py-1 bg-accent/20 text-accent-dark text-xs rounded-full">
                           {pooja.category?.name}
@@ -269,12 +269,13 @@ export default function PoojasPage() {
                           {pooja.mode.replace('_', ' ')}
                         </span>
                       </div>
-                      <h3 className="font-heading text-lg mb-2 group-hover:text-primary transition">
+                      <h3 className="font-heading text-lg mb-2 group-hover:text-primary transition line-clamp-1">
                         {pooja.title}
                       </h3>
-                      <p className="text-text-secondary text-sm mb-3 line-clamp-2">
+                      <p className="text-text-secondary text-sm mb-3 line-clamp-2 min-h-[40px]">
                         {pooja.description}
                       </p>
+                      <div className="flex-1" />
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-1">
                           <span className="text-warning">★</span>
