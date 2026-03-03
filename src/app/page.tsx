@@ -105,13 +105,6 @@ const TESTIMONIALS = [
 ]
 
 export default function HomePage() {
-  const [showBanner, setShowBanner] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !localStorage.getItem('poojabook_user_city')
-    }
-    return false
-  })
-  const [isDetecting, setIsDetecting] = useState(false)
   const [featuredPoojas, setFeaturedPoojas] = useState<Pooja[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -156,43 +149,6 @@ export default function HomePage() {
     .finally(() => setLoading(false))
   }, [])
 
-  const detectLocation = async () => {
-    if (!navigator.geolocation) {
-      setShowBanner(false)
-      return
-    }
-
-    setIsDetecting(true)
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1&email=support@poojabook.com`,
-            { headers: { 'User-Agent': 'PoojaBook/1.0' } }
-          )
-          const data = await response.json()
-          const address = data.address
-          const city = address.city || address.town || address.village || address.district
-          if (city) {
-            localStorage.setItem('poojabook_user_city', city)
-            const event = new CustomEvent('cityDetected', { detail: city })
-            window.dispatchEvent(event)
-          }
-        } catch (e) {
-          console.error(e)
-        }
-        setShowBanner(false)
-        setIsDetecting(false)
-      },
-      () => {
-        setShowBanner(false)
-        setIsDetecting(false)
-      },
-      { timeout: 10000 }
-    )
-  }
-
   return (
     <div>
       <WebsiteTour />
@@ -211,29 +167,6 @@ export default function HomePage() {
 
             {/* Search Box */}
             <div data-tour="search" className="bg-surface rounded-2xl p-4 shadow-xl">
-              {showBanner && (
-                <div className="mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 text-sm text-amber-800">
-                    <span>📍</span>
-                    <span>Enable location for personalized experience</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={detectLocation}
-                      disabled={isDetecting}
-                      className="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition font-medium disabled:opacity-50"
-                    >
-                      {isDetecting ? 'Detecting...' : 'Enable'}
-                    </button>
-                    <button
-                      onClick={() => setShowBanner(false)}
-                      className="px-2 py-1 text-gray-500 hover:text-gray-700 text-lg leading-none"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
-              )}
 
               <form action="/poojas" className="flex flex-col md:flex-row gap-3">
                 <div className="flex-[2]">
