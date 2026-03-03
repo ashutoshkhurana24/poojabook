@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "browsePoojas": "Browse Poojas",
+    "templePoojas": "Temple Poojas",
+    "atHome": "At Home",
+    "calendar": "Hindu Calendar",
+    "login": "Login",
+    "getStarted": "Get Started",
+    "myBookings": "My Bookings",
+    "adminDashboard": "Admin Dashboard",
+    "myDashboard": "My Dashboard",
+    "myListings": "My Listings",
+    "savedPoojas": "Saved Poojas",
+    "profileSettings": "Profile Settings",
+    "partnerSettings": "Partner Settings",
+    "logout": "Logout",
+    "notifications": "Notifications",
+    "clearAll": "Clear all",
+    "noNotifications": "No notifications yet"
+  },
+  "hero": {
+    "title": "Book Divine Poojas Across India",
+    "subtitle": "Connect with experienced pandits, book temple services, or arrange at-home poojas with just a few clicks.",
+    "searchPlaceholder": "Search poojas, temples...",
+    "findPooja": "Find My Perfect Pooja",
+    "search": "Search"
+  },
+  "categories": {
+    "title": "Browse by Category"
+  },
+  "featured": {
+    "title": "Featured Poojas",
+    "viewAll": "View All →"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1Title": "Browse & Select",
+    "step1Desc": "Explore poojas by category, location, or mode.",
+    "step2Title": "Book Your Slot",
+    "step2Desc": "Choose date, time, and complete booking.",
+    "step3Title": "Divine Experience",
+    "step3Desc": "Enjoy authentic pooja experience."
+  },
+  "stats": {
+    "poojas": "Poojas Completed",
+    "rating": "Average Rating",
+    "pandits": "Verified Pandits",
+    "cities": "Across India"
+  },
+  "testimonials": {
+    "title": "Blessed Experiences",
+    "subtitle": "Join thousands of families who have experienced divine ceremonies through PoojaBook",
+    "badge": "What Devotees Say"
+  },
+  "partner": {
+    "title": "Are You a Pandit or Temple?",
+    "subtitle": "Join PoojaBook to reach thousands of devotees seeking your divine services.",
+    "cta": "Partner With Us"
+  },
+  "footer": {
+    "tagline": "Your trusted platform for divine services across India.",
+    "quickLinks": "Quick Links",
+    "services": "Services",
+    "contact": "Contact",
+    "browsePoojas": "Browse Poojas",
+    "aboutUs": "About Us",
+    "contactUs": "Contact",
+    "templePoojas": "Temple Poojas",
+    "atHomePoojas": "At-Home Poojas",
+    "onlinePoojas": "Online Poojas",
+    "rights": "All rights reserved."
+  },
+  "language": {
+    "select": "Language",
+    "english": "English",
+    "hindi": "हिंदी",
+    "tamil": "தமிழ்",
+    "telugu": "తెలుగు",
+    "kannada": "ಕನ್ನಡ",
+    "bengali": "বাংলা",
+    "marathi": "मराठी",
+    "malayalam": "മലയാളം"
+  }
+}

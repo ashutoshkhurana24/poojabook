@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSelector from '@/components/LanguageSelector'
 
 interface User {
   id: string
@@ -13,6 +15,7 @@ interface User {
 }
 
 export function Header() {
+  const { t } = useLanguage()
   const [user, setUser] = useState<User | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
@@ -145,16 +148,16 @@ export function Header() {
 
           <nav className="hidden md:flex items-center gap-8">
             <Link href="/poojas" className="text-text-secondary hover:text-primary font-medium">
-              Browse Poojas
+              {t('nav.browsePoojas')}
             </Link>
             <Link href="/poojas?mode=IN_TEMPLE" className="text-text-secondary hover:text-primary font-medium">
-              Temple Poojas
+              {t('nav.templePoojas')}
             </Link>
             <Link href="/poojas?mode=AT_HOME" className="text-text-secondary hover:text-primary font-medium">
-              At Home
+              {t('nav.atHome')}
             </Link>
             <Link href="/calendar" className="text-text-secondary hover:text-primary font-medium">
-              Hindu Calendar
+              {t('nav.calendar')}
             </Link>
           </nav>
 
@@ -176,20 +179,20 @@ export function Header() {
               {notifOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-surface rounded-xl shadow-lg border py-2 animate-in fade-in slide-in-from-top-2 z-50">
                   <div className="px-4 py-2 border-b flex justify-between items-center">
-                    <p className="font-medium text-gray-900">Notifications</p>
+                    <p className="font-medium text-gray-900">{t('nav.notifications')}</p>
                     {notifications.length > 0 && (
-                      <button 
+                      <button
                         onClick={() => setNotifications([])}
                         className="text-xs text-red-500 hover:text-red-700"
                       >
-                        Clear all
+                        {t('nav.clearAll')}
                       </button>
                     )}
                   </div>
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <p className="px-4 py-6 text-center text-gray-500 text-sm">
-                        No notifications yet
+                        {t('nav.noNotifications')}
                       </p>
                     ) : (
                       notifications.map((n, i) => (
@@ -232,50 +235,50 @@ export function Header() {
                     
                     {isAdmin && (
                       <Link href="/admin" className="block px-4 py-2 text-sm hover:bg-background">
-                        Admin Dashboard
+                        {t('nav.adminDashboard')}
                       </Link>
                     )}
-                    
+
                     {(isVendor || isPartner) && (
                       <Link href="/vendor" className="block px-4 py-2 text-sm hover:bg-background">
-                        My Dashboard
+                        {t('nav.myDashboard')}
                       </Link>
                     )}
-                    
+
                     {isPartner && (
                       <Link href="/vendor/listings" className="block px-4 py-2 text-sm hover:bg-background">
-                        My Listings
+                        {t('nav.myListings')}
                       </Link>
                     )}
-                    
+
                     <Link href="/my-orders" className="block px-4 py-2 text-sm hover:bg-background">
-                      My Bookings
+                      {t('nav.myBookings')}
                     </Link>
-                    
+
                     {isCustomer && (
                       <>
                         <Link href="/saved" className="block px-4 py-2 text-sm hover:bg-background">
-                          Saved Poojas
+                          {t('nav.savedPoojas')}
                         </Link>
                         <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-background">
-                          Profile Settings
+                          {t('nav.profileSettings')}
                         </Link>
                       </>
                     )}
-                    
+
                     {(isVendor || isPartner) && (
                       <Link href="/vendor/settings" className="block px-4 py-2 text-sm hover:bg-background">
-                        Partner Settings
+                        {t('nav.partnerSettings')}
                       </Link>
                     )}
-                    
+
                     <div className="border-t my-1" />
-                    
-                    <button 
-                      onClick={handleLogout} 
+
+                    <button
+                      onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-background"
                     >
-                      Logout
+                      {t('nav.logout')}
                     </button>
                   </div>
                 )}
@@ -283,13 +286,14 @@ export function Header() {
             ) : (
               <>
                 <Link href="/login" className="text-text-secondary hover:text-primary font-medium">
-                  Login
+                  {t('nav.login')}
                 </Link>
                 <Link href="/register" className="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-dark transition">
-                  Get Started
+                  {t('nav.getStarted')}
                 </Link>
               </>
             )}
+            <LanguageSelector />
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import LocationSelector from '@/components/LocationSelector'
 import AuspiciousDaysSection from '@/components/AuspiciousDaysSection'
 import WebsiteTour from '@/components/WebsiteTour'
 import PanditMatchmaker from '@/components/PanditMatchmaker'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Pooja {
   id: string
@@ -105,6 +106,7 @@ const TESTIMONIALS = [
 ]
 
 export default function HomePage() {
+  const { t } = useLanguage()
   const [featuredPoojas, setFeaturedPoojas] = useState<Pooja[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -159,10 +161,10 @@ export default function HomePage() {
         <div className="relative container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl text-white mb-6">
-              Book Divine Poojas<br />Across India
+              {t('hero.title')}
             </h1>
             <p className="text-xl text-gray-200 mb-8">
-              Connect with experienced pandits, book temple services, or arrange at-home poojas with just a few clicks.
+              {t('hero.subtitle')}
             </p>
 
             {/* Search Box */}
@@ -173,7 +175,7 @@ export default function HomePage() {
                   <input
                     type="text"
                     name="search"
-                    placeholder="Search poojas, temples..."
+                    placeholder={t('hero.searchPlaceholder')}
                     className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                   />
                 </div>
@@ -186,15 +188,15 @@ export default function HomePage() {
                   type="submit"
                   className="h-12 px-8 bg-primary text-white rounded-xl hover:bg-primary-dark transition font-semibold whitespace-nowrap"
                 >
-                  Search
+                  {t('hero.search')}
                 </button>
               </form>
               
-              <button 
+              <button
                 onClick={() => setMatchmakerOpen(true)}
                 className="mt-6 bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto"
               >
-                🪔 Find My Perfect Pooja
+                🪔 {t('hero.findPooja')}
               </button>
             </div>
           </div>
@@ -204,7 +206,7 @@ export default function HomePage() {
       {/* Categories */}
       <section id="categories-section" data-tour="categories" className="py-16 bg-surface">
         <div className="container mx-auto px-4">
-          <h2 className="font-heading text-3xl text-center mb-12">Browse by Category</h2>
+          <h2 className="font-heading text-3xl text-center mb-12">{t('categories.title')}</h2>
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
@@ -287,9 +289,9 @@ export default function HomePage() {
       <section id="featured-section" data-tour="featured" className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="font-heading text-3xl">Featured Poojas</h2>
+            <h2 className="font-heading text-3xl">{t('featured.title')}</h2>
             <Link href="/poojas" className="text-primary hover:underline font-medium">
-              View All →
+              {t('featured.viewAll')}
             </Link>
           </div>
 
@@ -400,28 +402,28 @@ export default function HomePage() {
       {/* How It Works */}
       <section id="how-it-works-section" className="py-16 bg-surface">
         <div className="container mx-auto px-4">
-          <h2 className="font-heading text-3xl text-center mb-12">How It Works</h2>
+          <h2 className="font-heading text-3xl text-center mb-12">{t('howItWorks.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">🔍</span>
               </div>
-              <h3 className="font-heading text-xl mb-2">Browse & Select</h3>
-              <p className="text-text-secondary">Explore poojas by category, location, or mode.</p>
+              <h3 className="font-heading text-xl mb-2">{t('howItWorks.step1Title')}</h3>
+              <p className="text-text-secondary">{t('howItWorks.step1Desc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">📅</span>
               </div>
-              <h3 className="font-heading text-xl mb-2">Book Your Slot</h3>
-              <p className="text-text-secondary">Choose date, time, and complete booking.</p>
+              <h3 className="font-heading text-xl mb-2">{t('howItWorks.step2Title')}</h3>
+              <p className="text-text-secondary">{t('howItWorks.step2Desc')}</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">✨</span>
               </div>
-              <h3 className="font-heading text-xl mb-2">Divine Experience</h3>
-              <p className="text-text-secondary">Enjoy authentic pooja experience.</p>
+              <h3 className="font-heading text-xl mb-2">{t('howItWorks.step3Title')}</h3>
+              <p className="text-text-secondary">{t('howItWorks.step3Desc')}</p>
             </div>
           </div>
         </div>
@@ -432,13 +434,13 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
             <p className="text-orange-500 font-medium uppercase tracking-wider text-sm mb-2">
-              What Devotees Say
+              {t('testimonials.badge')}
             </p>
             <h2 className="text-4xl font-serif text-gray-800 mb-3">
-              Blessed Experiences
+              {t('testimonials.title')}
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto">
-              Join thousands of families who have experienced divine ceremonies through PoojaBook
+              {t('testimonials.subtitle')}
             </p>
             <div className="flex items-center justify-center gap-3 mt-6">
               <div className="flex gap-1">
@@ -456,9 +458,9 @@ export default function HomePage() {
               className="flex gap-6 transition-transform duration-500 ease-in-out items-start"
               style={{ transform: `translateX(-${activeTestimonial * (100 / visibleTestimonials)}%)` }}
             >
-              {TESTIMONIALS.map((t) => (
+              {TESTIMONIALS.map((testimonial) => (
                 <div
-                  key={t.id}
+                  key={testimonial.id}
                   className="min-w-[85vw] sm:min-w-[320px] max-w-[380px] bg-white rounded-2xl p-5 shadow-md border border-orange-100 flex-shrink-0"
                 >
                   <div className="flex gap-1 mb-3">
@@ -467,29 +469,29 @@ export default function HomePage() {
                     ))}
                   </div>
                   <p className="text-gray-600 leading-relaxed mb-4 text-sm line-clamp-4">
-                    "{t.review}"
+                    "{testimonial.review}"
                   </p>
                   <div className="mb-4">
                     <span className="bg-orange-100 text-orange-700 text-xs px-3 py-1 rounded-full font-medium">
-                      🪔 {t.pooja}
+                      🪔 {testimonial.pooja}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-sm">
-                        {t.avatar}
+                        {testimonial.avatar}
                       </div>
                       <div>
                         <div className="flex items-center gap-1">
-                          <p className="font-semibold text-gray-800 text-sm">{t.name}</p>
-                          {t.verified && (
+                          <p className="font-semibold text-gray-800 text-sm">{testimonial.name}</p>
+                          {testimonial.verified && (
                             <span className="text-green-500 text-xs">✓</span>
                           )}
                         </div>
-                        <p className="text-gray-400 text-xs">{t.location}</p>
+                        <p className="text-gray-400 text-xs">{testimonial.location}</p>
                       </div>
                     </div>
-                    <p className="text-gray-300 text-xs">{t.date}</p>
+                    <p className="text-gray-300 text-xs">{testimonial.date}</p>
                   </div>
                 </div>
               ))}
@@ -528,28 +530,28 @@ export default function HomePage() {
               <span className="text-2xl">🙏</span>
               <div>
                 <p className="font-bold text-gray-800">10,000+</p>
-                <p className="text-xs">Poojas Completed</p>
+                <p className="text-xs">{t('stats.poojas')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-gray-500">
               <span className="text-2xl">⭐</span>
               <div>
                 <p className="font-bold text-gray-800">4.9/5</p>
-                <p className="text-xs">Average Rating</p>
+                <p className="text-xs">{t('stats.rating')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-gray-500">
               <span className="text-2xl">🏛</span>
               <div>
                 <p className="font-bold text-gray-800">500+</p>
-                <p className="text-xs">Verified Pandits</p>
+                <p className="text-xs">{t('stats.pandits')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-gray-500">
               <span className="text-2xl">📍</span>
               <div>
-                <p className="font-bold text-gray-800">50+ Cities</p>
-                <p className="text-xs">Across India</p>
+                <p className="font-bold text-gray-800">50+</p>
+                <p className="text-xs">{t('stats.cities')}</p>
               </div>
             </div>
           </div>
@@ -559,15 +561,15 @@ export default function HomePage() {
       {/* CTA */}
       <section id="partner-section" className="py-16 bg-secondary text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="font-heading text-3xl mb-4">Are You a Pandit or Temple?</h2>
+          <h2 className="font-heading text-3xl mb-4">{t('partner.title')}</h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join PoojaBook to reach thousands of devotees seeking your divine services.
+            {t('partner.subtitle')}
           </p>
           <Link
             href="/register"
             className="inline-block px-8 py-4 bg-accent text-secondary font-semibold rounded-full hover:bg-accent/90 transition"
           >
-            Partner With Us
+            {t('partner.cta')}
           </Link>
         </div>
       </section>
