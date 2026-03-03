@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 
@@ -9,6 +9,7 @@ type LoginMethod = 'email' | 'phone'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [method, setMethod] = useState<LoginMethod>('email')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -20,11 +21,20 @@ export default function LoginPage() {
   const [emailForm, setEmailForm] = useState({ email: '', password: '', rememberMe: false })
   const [phoneForm, setPhoneForm] = useState({ phone: '', password: '', rememberMe: false })
 
+  useEffect(() => {
+    const stored = sessionStorage.getItem('bookingRedirect')
+    if (stored) {
+      sessionStorage.removeItem('bookingRedirect')
+    }
+  }, [])
+
+  const redirectTo = searchParams?.get('redirect') || sessionStorage.getItem('bookingRedirect') || '/'
+
   const handleGoogleLogin = async () => {
     setGoogleLoading(true)
     setError('')
     try {
-      await signIn('google', { callbackUrl: '/' })
+      await signIn('google', { callbackUrl: redirectTo })
     } catch (err) {
       setError('Failed to sign in with Google')
       setGoogleLoading(false)
@@ -55,7 +65,7 @@ export default function LoginPage() {
         return
       }
 
-      router.push(data.data.redirectTo || '/')
+      router.push(data.data.redirectTo || redirectTo)
       router.refresh()
     } catch (err) {
       setError('Something went wrong. Please try again.')
@@ -151,12 +161,12 @@ export default function LoginPage() {
       }
 
       if (data.data.isNewUser) {
-        router.push('/register?phone=' + phoneForm.phone.replace(/\D/g, '').slice(0, 10))
+        router.push('/register?phone=' + phoneForm.phone.replace(/\D/g, '').slice(0, 10) + '&redirect=' + encodeURIComponent(redirectTo))
         return
       }
 
       await new Promise(resolve => setTimeout(resolve, 500))
-      window.location.href = data.data.redirectTo || '/'
+      window.location.href = data.data.redirectTo || redirectTo
     } catch (err) {
       setError('Failed to verify OTP')
     } finally {

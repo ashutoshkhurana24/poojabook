@@ -105,7 +105,21 @@ export default function MockPayment({
               <input
                 type="text"
                 value={expiry}
-                onChange={(e) => setExpiry(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/[^\d\/]/g, '')
+                  if (value.length === 2 && !value.includes('/')) {
+                    value = value + '/'
+                  }
+                  if (value.length <= 5) {
+                    setExpiry(value)
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === '/' && expiry.length < 2) {
+                    e.preventDefault()
+                    setExpiry(expiry + '/')
+                  }
+                }}
                 placeholder="MM/YY"
                 className="w-full px-4 py-3 border rounded-lg focus:border-primary outline-none"
               />

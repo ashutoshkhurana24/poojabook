@@ -14,6 +14,35 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // For mock payments (test mode), skip verification
+    if (razorpayPaymentId.startsWith('pay_mock_')) {
+      await prisma.payment.create({
+        data: {
+          orderId,
+          provider: 'RAZORPAY',
+          status: 'SUCCESS',
+          amount: 0,
+          paymentRef: razorpayPaymentId,
+          rawResponse: JSON.stringify({ razorpayPaymentId, razorpaySignature }),
+        },
+      }).catch(() => {
+        return prisma.payment.updateMany({
+          where: { orderId },
+          data: { 
+            status: 'SUCCESS',
+            rawResponse: JSON.stringify({ razorpayPaymentId, razorpaySignature }),
+          },
+        })
+      })
+      
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'CONFIRMED' },
+      })
+
+      return NextResponse.json({ success: true, data: { orderId } })
+    }
+
     const isValid = await verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature)
 
     if (!isValid) {

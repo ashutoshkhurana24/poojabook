@@ -126,6 +126,7 @@ export default function BookingForm({ poojaId, basePrice, categorySlug }: {
       const data = await res.json()
 
       if (res.status === 401 || data.error?.includes('authorized')) {
+        sessionStorage.setItem('bookingRedirect', window.location.pathname + window.location.search)
         router.push('/login')
         return
       }

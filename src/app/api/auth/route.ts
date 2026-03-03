@@ -218,6 +218,7 @@ export async function POST(request: NextRequest) {
         city: z.string().optional(),
         agreeToTerms: z.boolean(),
         otpVerified: z.boolean().optional(),
+        redirectTo: z.string().optional(),
       }).parse(body)
 
       if (data.password !== data.confirmPassword) {
@@ -297,7 +298,8 @@ export async function POST(request: NextRequest) {
       const response = successResponse({ 
         user: { ...user, passwordHash: undefined },
         token,
-        message: 'Account created successfully'
+        message: 'Account created successfully',
+        redirectTo: data.redirectTo || '/'
       })
       setAuthCookie(response, token)
       

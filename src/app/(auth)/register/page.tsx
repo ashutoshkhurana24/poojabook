@@ -95,6 +95,8 @@ function RegisterPageInner() {
     }
   }, [searchParams])
 
+  const redirectParam = searchParams?.get('redirect') || sessionStorage.getItem('bookingRedirect') || null
+
   const [partnerForm, setPartnerForm] = useState({
     fullName: '',
     email: '',
@@ -211,8 +213,9 @@ function RegisterPageInner() {
       }
       
       setSuccess('Account created successfully!')
+      sessionStorage.removeItem('bookingRedirect')
       setTimeout(() => {
-        router.push(data.data.redirectTo || '/')
+        router.push(data.data.redirectTo || redirectParam || '/')
         router.refresh()
       }, 1000)
     } catch (err) {
