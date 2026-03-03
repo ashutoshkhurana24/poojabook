@@ -159,6 +159,9 @@ export function Header() {
             <Link href="/calendar" className="text-text-secondary hover:text-primary font-medium">
               {t('nav.calendar')}
             </Link>
+            <Link href="/guide" className="text-text-secondary hover:text-primary font-medium">
+              {t('nav.poojaGuide')}
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">

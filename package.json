@@ -33,6 +33,7 @@
     "razorpay": "^2.9.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-share": "^5.2.2",
     "react-tooltip": "^5.30.0",
     "swr": "^2.4.0",
     "twilio": "^5.12.2",

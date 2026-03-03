@@ -234,9 +234,8 @@ export default function PoojasPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {poojas.map((pooja) => (
-                  <Link
+                  <div
                     key={pooja.id}
-                    href={`/poojas/${pooja.slug}`}
                     className="bg-surface rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
                   >
                     <div className="relative h-52 w-full overflow-hidden bg-orange-50">
@@ -276,7 +275,7 @@ export default function PoojasPage() {
                       <p className="text-text-secondary text-sm mb-3 line-clamp-2">
                         {pooja.description}
                       </p>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-1">
                           <span className="text-warning">★</span>
                           <span className="text-sm font-medium">4.8</span>
@@ -286,8 +285,22 @@ export default function PoojasPage() {
                           ₹{pooja.basePrice.toLocaleString()}
                         </div>
                       </div>
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/poojas/${pooja.slug}`}
+                          className="flex-1 text-center py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition"
+                        >
+                          Book Now
+                        </Link>
+                        <Link
+                          href={`/guide/${pooja.slug}`}
+                          className="flex-1 text-center py-2 border border-primary text-primary rounded-xl text-sm font-semibold hover:bg-primary/10 transition"
+                        >
+                          📖 Learn More
+                        </Link>
+                      </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
