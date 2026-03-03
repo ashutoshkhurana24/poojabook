@@ -15,8 +15,56 @@ const DEFAULT_CITIES: CityOption[] = [
   { value: 'Chennai', label: 'Chennai, Tamil Nadu' },
 ]
 
+const STATE_MAP: Record<string, string> = {
+  'Maharashtra': 'Maharashtra', 'Karnataka': 'Karnataka',
+  'Tamil Nādu': 'Tamil Nadu', 'Tamil Nadu': 'Tamil Nadu',
+  'Uttar Pradesh': 'UP', 'West Bengal': 'West Bengal',
+  'Gujarat': 'Gujarat', 'Telangana': 'Telangana', 'Kerala': 'Kerala',
+  'Rajasthan': 'Rajasthan', 'Madhya Pradesh': 'MP', 'Bihar': 'Bihar',
+  'Punjab': 'Punjab', 'Haryana': 'Haryana', 'Himachal Pradesh': 'HP',
+  'Uttarakhand': 'Uttarakhand', 'Jharkhand': 'Jharkhand',
+  'Odisha': 'Odisha', 'Chhattisgarh': 'CG', 'Assam': 'Assam',
+  'NCT': 'Delhi',
+}
+
 interface LocationSelectorProps {
   onCityChange?: (city: string) => void
+}
+
+function extractCityFromNominatim(address: Record<string, string>): string {
+  return (
+    address.city ||
+    address.town ||
+    address.city_district ||
+    address.municipality ||
+    address.suburb ||
+    address.village ||
+    address.district ||
+    address.county ||
+    ''
+  )
+}
+
+function applyCity(
+  city: string,
+  state: string,
+  setSelectedCity: (v: string) => void,
+  setCustomCity: (v: string) => void,
+  onCityChange?: (v: string) => void
+) {
+  const normalizedState = STATE_MAP[state] || state
+  const fullLocation = state ? `${city}, ${normalizedState}` : city
+
+  const existingCity = DEFAULT_CITIES.find(
+    c => c.value.toLowerCase() === city.toLowerCase() ||
+         c.label.toLowerCase().includes(city.toLowerCase())
+  )
+
+  const finalValue = existingCity ? existingCity.value : fullLocation
+  setSelectedCity(finalValue)
+  if (!existingCity) setCustomCity(fullLocation)
+  localStorage.setItem('poojabook_user_city', finalValue)
+  onCityChange?.(finalValue)
 }
 
 export default function LocationSelector({ onCityChange }: LocationSelectorProps) {
@@ -30,8 +78,33 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
     if (savedCity) {
       setSelectedCity(savedCity)
       onCityChange?.(savedCity)
+      return
     }
-  }, [onCityChange])
+    // Auto-detect via IP on first visit (no permission needed)
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(data => {
+        const city = data.city
+        const state = data.region || ''
+        if (city && !localStorage.getItem('poojabook_user_city')) {
+          applyCity(city, state, setSelectedCity, setCustomCity, onCityChange)
+        }
+      })
+      .catch(() => {})
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Listen for the cityDetected event fired by the home page banner
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const city = (e as CustomEvent<string>).detail
+      if (city) {
+        setSelectedCity(city)
+        setCustomCity('')
+      }
+    }
+    window.addEventListener('cityDetected', handler)
+    return () => window.removeEventListener('cityDetected', handler)
+  }, [])
 
   const detectLocation = async () => {
     if (!navigator.geolocation) {
@@ -45,61 +118,33 @@ export default function LocationSelector({ onCityChange }: LocationSelectorProps
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords
-        
         try {
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1&email=support@poojabook.com`,
-            { headers: { 'User-Agent': 'PoojaBook/1.0' } }
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`
           )
-          
-          if (!response.ok) throw new Error('Reverse geocoding failed')
+          if (!response.ok) throw new Error('Geocoding failed')
 
           const data = await response.json()
           const address = data.address
-          let city = address.city || address.town || address.village || address.district || address.county
-          let state = address.state
+          const city = extractCityFromNominatim(address)
+          let state = address.state || ''
+          if (state === 'NCT' || city === 'Delhi') state = 'Delhi'
 
-          if (!city || !state) {
-            setError('Couldn\'t find city')
-            setIsDetecting(false)
+          if (!city) {
+            setError("Couldn't find city")
             return
           }
 
-          if (state === 'NCT' || state === 'Delhi') state = 'Delhi'
-          
-          const stateMap: Record<string, string> = {
-            'Maharashtra': 'Maharashtra', 'Karnataka': 'Karnataka',
-            'Tamil Nādu': 'Tamil Nadu', 'Tamil Nadu': 'Tamil Nadu',
-            'Uttar Pradesh': 'UP', 'West Bengal': 'West Bengal',
-            'Gujarat': 'Gujarat', 'Telangana': 'Telangana', 'Kerala': 'Kerala',
-          }
-
-          const normalizedState = stateMap[state] || state
-          const fullLocation = `${city}, ${normalizedState}`
-
-          const existingCity = DEFAULT_CITIES.find(
-            c => c.value.toLowerCase() === city.toLowerCase() || c.label.toLowerCase().includes(city.toLowerCase())
-          )
-
-          if (existingCity) {
-            setSelectedCity(existingCity.value)
-            localStorage.setItem('poojabook_user_city', existingCity.value)
-            onCityChange?.(existingCity.value)
-          } else {
-            setCustomCity(fullLocation)
-            setSelectedCity(fullLocation)
-            localStorage.setItem('poojabook_user_city', fullLocation)
-            onCityChange?.(fullLocation)
-          }
-        } catch (err) {
-          setError('Couldn\'t fetch location')
+          applyCity(city, state, setSelectedCity, setCustomCity, onCityChange)
+        } catch {
+          setError("Couldn't fetch location")
         } finally {
           setIsDetecting(false)
         }
       },
       (err) => {
         setIsDetecting(false)
-        setError(err.code === err.PERMISSION_DENIED ? 'Location denied' : 'Couldn\'t detect location')
+        setError(err.code === err.PERMISSION_DENIED ? 'Location denied' : "Couldn't detect location")
       },
       { timeout: 10000 }
     )
