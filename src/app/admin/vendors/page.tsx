@@ -35,7 +35,7 @@ export default function AdminVendorsPage() {
         return res.json()
       })
       .then((userData) => {
-        if (!userData || userData.data?.role !== 'ADMIN') {
+        if (!userData?.success || userData.data?.role !== 'ADMIN') {
           router.push('/?unauthorized=true')
           return null
         }

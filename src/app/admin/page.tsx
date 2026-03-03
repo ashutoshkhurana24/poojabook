@@ -44,7 +44,9 @@ export default function AdminDashboard() {
         return res.json()
       })
       .then((userData) => {
-        if (!userData || userData.data?.role !== 'ADMIN') {
+        // userData is { success: true, data: { role: 'ADMIN', ... } }
+        const role = userData?.data?.role
+        if (role !== 'ADMIN') {
           router.push('/?unauthorized=true')
           return null
         }

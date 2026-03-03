@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 import { getAuthUser, type JWTPayload } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export function successResponse(data: any, status = 200) {
   return NextResponse.json({ success: true, data }, { status })
@@ -48,6 +49,13 @@ export async function requireAuth(): Promise<AuthGuardResult> {
 export async function requireRole(role: string): Promise<AuthGuardResult> {
   const auth = await getAuthUser()
   if (!auth) return { auth: null, response: unauthorized() }
-  if (auth.role !== role) return { auth: null, response: forbidden() }
+  
+  // Get current role from database to ensure we have the latest
+  const user = await prisma.user.findUnique({
+    where: { id: auth.userId },
+    select: { role: true }
+  })
+  
+  if (!user || user.role !== role) return { auth: null, response: forbidden() }
   return { auth, response: null }
 }
