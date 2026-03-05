@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { GUIDE_SLUG_SET } from '@/lib/poojaGuides'
 
 interface Pooja {
   id: string
@@ -290,18 +289,16 @@ export default function PoojasPage() {
                       <div className="flex gap-2">
                         <Link
                           href={`/poojas/${pooja.slug}`}
-                          className={`text-center py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition ${GUIDE_SLUG_SET.has(pooja.slug) ? 'flex-1' : 'w-full'}`}
+                          className="flex-1 text-center py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary-dark transition"
                         >
                           Book Now
                         </Link>
-                        {GUIDE_SLUG_SET.has(pooja.slug) && (
-                          <Link
-                            href={`/guide/${pooja.slug}`}
-                            className="flex-1 text-center py-2 border border-primary text-primary rounded-xl text-sm font-semibold hover:bg-primary/10 transition"
-                          >
-                            📖 Learn More
-                          </Link>
-                        )}
+                        <Link
+                          href={`/guide/${pooja.slug}`}
+                          className="flex-1 text-center py-2 border border-primary text-primary rounded-xl text-sm font-semibold hover:bg-primary/10 transition"
+                        >
+                          📖 Learn More
+                        </Link>
                       </div>
                     </div>
                   </div>
